@@ -10,13 +10,19 @@ namespace ReminderGenerator
 {
     class Program
     {
+        private static string Path;
+        
         static void Main()
         {
+            StreamReader sr = new StreamReader(@"C:\Users\Wolfie\Source\Repos\CustomReminders\ReminderGenerator\ModPath.txt");
+            Path = sr.ReadLine();
+            sr.Close();
+
             string command = "";
             // Main loop
             do
             {
-                Console.WriteLine("Commands:\nnew - new reminder_number{int} date{int} season{int} year{int} time{int} message{string}\nhelp\nquit");
+                Console.WriteLine("Commands:\nnew - new date{int} season{int} year{int} time{int} message{string}\nhelp\nquit");
                 command = Console.ReadLine();
                 CommandHandler(command);
             } while (!command.ToLower().StartsWith("quit"));
@@ -32,14 +38,14 @@ namespace ReminderGenerator
                         string ReminderMessage = "";
                         int DaysSinceStart, Time;
 
-                        DaysSinceStart = ConvertToDays(command_parts[2], command_parts[3], command_parts[4]);
-                        Time = Convert.ToInt32(command_parts[5]);
-                        for (int i = 0; i < command_parts.Length - 6; i++)
+                        DaysSinceStart = ConvertToDays(command_parts[1], command_parts[2], command_parts[3]);
+                        Time = Convert.ToInt32(command_parts[4]);
+                        for (int i = 0; i < command_parts.Length - 5; i++)
                         {
-                            int index = i + 6;
+                            int index = i + 5;
                             ReminderMessage += " " + command_parts[index];
                         }
-                        WriteToFile(command_parts[1], ReminderMessage, DaysSinceStart, Time);
+                        WriteToFile(ReminderMessage, DaysSinceStart, Time);
                         break;
                     }
                 case "help":
@@ -54,21 +60,26 @@ namespace ReminderGenerator
 
         }
         
-        static private void WriteToFile(string reminder_num, string ReminderMessage, int DaysSinceStart, int Time)
+        static private void WriteToFile(string ReminderMessage, int DaysSinceStart, int Time)
         {
             var options = new JsonWriterOptions { Indented = true };
+            int ReminderCount = 0;
+            foreach (string Path in Directory.EnumerateFiles(Path))
+            { 
+                ReminderCount++; 
+            }
             using (var stream = new MemoryStream())
             {
                 using (var writer = new Utf8JsonWriter(stream, options))
                 {
                     writer.WriteStartObject();
-                    writer.WriteString("ReminderMessage", ReminderMessage);
+                    writer.WriteString("ReminderMessage", ReminderMessage.Trim());
                     writer.WriteNumber("DaysSinceStart", DaysSinceStart);
                     writer.WriteNumber("Time", Time);
                     writer.WriteEndObject();
                 }
                 string json = Encoding.UTF8.GetString(stream.ToArray());
-                System.IO.File.WriteAllText($"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Stardew Valley\\Mods\\CustomReminders\\data\\Wolfie_183009987\\reminder{reminder_num}.json", json);
+                System.IO.File.WriteAllText($"{Path}\\reminder{++ReminderCount}.json", json);
             }
         }
 
