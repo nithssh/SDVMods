@@ -11,18 +11,23 @@ namespace Dem1se.CustomReminders
     /// <summary>The mod entry point.</summary>
     public class ModEntry : Mod
     {
+        /// <summary> Object with all the properties of the config.</summary>
         private ModConfig Config;
+        
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
+            // Load the Config
             this.Config = this.Helper.ReadConfig<ModConfig>();
             
             // Binds the event with method.
             helper.Events.Input.ButtonPressed += OnButtonPressed;
             helper.Events.GameLoop.TimeChanged += ReminderNotifier;
-        }
 
+        }
+        
+        /// <summary> Defines what happens when user press the config button </summary>
         private void OnButtonPressed(object sender, ButtonPressedEventArgs ev)
         {
             // ignore if player hasn't loaded a save yet
@@ -30,43 +35,55 @@ namespace Dem1se.CustomReminders
                 return;
             
             // reminder menu
-            if (ev.Button == this.Helper.Data.ReadJsonFile<ModConfig>("config.json").Button)
+            if (ev.Button == Config.Button)
             {
-                // Create new reminder  (testing)
-                //this.Helper.Data.WriteJsonFile($"data/{Constants.SaveFolderName}/reminder1.json", reminder);
+                // new reminder menu
             }
         }
         
-        //TODO: make it run every 30 secs and not evey 10 secs
+        /// <summary> Loop that checks if </summary>
         private void ReminderNotifier(object sender, TimeChangedEventArgs ev)
         {
+            // returns function if game time isn't multiple of 30 in-game minutes.
             string TimeString = Convert.ToString(ev.NewTime);
             if (!(TimeString.EndsWith("30") || TimeString.EndsWith("00"))) { return; }
+
+            // Loops through all the reminder files and evaluates if they are current.
+            #region CoreEvaluationLoop
             SDate CurrentDate = SDate.Now();
-            for (int i = 0; i < 20; i++)
+            foreach (string FilePathAbsolute in Directory.EnumerateFiles($"{Constants.ExecutionPath}\\Mods\\CustomReminders\\data\\{Constants.SaveFolderName}"))
             {
                 try
                 {
-                    this.Monitor.VerboseLog($"Processed {ev.NewTime}");
-                    var Reminder = this.Helper.Data.ReadJsonFile<ReminderModel>($"data/{Constants.SaveFolderName}/reminder{i}.json");
+                    string[] FilePathAbsoulute_Parts = FilePathAbsolute.Split('\\');
+                    string FilePathRelative = "";
+                    int FilePathIndex = Array.IndexOf(FilePathAbsoulute_Parts, "data");
+                    for (int i = FilePathIndex; i < FilePathAbsoulute_Parts.Length; i++)
+                    {
+                        FilePathRelative += FilePathAbsoulute_Parts[i] + "\\";
+                    }
+                    
+                    // Remove the trailing forward slash in Relative path
+                    FilePathRelative = FilePathRelative.Remove(FilePathRelative.LastIndexOf("\\"));
+
+                    this.Monitor.Log($"Processed {ev.NewTime}", LogLevel.Trace);
+                    var Reminder = this.Helper.Data.ReadJsonFile<ReminderModel>(FilePathRelative);
                     if (Reminder.DaysSinceStart == CurrentDate.DaysSinceStart)
                     {
                         if (Reminder.Time == ev.NewTime)
                         {
-                            this.Monitor.VerboseLog($"Reminder set for {Reminder.DaysSinceStart} on {CurrentDate.DaysSinceStart}");
+                            this.Monitor.Log($"Reminder set for {Reminder.DaysSinceStart} on {CurrentDate.DaysSinceStart}", LogLevel.Trace);
                             Game1.addHUDMessage(new HUDMessage(Reminder.ReminderMessage, 2));
+                            File.Delete(FilePathAbsolute);
                         }
                     }
                 }
-                catch (FileNotFoundException)
+                catch (Exception e)
                 {
-                    break;
-                }
-                catch (NullReferenceException)
-                {
-                    break;
+                    Monitor.Log(e.Message, LogLevel.Debug);
                 }
             }
+            #endregion
         }
     }
 
