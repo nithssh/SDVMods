@@ -27,7 +27,7 @@ namespace Dem1se.CustomReminders.Utilities
             {
                 ReminderCount++;
             }
-            System.IO.File.WriteAllText($"{Constants.ExecutionPath}\\mods\\CustomReminders\\data\\{Constants.SaveFolderName}\\reminder{++ReminderCount}.json", SerializedReminderData);
+            File.WriteAllText($"{Constants.ExecutionPath}\\mods\\CustomReminders\\data\\{Constants.SaveFolderName}\\reminder{++ReminderCount}.json", SerializedReminderData);
         }
 
         /// <summary>

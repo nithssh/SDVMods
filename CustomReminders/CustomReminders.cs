@@ -1,4 +1,5 @@
 ﻿using Dem1se.CustomReminders.UI;
+using Dem1se.CustomReminders.Utilities;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
@@ -36,12 +37,13 @@ namespace Dem1se.CustomReminders
         public void Page1OnChangedBehaviour(string message, string season, int day)
         {
             int Season = 0;
+            int Year;
             switch (season)
             {
-                case "summer":
+                case "spring":
                     Season = 1;
                     break;
-                case "spring":
+                case "summer":
                     Season = 2;
                     break;
                 case "fall":
@@ -51,11 +53,40 @@ namespace Dem1se.CustomReminders
                     Season = 4;
                     break;
             }
-
-            this.ReminderMessage = message;
-            // covert the date to dayssincestart
-            this.ReminderDate = Utilities.Utilities.ConvertToDays(day, Season);
+            // covert the date to dayssincestart initially
+            
             Game1.exitActiveMenu();
+
+            if (SDate.Now().SeasonIndex == Season - 1) // same seasons
+            {
+                if (SDate.Now().Day > day) // same season , past date
+                {
+                    Year = SDate.Now().Year + 1;
+                    this.ReminderDate = Utilities.Utilities.ConvertToDays(day, Season, Year);
+                }
+                else if (SDate.Now().Day == day) // same season, same date
+                {
+                    Year = SDate.Now().Year;
+                    this.ReminderDate = Utilities.Utilities.ConvertToDays(day, Season, Year);
+                }
+                else // same season, Future Date
+                {
+                    Year = SDate.Now().Year;
+                    this.ReminderDate = Utilities.Utilities.ConvertToDays(day, Season, Year);
+                }
+            }
+            else if (SDate.Now().SeasonIndex > Season - 1) // past season
+            {
+                Year = SDate.Now().Year + 1;
+                this.ReminderDate = Utilities.Utilities.ConvertToDays(day, Season, Year);
+            }
+            else // future season
+            {
+                Year = SDate.Now().Year;
+                this.ReminderDate = Utilities.Utilities.ConvertToDays(day, Season, Year);
+            }
+            this.ReminderMessage = message;
+            
             // open the second page
             Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage2(Page2OnChangedBehaviour);
 
@@ -125,7 +156,7 @@ namespace Dem1se.CustomReminders
                     {
                         if (Reminder.Time == ev.NewTime)
                         {
-                            this.Monitor.Log($"Reminder set for {Reminder.DaysSinceStart} on {CurrentDate.DaysSinceStart}", LogLevel.Trace);
+                            this.Monitor.Log($"Reminder set for {Reminder.DaysSinceStart} on {CurrentDate.DaysSinceStart}: {Reminder.ReminderMessage}", LogLevel.Trace);
                             Game1.addHUDMessage(new HUDMessage(Reminder.ReminderMessage, 2));
                             File.Delete(FilePathAbsolute);
                         }
