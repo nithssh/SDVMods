@@ -15,6 +15,10 @@ namespace Dem1se.CustomReminders
         /// <summary> Object with all the properties of the config.</summary>
         private ModConfig Config;
 
+        private string ReminderMessage;
+        private int ReminderDate;
+        private int ReminderTime;
+
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
@@ -29,12 +33,9 @@ namespace Dem1se.CustomReminders
         }
 
         ///<summary> Define the behaviour after the reminder menu OkButton is pressed.</summary>
-        public void OnChangedBehaviour(string message, string season, int day, int time)
+        public void Page1OnChangedBehaviour(string message, string season, int day)
         {
-            // TODO Time
-            Monitor.Log(day + ' ' + season + ": " + message , LogLevel.Trace);
             int Season = 0;
-            //Game1.exitActiveMenu();
             switch (season)
             {
                 case "summer":
@@ -50,13 +51,23 @@ namespace Dem1se.CustomReminders
                     Season = 4;
                     break;
             }
-            // int Time = Convert.ToInt32(DateAndTime[2]);
 
+            this.ReminderMessage = message;
             // covert the date to dayssincestart
-            int DaysSince = Utilities.Utilities.ConvertToDays(day, Season);
+            this.ReminderDate = Utilities.Utilities.ConvertToDays(day, Season);
+            Game1.exitActiveMenu();
+            // open the second page
+            Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage2(Page2OnChangedBehaviour);
 
+        }
+
+        /// <summary>Define the behaviour after the Page2 OkButton menu is pressed</summary>
+        public void Page2OnChangedBehaviour(int time)
+        {
+            this.ReminderTime = time;
             // write the data to file
-            Utilities.Utilities.WriteToFile(message, DaysSince, time);
+            Utilities.Utilities.WriteToFile(this.ReminderMessage, this.ReminderDate, this.ReminderTime);
+            Monitor.Log("Saved the reminder: " + this.ReminderMessage + " for " + this.ReminderDate + " at" + this.ReminderTime);
         }
         
         ///<summary> Defines what happens when a save is loaded</summary>
@@ -77,9 +88,8 @@ namespace Dem1se.CustomReminders
                 return;
 
             if (Game1.activeClickableMenu != null || (!Context.IsPlayerFree) || ev.Button != Config.Button) { return; }
-            //Game1.activeClickableMenu = (IClickableMenu)new ReminderMenu(DoneNaming, "New Reminder");
-            Game1.activeClickableMenu = (IClickableMenu)new RemindersMenu(OnChangedBehaviour);
 
+            Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage1(Page1OnChangedBehaviour);
         }
 
         /// <summary> Loop that checks if any reminders are mature.</summary>
