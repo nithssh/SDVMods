@@ -10,5 +10,5 @@ Using this mod you can set reminders in game, for example, A reminder to farm Me
 or maybe to catch sturgeons during the next winter to start a caviar farm, or maybe even to buy seeds the next day (since you went to Pierre's on a Wednesday :D)... 
 The potential is limitless. Download this mod to keep your progress on the fast lane, and to maximize the efficiency of your gameplay hours.
 
-#Installation
+# Installation
 Download the latest release from the repo, or download the mod from [NexusMods](https://www.nexusmods.com/stardewvalley/mods/6215)(recommended)
