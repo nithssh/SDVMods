@@ -157,7 +157,13 @@ namespace Dem1se.CustomReminders
                             this.Monitor.Log($"Reminder set for {Reminder.DaysSinceStart} on {CurrentDate.DaysSinceStart}: {Reminder.ReminderMessage}", LogLevel.Trace);
                             Game1.addHUDMessage(new HUDMessage(Reminder.ReminderMessage, 2));
                             File.Delete(FilePathAbsolute);
+                        } 
+                        else if (Reminder.DaysSinceStart < SDate.Now().DaysSinceStart)
+                        {
+                            File.Delete(FilePathAbsolute);
+                            Monitor.Log("Deleted old, useless reminder");
                         }
+
                     }
                 }
                 catch (Exception e)
