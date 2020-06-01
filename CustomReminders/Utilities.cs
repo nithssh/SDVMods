@@ -39,7 +39,7 @@ namespace Dem1se.CustomReminders.Utilities
         /// <returns>Returns int of DaysSinceStart</returns>
         public static int ConvertToDays(int date, int season, int year)
         {
-            int DaysSinceStart = ((season - 1) * 28) + ((year - 1) * 112) + (date + 28);
+            int DaysSinceStart = (season * 28) + ((year - 1) * 112) + date;
             return DaysSinceStart;
         }
 
@@ -52,7 +52,7 @@ namespace Dem1se.CustomReminders.Utilities
         public static int ConvertToDays(int date, int season)
         {
             int year = SDate.Now().Year;
-            int DaysSinceStart = ((season - 1) * 28) + ((year - 1) * 112) + (date + 28);
+            int DaysSinceStart = (season * 28) + ((year - 1) * 112) + date;
             return DaysSinceStart;
         }
     }

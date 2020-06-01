@@ -1,5 +1,4 @@
 ﻿using Dem1se.CustomReminders.UI;
-using Dem1se.CustomReminders.Utilities;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
@@ -41,23 +40,22 @@ namespace Dem1se.CustomReminders
             switch (season)
             {
                 case "spring":
-                    Season = 1;
+                    Season = 0;
                     break;
                 case "summer":
-                    Season = 2;
+                    Season = 1;
                     break;
                 case "fall":
-                    Season = 3;
+                    Season = 2;
                     break;
                 case "winter":
-                    Season = 4;
+                    Season = 3;
                     break;
             }
             // covert the date to dayssincestart initially
             
             Game1.exitActiveMenu();
-
-            if (SDate.Now().SeasonIndex == Season - 1) // same seasons
+            if (SDate.Now().SeasonIndex == Season) // same seasons
             {
                 if (SDate.Now().Day > day) // same season , past date
                 {
@@ -75,7 +73,7 @@ namespace Dem1se.CustomReminders
                     this.ReminderDate = Utilities.Utilities.ConvertToDays(day, Season, Year);
                 }
             }
-            else if (SDate.Now().SeasonIndex > Season - 1) // past season
+            else if (SDate.Now().SeasonIndex > Season) // past season
             {
                 Year = SDate.Now().Year + 1;
                 this.ReminderDate = Utilities.Utilities.ConvertToDays(day, Season, Year);
