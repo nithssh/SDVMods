@@ -31,7 +31,7 @@ namespace Dem1se.CustomReminders
             helper.Events.GameLoop.TimeChanged += ReminderNotifier;
             helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
 
-            
+
         }
 
         ///<summary> Define the behaviour after the reminder menu OkButton is pressed.</summary>
@@ -55,7 +55,7 @@ namespace Dem1se.CustomReminders
                     break;
             }
             // covert the date to dayssincestart initially
-            
+
             Game1.exitActiveMenu();
             if (SDate.Now().SeasonIndex == Season) // same seasons
             {
@@ -86,7 +86,7 @@ namespace Dem1se.CustomReminders
                 this.ReminderDate = Utilities.Utilities.ConvertToDays(day, Season, Year);
             }
             this.ReminderMessage = message;
-            
+
             // open the second page
             Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage2(Page2OnChangedBehaviour, Helper);
 
@@ -100,14 +100,14 @@ namespace Dem1se.CustomReminders
             Utilities.Utilities.WriteToFile(this.ReminderMessage, this.ReminderDate, this.ReminderTime, Helper);
             Monitor.Log("Saved the reminder: " + this.ReminderMessage + " for " + this.ReminderDate + " at" + this.ReminderTime);
         }
-        
+
         ///<summary> Defines what happens when a save is loaded</summary>
         public void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
         {
             // Create the data subfolder for the save for first time users. ( Avoid DirectoryNotFound Exception in OnChangedBehaviour() )
-            if (!(Directory.Exists($"{Constants.ExecutionPath}\\mods\\CustomReminders\\data\\{Constants.SaveFolderName}")))
+            if (!Directory.Exists(Path.Combine(Helper.DirectoryPath, "data", Constants.SaveFolderName)))
             {
-                Directory.CreateDirectory($"{Constants.ExecutionPath}\\mods\\CustomReminders\\data\\{Constants.SaveFolderName}");
+                Directory.CreateDirectory(Path.Combine(Helper.DirectoryPath, "data", Constants.SaveFolderName));
             }
         }
 
@@ -117,10 +117,6 @@ namespace Dem1se.CustomReminders
             // ignore if player hasn't loaded a save yet
             if (!Context.IsWorldReady)
                 return;
-
-            // read file
-            string MenuButton = this.Helper.Data.ReadSaveData<string>("menuButton");
-            Monitor.Log(MenuButton, LogLevel.Debug);
 
             if (Game1.activeClickableMenu != null || (!Context.IsPlayerFree) || ev.Button != Config.Button) { return; }
             Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage1(Page1OnChangedBehaviour, Helper);
@@ -144,9 +140,9 @@ namespace Dem1se.CustomReminders
                     string FilePathRelative = "";
                     string[] FilePathAbsoulute_Parts;
                     int FilePathIndex;
-                    
+
                     // windows style
-                    if (Constants.TargetPlatform.ToString() == "Windows") 
+                    if (Constants.TargetPlatform.ToString() == "Windows")
                     {
                         FilePathAbsoulute_Parts = FilePathAbsolute.Split('\\');
                         FilePathIndex = Array.IndexOf(FilePathAbsoulute_Parts, "data");
@@ -158,7 +154,7 @@ namespace Dem1se.CustomReminders
                         FilePathRelative = FilePathRelative.Remove(FilePathRelative.LastIndexOf("\\"));
                     }
                     //unix style
-                    else if(Constants.TargetPlatform.ToString() == "Mac" || Constants.TargetPlatform.ToString() == "Linux")
+                    else if (Constants.TargetPlatform.ToString() == "Mac" || Constants.TargetPlatform.ToString() == "Linux")
                     {
                         // do unix style parsing
                         FilePathAbsoulute_Parts = FilePathAbsolute.Split('/');
@@ -185,7 +181,7 @@ namespace Dem1se.CustomReminders
                             Game1.addHUDMessage(new HUDMessage(Reminder.ReminderMessage, 2));
                             File.Delete(FilePathAbsolute);
                             this.Monitor.Log($"Reminder set for {Reminder.DaysSinceStart} on {CurrentDate.DaysSinceStart}: {Reminder.ReminderMessage}", LogLevel.Trace);
-                        } 
+                        }
                         else if (Reminder.DaysSinceStart < SDate.Now().DaysSinceStart)
                         {
                             File.Delete(FilePathAbsolute);
@@ -216,4 +212,3 @@ namespace Dem1se.CustomReminders
         public SButton Button { get; set; } = SButton.F2;
     }
 }
-

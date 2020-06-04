@@ -8,7 +8,6 @@ using StardewValley;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace Dem1se.CustomReminders.UI
 {
@@ -29,7 +28,6 @@ namespace Dem1se.CustomReminders.UI
 
         /// <summary> The Textboxes to draw </summary>
         private TextBox ReminderTextBox;
-        //private TextBox TimeTextBox;
 
         /// <summary>The OK button to draw.</summary>
         private ClickableTextureComponent OkButton;
@@ -48,6 +46,8 @@ namespace Dem1se.CustomReminders.UI
 
         private IModHelper Helper;
 
+        private SButton MenuButton;
+
         /*********
         ** Public methods
         *********/
@@ -60,9 +60,8 @@ namespace Dem1se.CustomReminders.UI
         {
             this.OnChanged = onChanged;
             this.Helper = Helper;
+            this.MenuButton = Utilities.Utilities.GetMenuButton();
 
-            
-            
             this.SetUpPositions();
         }
 
@@ -77,7 +76,7 @@ namespace Dem1se.CustomReminders.UI
             this.SetUpPositions();
         }
 
-        
+
         /*********
         ** Private methods
         *********/
@@ -94,7 +93,7 @@ namespace Dem1se.CustomReminders.UI
             this.ReminderTextBox = new TextBox(null, null, Game1.smallFont, Game1.textColor)
             {
                 X = this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1,
-                Y = this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + IClickableMenu.borderWidth - Game1.tileSize / 4 + Game1.tileSize / 2 + Game1.tileSize ,
+                Y = this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + IClickableMenu.borderWidth - Game1.tileSize / 4 + Game1.tileSize / 2 + Game1.tileSize,
                 Width = this.width - IClickableMenu.borderWidth - IClickableMenu.spaceToClearSideBorder - Game1.tileSize * 3 - Game1.tileSize / 4,
                 Height = 180
             };
@@ -283,7 +282,7 @@ namespace Dem1se.CustomReminders.UI
         /// <param name="b">The sprite batch.</param>
         public override void draw(SpriteBatch b)
         {
-            Helper.Input.Suppress(SButton.E);
+            Helper.Input.Suppress(MenuButton);
 
             //draw screen fade
             b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.75f);
@@ -291,7 +290,7 @@ namespace Dem1se.CustomReminders.UI
             // draw menu box
             Game1.drawDialogueBox(this.xPositionOnScreen, this.yPositionOnScreen, this.width, this.height, false, true);
             //b.Draw(Game1.daybg, new Vector2((this.xPositionOnScreen + Game1.tileSize + Game1.tileSize * 2 / 3 - 2), (this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 4)), Color.White);
-            
+
             // draw textbox
             this.ReminderTextBox.Draw(b, false);
 
@@ -358,12 +357,15 @@ namespace Dem1se.CustomReminders.UI
 
         private IModHelper Helper;
 
+        private SButton MenuButton;
+
         /// <summary>The callback function that gets called when ok buttong is pressed</summary>
         public ReminderMenuPage2(Action<int> OnChanged, IModHelper Helper)
             : base(Game1.viewport.Width / 2 - (632 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize, 632 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize)
         {
             this.Helper = Helper;
             this.OnChanged = OnChanged;
+            this.MenuButton = Utilities.Utilities.GetMenuButton();
             this.SetupPositions();
         }
 
@@ -424,7 +426,7 @@ namespace Dem1se.CustomReminders.UI
         /// <returns>True if ok button is ready False if not</returns>
         private bool IsOkButtonReady()
         {
-            if (this.TimeTextBox.Text.Length == 4 && this.TimeTextBox.Text != null && this.TimeTextBox.Text != "" && (this.TimeTextBox.Text.ToString().EndsWith("30") || this.TimeTextBox.Text.ToString().EndsWith("00")) && (Convert.ToInt32(this.TimeTextBox.Text) >= 0600 || Convert.ToInt32(this.TimeTextBox.Text) <= 2600))
+            if (this.TimeTextBox.Text.Length == 4 && this.TimeTextBox.Text != null && this.TimeTextBox.Text != "" && (this.TimeTextBox.Text.ToString().EndsWith("30") || this.TimeTextBox.Text.ToString().EndsWith("00")) && (Convert.ToInt32(this.TimeTextBox.Text) >= 0600 && Convert.ToInt32(this.TimeTextBox.Text) <= 2600))
             {
                 return true;
             }
@@ -437,16 +439,14 @@ namespace Dem1se.CustomReminders.UI
         /// <summary> Draws the UI</summary>
         public override void draw(SpriteBatch b)
         {
-            // TODO Replace hard code
             // supress the Menu button
-            Helper.Input.Suppress(SButton.E);
+            Helper.Input.Suppress(MenuButton);
 
             // draw screen fade
             b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.75f);
 
             // draw menu box
             Game1.drawDialogueBox(this.xPositionOnScreen, this.yPositionOnScreen, this.width, this.height, false, true);
-            //b.Draw(Game1.daybg, new Vector2((this.xPositionOnScreen + Game1.tileSize + Game1.tileSize * 2 / 3 - 2), (this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 4)), Color.White);
 
             // draw textbox
             this.TimeTextBox.Draw(b, false);

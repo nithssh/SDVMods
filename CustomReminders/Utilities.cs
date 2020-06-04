@@ -1,10 +1,16 @@
 ﻿using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
+using System;
 using System.IO;
+using System.Linq;
+using System.Xml.Linq;
 
 namespace Dem1se.CustomReminders.Utilities
 {
+    /// <summary>
+    /// Contains some useful functions that other classes use.
+    /// </summary>
     static class Utilities
     {
         /// <summary>
@@ -21,7 +27,7 @@ namespace Dem1se.CustomReminders.Utilities
                 ReminderMessage = ReminderMessage,
                 Time = Time
             };
-            
+
             string PathToWrite = Path.Combine(Helper.DirectoryPath, "data", Constants.SaveFolderName);
             string SerializedReminderData = JsonConvert.SerializeObject(ReminderData, Formatting.Indented);
             int ReminderCount = 0;
@@ -29,7 +35,7 @@ namespace Dem1se.CustomReminders.Utilities
             {
                 ReminderCount++;
             }
-            File.WriteAllText(Path.Combine(PathToWrite, $"reminder{++ReminderCount}.json") , SerializedReminderData);
+            File.WriteAllText(Path.Combine(PathToWrite, $"reminder{++ReminderCount}.json"), SerializedReminderData);
         }
         /// <summary>
         /// Returns the SDate.DaysSinceStart() int equivalent given the date season and year
@@ -55,6 +61,24 @@ namespace Dem1se.CustomReminders.Utilities
             int year = SDate.Now().Year;
             int DaysSinceStart = (season * 28) + ((year - 1) * 112) + date;
             return DaysSinceStart;
+        }
+
+        /// <summary>
+        /// Returns the button that is set to open the menu in current save.
+        /// </summary>
+        /// <returns>the button that opens menu as SButton</returns>
+        public static SButton GetMenuButton()
+        {
+            var SaveFile = XDocument.Load(Path.Combine(Constants.CurrentSavePath, Constants.SaveFolderName));
+            var query = from xml in SaveFile.Descendants("menuButton")
+                        select xml.Element("InputButton").Element("key").Value;
+            string MenuString = "";
+            foreach (string Key in query)
+            {
+                MenuString = Key;
+            }
+            SButton MenuButton = (SButton)Enum.Parse(typeof(SButton), MenuString);
+            return MenuButton;
         }
     }
 }
