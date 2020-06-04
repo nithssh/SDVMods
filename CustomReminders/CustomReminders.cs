@@ -30,6 +30,8 @@ namespace Dem1se.CustomReminders
             helper.Events.Input.ButtonPressed += OnButtonPressed;
             helper.Events.GameLoop.TimeChanged += ReminderNotifier;
             helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
+
+            
         }
 
         ///<summary> Define the behaviour after the reminder menu OkButton is pressed.</summary>
@@ -86,7 +88,7 @@ namespace Dem1se.CustomReminders
             this.ReminderMessage = message;
             
             // open the second page
-            Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage2(Page2OnChangedBehaviour);
+            Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage2(Page2OnChangedBehaviour, Helper);
 
         }
 
@@ -95,7 +97,7 @@ namespace Dem1se.CustomReminders
         {
             this.ReminderTime = time;
             // write the data to file
-            Utilities.Utilities.WriteToFile(this.ReminderMessage, this.ReminderDate, this.ReminderTime);
+            Utilities.Utilities.WriteToFile(this.ReminderMessage, this.ReminderDate, this.ReminderTime, Helper);
             Monitor.Log("Saved the reminder: " + this.ReminderMessage + " for " + this.ReminderDate + " at" + this.ReminderTime);
         }
         
@@ -116,9 +118,12 @@ namespace Dem1se.CustomReminders
             if (!Context.IsWorldReady)
                 return;
 
-            if (Game1.activeClickableMenu != null || (!Context.IsPlayerFree) || ev.Button != Config.Button) { return; }
+            // read file
+            string MenuButton = this.Helper.Data.ReadSaveData<string>("menuButton");
+            Monitor.Log(MenuButton, LogLevel.Debug);
 
-            Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage1(Page1OnChangedBehaviour);
+            if (Game1.activeClickableMenu != null || (!Context.IsPlayerFree) || ev.Button != Config.Button) { return; }
+            Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage1(Page1OnChangedBehaviour, Helper);
         }
 
         /// <summary> Loop that checks if any reminders are mature.</summary>
@@ -131,21 +136,44 @@ namespace Dem1se.CustomReminders
             // Loops through all the reminder files and evaluates if they are current.
             #region CoreReminderLoop
             SDate CurrentDate = SDate.Now();
-            foreach (string FilePathAbsolute in Directory.EnumerateFiles($"{Constants.ExecutionPath}\\Mods\\CustomReminders\\data\\{Constants.SaveFolderName}"))
+            foreach (string FilePathAbsolute in Directory.EnumerateFiles(Path.Combine(this.Helper.DirectoryPath, "data", Constants.SaveFolderName)))
             {
                 try
                 {
                     // Make relative path from absolute path
-                    string[] FilePathAbsoulute_Parts = FilePathAbsolute.Split('\\');
                     string FilePathRelative = "";
-                    int FilePathIndex = Array.IndexOf(FilePathAbsoulute_Parts, "data");
-                    for (int i = FilePathIndex; i < FilePathAbsoulute_Parts.Length; i++)
+                    string[] FilePathAbsoulute_Parts;
+                    int FilePathIndex;
+                    
+                    // windows style
+                    if (Constants.TargetPlatform.ToString() == "Windows") 
                     {
-                        FilePathRelative += FilePathAbsoulute_Parts[i] + "\\";
+                        FilePathAbsoulute_Parts = FilePathAbsolute.Split('\\');
+                        FilePathIndex = Array.IndexOf(FilePathAbsoulute_Parts, "data");
+                        for (int i = FilePathIndex; i < FilePathAbsoulute_Parts.Length; i++)
+                        {
+                            FilePathRelative += FilePathAbsoulute_Parts[i] + "\\";
+                        }
+                        // Remove the trailing forward slash in Relative path
+                        FilePathRelative = FilePathRelative.Remove(FilePathRelative.LastIndexOf("\\"));
                     }
-
-                    // Remove the trailing forward slash in Relative path
-                    FilePathRelative = FilePathRelative.Remove(FilePathRelative.LastIndexOf("\\"));
+                    //unix style
+                    else if(Constants.TargetPlatform.ToString() == "Mac" || Constants.TargetPlatform.ToString() == "Linux")
+                    {
+                        // do unix style parsing
+                        FilePathAbsoulute_Parts = FilePathAbsolute.Split('/');
+                        FilePathIndex = Array.IndexOf(FilePathAbsoulute_Parts, "data");
+                        for (int i = FilePathIndex; i < FilePathAbsoulute_Parts.Length; i++)
+                        {
+                            FilePathRelative += FilePathAbsoulute_Parts[i] + "/";
+                        }
+                        // Remove the trailing slash in Relative path
+                        FilePathRelative = FilePathRelative.Remove(FilePathRelative.LastIndexOf("/"));
+                    }
+                    else
+                    {
+                        Monitor.Log("Invalid platform: " + Constants.TargetPlatform.ToString(), LogLevel.Error);
+                    }
 
                     // Read the reminder and notify if mature
                     this.Monitor.Log($"Processed {ev.NewTime}", LogLevel.Trace);
@@ -154,21 +182,20 @@ namespace Dem1se.CustomReminders
                     {
                         if (Reminder.Time == ev.NewTime)
                         {
-                            this.Monitor.Log($"Reminder set for {Reminder.DaysSinceStart} on {CurrentDate.DaysSinceStart}: {Reminder.ReminderMessage}", LogLevel.Trace);
                             Game1.addHUDMessage(new HUDMessage(Reminder.ReminderMessage, 2));
                             File.Delete(FilePathAbsolute);
+                            this.Monitor.Log($"Reminder set for {Reminder.DaysSinceStart} on {CurrentDate.DaysSinceStart}: {Reminder.ReminderMessage}", LogLevel.Trace);
                         } 
                         else if (Reminder.DaysSinceStart < SDate.Now().DaysSinceStart)
                         {
                             File.Delete(FilePathAbsolute);
-                            Monitor.Log("Deleted old, useless reminder");
+                            Monitor.Log("Deleted old, useless reminder", LogLevel.Trace);
                         }
-
                     }
                 }
                 catch (Exception e)
                 {
-                    Monitor.Log(e.Message, LogLevel.Debug);
+                    Monitor.Log(e.Message, LogLevel.Error);
                 }
             }
             #endregion

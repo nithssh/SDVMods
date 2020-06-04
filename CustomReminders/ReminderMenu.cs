@@ -3,10 +3,12 @@
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Dem1se.CustomReminders.UI
 {
@@ -44,6 +46,7 @@ namespace Dem1se.CustomReminders.UI
         /// <summary>The callback to invoke when the ok button is pressed</summary>
         private readonly Action<string, string, int> OnChanged;
 
+        private IModHelper Helper;
 
         /*********
         ** Public methods
@@ -52,10 +55,14 @@ namespace Dem1se.CustomReminders.UI
         /// <param name="season">The initial birthday season.</param>
         /// <param name="day">The initial birthday day.</param>
         /// <param name="onChanged">The callback to invoke when the birthday value changes.</param>
-        public ReminderMenuPage1(Action<string, string, int> onChanged)
+        public ReminderMenuPage1(Action<string, string, int> onChanged, IModHelper Helper)
             : base(Game1.viewport.Width / 2 - (632 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize, 632 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize)
         {
             this.OnChanged = onChanged;
+            this.Helper = Helper;
+
+            
+            
             this.SetUpPositions();
         }
 
@@ -70,7 +77,7 @@ namespace Dem1se.CustomReminders.UI
             this.SetUpPositions();
         }
 
-
+        
         /*********
         ** Private methods
         *********/
@@ -276,6 +283,8 @@ namespace Dem1se.CustomReminders.UI
         /// <param name="b">The sprite batch.</param>
         public override void draw(SpriteBatch b)
         {
+            Helper.Input.Suppress(SButton.E);
+
             //draw screen fade
             b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.75f);
 
@@ -347,10 +356,13 @@ namespace Dem1se.CustomReminders.UI
         /// <summary>The callback to invoke when the birthday value changes.</summary>
         private readonly Action<int> OnChanged;
 
+        private IModHelper Helper;
+
         /// <summary>The callback function that gets called when ok buttong is pressed</summary>
-        public ReminderMenuPage2(Action<int> OnChanged)
+        public ReminderMenuPage2(Action<int> OnChanged, IModHelper Helper)
             : base(Game1.viewport.Width / 2 - (632 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize, 632 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize)
         {
+            this.Helper = Helper;
             this.OnChanged = OnChanged;
             this.SetupPositions();
         }
@@ -425,6 +437,10 @@ namespace Dem1se.CustomReminders.UI
         /// <summary> Draws the UI</summary>
         public override void draw(SpriteBatch b)
         {
+            // TODO Replace hard code
+            // supress the Menu button
+            Helper.Input.Suppress(SButton.E);
+
             // draw screen fade
             b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.75f);
 

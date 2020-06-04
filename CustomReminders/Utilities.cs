@@ -13,7 +13,7 @@ namespace Dem1se.CustomReminders.Utilities
         /// <param name="ReminderMessage">The message that will pop up in reminder</param>
         /// <param name="DaysSinceStart">The date converted to DaysSinceStart</param>
         /// <param name="Time">The time of the reminder in 24hrs format</param>
-        public static void WriteToFile(string ReminderMessage, int DaysSinceStart, int Time)
+        public static void WriteToFile(string ReminderMessage, int DaysSinceStart, int Time, IModHelper Helper)
         {
             ReminderModel ReminderData = new ReminderModel()
             {
@@ -21,15 +21,16 @@ namespace Dem1se.CustomReminders.Utilities
                 ReminderMessage = ReminderMessage,
                 Time = Time
             };
+            
+            string PathToWrite = Path.Combine(Helper.DirectoryPath, "data", Constants.SaveFolderName);
             string SerializedReminderData = JsonConvert.SerializeObject(ReminderData, Formatting.Indented);
             int ReminderCount = 0;
-            foreach (string Path in Directory.EnumerateFiles($"{Constants.ExecutionPath}\\mods\\CustomReminders\\data\\{Constants.SaveFolderName}"))
+            foreach (string Path in Directory.EnumerateFiles(PathToWrite))
             {
                 ReminderCount++;
             }
-            File.WriteAllText($"{Constants.ExecutionPath}\\mods\\CustomReminders\\data\\{Constants.SaveFolderName}\\reminder{++ReminderCount}.json", SerializedReminderData);
+            File.WriteAllText(Path.Combine(PathToWrite, $"reminder{++ReminderCount}.json") , SerializedReminderData);
         }
-
         /// <summary>
         /// Returns the SDate.DaysSinceStart() int equivalent given the date season and year
         /// </summary>
