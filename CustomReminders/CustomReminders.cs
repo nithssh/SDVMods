@@ -25,13 +25,11 @@ namespace Dem1se.CustomReminders
         {
             // Load the Config
             this.Config = this.Helper.ReadConfig<ModConfig>();
-
+            Monitor.Log("Config loaded and read.", LogLevel.Trace);
             // Binds the event with method.
             helper.Events.Input.ButtonPressed += OnButtonPressed;
             helper.Events.GameLoop.TimeChanged += ReminderNotifier;
             helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
-
-
         }
 
         ///<summary> Define the behaviour after the reminder menu OkButton is pressed.</summary>
@@ -86,7 +84,7 @@ namespace Dem1se.CustomReminders
                 this.ReminderDate = Utilities.Utilities.ConvertToDays(day, Season, Year);
             }
             this.ReminderMessage = message;
-
+            Monitor.Log("First page completed. Date: " + this.ReminderDate + " Time: " + this.ReminderTime + "Message: " + this.ReminderMessage, LogLevel.Trace);
             // open the second page
             Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage2(Page2OnChangedBehaviour, Helper);
 
@@ -98,7 +96,7 @@ namespace Dem1se.CustomReminders
             this.ReminderTime = time;
             // write the data to file
             Utilities.Utilities.WriteToFile(this.ReminderMessage, this.ReminderDate, this.ReminderTime, Helper);
-            Monitor.Log("Saved the reminder: " + this.ReminderMessage + " for " + this.ReminderDate + " at" + this.ReminderTime);
+            Monitor.Log("Saved the reminder: '" + this.ReminderMessage + "' for " + this.ReminderDate + " at " + this.ReminderTime, LogLevel.Info);
         }
 
         ///<summary> Defines what happens when a save is loaded</summary>
@@ -107,7 +105,9 @@ namespace Dem1se.CustomReminders
             // Create the data subfolder for the save for first time users. ( Avoid DirectoryNotFound Exception in OnChangedBehaviour() )
             if (!Directory.Exists(Path.Combine(Helper.DirectoryPath, "data", Constants.SaveFolderName)))
             {
+                Monitor.Log("Reminders directory not found. Creating directory.", LogLevel.Info);
                 Directory.CreateDirectory(Path.Combine(Helper.DirectoryPath, "data", Constants.SaveFolderName));
+                Monitor.Log("Reminders directory created successfully.", LogLevel.Info);
             }
         }
 
@@ -119,6 +119,7 @@ namespace Dem1se.CustomReminders
                 return;
 
             if (Game1.activeClickableMenu != null || (!Context.IsPlayerFree) || ev.Button != Config.Button) { return; }
+            Monitor.Log("Opened ReminderMenu page 1", LogLevel.Trace);
             Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage1(Page1OnChangedBehaviour, Helper);
         }
 
@@ -144,6 +145,7 @@ namespace Dem1se.CustomReminders
                     // windows style
                     if (Constants.TargetPlatform.ToString() == "Windows")
                     {
+                        Monitor.Log("Parsing the paths Windows style", LogLevel.Trace);
                         FilePathAbsoulute_Parts = FilePathAbsolute.Split('\\');
                         FilePathIndex = Array.IndexOf(FilePathAbsoulute_Parts, "data");
                         for (int i = FilePathIndex; i < FilePathAbsoulute_Parts.Length; i++)
@@ -156,7 +158,7 @@ namespace Dem1se.CustomReminders
                     //unix style
                     else if (Constants.TargetPlatform.ToString() == "Mac" || Constants.TargetPlatform.ToString() == "Linux")
                     {
-                        // do unix style parsing
+                        Monitor.Log("Parsing the paths Unix style", LogLevel.Trace);
                         FilePathAbsoulute_Parts = FilePathAbsolute.Split('/');
                         FilePathIndex = Array.IndexOf(FilePathAbsoulute_Parts, "data");
                         for (int i = FilePathIndex; i < FilePathAbsoulute_Parts.Length; i++)
@@ -172,20 +174,20 @@ namespace Dem1se.CustomReminders
                     }
 
                     // Read the reminder and notify if mature
-                    this.Monitor.Log($"Processed {ev.NewTime}", LogLevel.Trace);
+                    this.Monitor.Log($"Processing {ev.NewTime}", LogLevel.Trace);
                     var Reminder = this.Helper.Data.ReadJsonFile<ReminderModel>(FilePathRelative);
                     if (Reminder.DaysSinceStart == CurrentDate.DaysSinceStart)
                     {
                         if (Reminder.Time == ev.NewTime)
                         {
                             Game1.addHUDMessage(new HUDMessage(Reminder.ReminderMessage, 2));
+                            this.Monitor.Log($"Reminder notified for {Reminder.DaysSinceStart}: {Reminder.ReminderMessage}", LogLevel.Info);
                             File.Delete(FilePathAbsolute);
-                            this.Monitor.Log($"Reminder set for {Reminder.DaysSinceStart} on {CurrentDate.DaysSinceStart}: {Reminder.ReminderMessage}", LogLevel.Trace);
                         }
                         else if (Reminder.DaysSinceStart < SDate.Now().DaysSinceStart)
                         {
                             File.Delete(FilePathAbsolute);
-                            Monitor.Log("Deleted old, useless reminder", LogLevel.Trace);
+                            Monitor.Log("Deleted old, useless reminder", LogLevel.Info);
                         }
                     }
                 }
