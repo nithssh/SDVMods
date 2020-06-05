@@ -1,4 +1,4 @@
-﻿/// Code Modified from https://github.com/janavarro95/Stardew_Valley_Mods/blob/master/GeneralMods/HappyBirthday/Framework/BirthdayMenu.cs
+﻿/// Contains parts of code from https://github.com/janavarro95/Stardew_Valley_Mods/blob/master/GeneralMods/HappyBirthday/Framework/BirthdayMenu.cs
 /// Thanks to janavarro95.
 
 using Microsoft.Xna.Framework;

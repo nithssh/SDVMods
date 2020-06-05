@@ -52,9 +52,8 @@ namespace Dem1se.CustomReminders
                     Season = 3;
                     break;
             }
-            // covert the date to dayssincestart initially
-
             Game1.exitActiveMenu();
+            // Convert to DaysSinceStart
             if (SDate.Now().SeasonIndex == Season) // same seasons
             {
                 if (SDate.Now().Day > day) // same season , past date
@@ -84,7 +83,7 @@ namespace Dem1se.CustomReminders
                 this.ReminderDate = Utilities.Utilities.ConvertToDays(day, Season, Year);
             }
             this.ReminderMessage = message;
-            Monitor.Log("First page completed. Date: " + this.ReminderDate + " Time: " + this.ReminderTime + "Message: " + this.ReminderMessage, LogLevel.Trace);
+            Monitor.Log("First page completed. Date: " + season + " " + this.ReminderDate + " Time: " + this.ReminderTime + "Message: " + this.ReminderMessage, LogLevel.Trace);
             // open the second page
             Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage2(Page2OnChangedBehaviour, Helper);
 
@@ -117,7 +116,6 @@ namespace Dem1se.CustomReminders
             // ignore if player hasn't loaded a save yet
             if (!Context.IsWorldReady)
                 return;
-
             if (Game1.activeClickableMenu != null || (!Context.IsPlayerFree) || ev.Button != Config.Button) { return; }
             Monitor.Log("Opened ReminderMenu page 1", LogLevel.Trace);
             Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage1(Page1OnChangedBehaviour, Helper);

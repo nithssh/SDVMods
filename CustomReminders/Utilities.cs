@@ -21,6 +21,7 @@ namespace Dem1se.CustomReminders.Utilities
         /// <param name="Time">The time of the reminder in 24hrs format</param>
         public static void WriteToFile(string ReminderMessage, int DaysSinceStart, int Time, IModHelper Helper)
         {
+            Random rnd = new Random();
             ReminderModel ReminderData = new ReminderModel()
             {
                 DaysSinceStart = DaysSinceStart,
@@ -31,11 +32,15 @@ namespace Dem1se.CustomReminders.Utilities
             string PathToWrite = Path.Combine(Helper.DirectoryPath, "data", Constants.SaveFolderName);
             string SerializedReminderData = JsonConvert.SerializeObject(ReminderData, Formatting.Indented);
             int ReminderCount = 0;
-            foreach (string Path in Directory.EnumerateFiles(PathToWrite))
+            do
             {
-                ReminderCount++;
-            }
-            File.WriteAllText(Path.Combine(PathToWrite, $"reminder{++ReminderCount}.json"), SerializedReminderData);
+                ReminderCount = rnd.Next(1000, 10000);
+                if (!File.Exists(Path.Combine(PathToWrite, $"reminder{ReminderCount}.json")))
+                {
+                    File.WriteAllText(Path.Combine(PathToWrite, $"reminder{ReminderCount}.json"), SerializedReminderData);
+                    break;
+                }
+            } while (File.Exists(Path.Combine(PathToWrite, $"reminder{ReminderCount}.json")));
         }
         /// <summary>
         /// Returns the SDate.DaysSinceStart() int equivalent given the date season and year
