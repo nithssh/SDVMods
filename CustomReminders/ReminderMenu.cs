@@ -1,17 +1,17 @@
-﻿/// Contains parts of code from https://github.com/janavarro95/Stardew_Valley_Mods/blob/master/GeneralMods/HappyBirthday/Framework/BirthdayMenu.cs
-/// Thanks to janavarro95.
-
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Dem1se.CustomReminders.UI
 {
     /// <summary>The menu which lets the set new reminders.</summary>
+    /// Contains parts of code from https://github.com/janavarro95/Stardew_Valley_Mods/blob/master/GeneralMods/HappyBirthday/Framework/BirthdayMenu.cs
+    /// Thanks to janavarro95.
     internal class ReminderMenuPage1 : IClickableMenu
     {
         /*********
@@ -188,6 +188,22 @@ namespace Dem1se.CustomReminders.UI
             Game1.playSound("coin");
         }
 
+        /// <summary>
+        /// Checks if the page1 inputs are all valid
+        /// </summary>
+        /// <returns>True if ok button is ready False if not</returns>
+        private bool IsOkButtonReady()
+        {
+            if (this.ReminderDate != 0 && this.ReminderSeason != "" && this.ReminderTextBox.Text != null && this.ReminderTextBox.Text != "")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         /// <summary>The method invoked when the player left-clicks on the menu.</summary>
         /// <param name="x">The X-position of the cursor.</param>
         /// <param name="y">The Y-position of the cursor.</param>
@@ -262,21 +278,6 @@ namespace Dem1se.CustomReminders.UI
 
         }
 
-        /// <summary>
-        /// Checks if the page1 inputs are all valid
-        /// </summary>
-        /// <returns>True if ok button is ready False if not</returns>
-        private bool IsOkButtonReady()
-        {
-            if (this.ReminderDate != 0 && this.ReminderSeason != "" && this.ReminderTextBox.Text != null && this.ReminderTextBox.Text != "")
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
 
         /// <summary>Draw the menu to the screen.</summary>
         /// <param name="b">The sprite batch.</param>
@@ -357,7 +358,7 @@ namespace Dem1se.CustomReminders.UI
 
         private IModHelper Helper;
 
-        private SButton MenuButton;
+        private readonly SButton MenuButton;
 
         /// <summary>The callback function that gets called when ok buttong is pressed</summary>
         public ReminderMenuPage2(Action<int> OnChanged, IModHelper Helper)

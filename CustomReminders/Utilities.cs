@@ -42,6 +42,7 @@ namespace Dem1se.CustomReminders.Utilities
                 }
             } while (File.Exists(Path.Combine(PathToWrite, $"reminder{ReminderCount}.json")));
         }
+        
         /// <summary>
         /// Returns the SDate.DaysSinceStart() int equivalent given the date season and year
         /// </summary>
@@ -84,6 +85,53 @@ namespace Dem1se.CustomReminders.Utilities
             }
             SButton MenuButton = (SButton)Enum.Parse(typeof(SButton), MenuString);
             return MenuButton;
+        }
+
+        /// <summary>
+        /// Makes platform sensitive relative paths from absoulute paths
+        /// </summary>
+        /// <param name="FilePathAbsolute">The file path from the directory enumerator</param>
+        /// <param name="monitor">The SMAPI Monitor for logging purposed within the function</param>
+        /// <returns>Relative path that starts from mod folder.</returns>
+        public static string MakeRelativePath(string FilePathAbsolute, IMonitor monitor)
+        {
+            // Make relative path from absolute path
+            string FilePathRelative = "";
+            string[] FilePathAbsoulute_Parts;
+            int FilePathIndex;
+
+            // windows style
+            if (Constants.TargetPlatform.ToString() == "Windows")
+            {
+                monitor.Log("Parsing the paths Windows style", LogLevel.Trace);
+                FilePathAbsoulute_Parts = FilePathAbsolute.Split('\\');
+                FilePathIndex = Array.IndexOf(FilePathAbsoulute_Parts, "data");
+                for (int i = FilePathIndex; i < FilePathAbsoulute_Parts.Length; i++)
+                {
+                    FilePathRelative += FilePathAbsoulute_Parts[i] + "\\";
+                }
+                // Remove the trailing forward slash in Relative path
+                FilePathRelative = FilePathRelative.Remove(FilePathRelative.LastIndexOf("\\"));
+            }
+            //unix style
+            else if (Constants.TargetPlatform.ToString() == "Mac" || Constants.TargetPlatform.ToString() == "Linux")
+            {
+                monitor.Log("Parsing the paths Unix style", LogLevel.Trace);
+                FilePathAbsoulute_Parts = FilePathAbsolute.Split('/');
+                FilePathIndex = Array.IndexOf(FilePathAbsoulute_Parts, "data");
+                for (int i = FilePathIndex; i < FilePathAbsoulute_Parts.Length; i++)
+                {
+                    FilePathRelative += FilePathAbsoulute_Parts[i] + "/";
+                }
+                // Remove the trailing slash in Relative path
+                FilePathRelative = FilePathRelative.Remove(FilePathRelative.LastIndexOf("/"));
+            }
+            else
+            {
+                monitor.Log("Invalid platform: " + Constants.TargetPlatform.ToString(), LogLevel.Error);
+            }
+
+            return FilePathRelative;
         }
     }
 }

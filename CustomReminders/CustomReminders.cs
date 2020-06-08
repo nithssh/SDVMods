@@ -119,6 +119,7 @@ namespace Dem1se.CustomReminders
             if (Game1.activeClickableMenu != null || (!Context.IsPlayerFree) || ev.Button != Config.Button) { return; }
             Monitor.Log("Opened ReminderMenu page 1", LogLevel.Trace);
             Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage1(Page1OnChangedBehaviour, Helper);
+            //Game1.activeClickableMenu = (IClickableMenu)new DisplayReminders(Helper, Monitor);
         }
 
         /// <summary> Loop that checks if any reminders are mature.</summary>
@@ -135,50 +136,18 @@ namespace Dem1se.CustomReminders
             {
                 try
                 {
-                    // Make relative path from absolute path
-                    string FilePathRelative = "";
-                    string[] FilePathAbsoulute_Parts;
-                    int FilePathIndex;
-
-                    // windows style
-                    if (Constants.TargetPlatform.ToString() == "Windows")
-                    {
-                        Monitor.Log("Parsing the paths Windows style", LogLevel.Trace);
-                        FilePathAbsoulute_Parts = FilePathAbsolute.Split('\\');
-                        FilePathIndex = Array.IndexOf(FilePathAbsoulute_Parts, "data");
-                        for (int i = FilePathIndex; i < FilePathAbsoulute_Parts.Length; i++)
-                        {
-                            FilePathRelative += FilePathAbsoulute_Parts[i] + "\\";
-                        }
-                        // Remove the trailing forward slash in Relative path
-                        FilePathRelative = FilePathRelative.Remove(FilePathRelative.LastIndexOf("\\"));
-                    }
-                    //unix style
-                    else if (Constants.TargetPlatform.ToString() == "Mac" || Constants.TargetPlatform.ToString() == "Linux")
-                    {
-                        Monitor.Log("Parsing the paths Unix style", LogLevel.Trace);
-                        FilePathAbsoulute_Parts = FilePathAbsolute.Split('/');
-                        FilePathIndex = Array.IndexOf(FilePathAbsoulute_Parts, "data");
-                        for (int i = FilePathIndex; i < FilePathAbsoulute_Parts.Length; i++)
-                        {
-                            FilePathRelative += FilePathAbsoulute_Parts[i] + "/";
-                        }
-                        // Remove the trailing slash in Relative path
-                        FilePathRelative = FilePathRelative.Remove(FilePathRelative.LastIndexOf("/"));
-                    }
-                    else
-                    {
-                        Monitor.Log("Invalid platform: " + Constants.TargetPlatform.ToString(), LogLevel.Error);
-                    }
+                    // make relative path from absolute path
+                    string FilePathRelative = Utilities.Utilities.MakeRelativePath(FilePathAbsolute, Monitor);
 
                     // Read the reminder and notify if mature
                     this.Monitor.Log($"Processing {ev.NewTime}", LogLevel.Trace);
-                    var Reminder = this.Helper.Data.ReadJsonFile<ReminderModel>(FilePathRelative);
+                    ReminderModel Reminder = Helper.Data.ReadJsonFile<ReminderModel>(FilePathRelative);
                     if (Reminder.DaysSinceStart == CurrentDate.DaysSinceStart)
                     {
                         if (Reminder.Time == ev.NewTime)
                         {
                             Game1.addHUDMessage(new HUDMessage(Reminder.ReminderMessage, 2));
+                            Game1.playSound("crit");
                             this.Monitor.Log($"Reminder notified for {Reminder.DaysSinceStart}: {Reminder.ReminderMessage}", LogLevel.Info);
                             File.Delete(FilePathAbsolute);
                         }
