@@ -18,6 +18,7 @@ namespace Dem1se.CustomReminders
         private string ReminderMessage;
         private int ReminderDate;
         private int ReminderTime;
+        private string NotificationSound;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -26,6 +27,17 @@ namespace Dem1se.CustomReminders
             // Load the Config
             this.Config = this.Helper.ReadConfig<ModConfig>();
             Monitor.Log("Config loaded and read.", LogLevel.Trace);
+            
+            // Set the notification sound
+            if (Config.SubtlerReminderSound)
+            {
+                this.NotificationSound = "crit";
+            }
+            else
+            {
+                this.NotificationSound = "questcomplete";
+            }
+
             // Binds the event with method.
             helper.Events.Input.ButtonPressed += OnButtonPressed;
             helper.Events.GameLoop.TimeChanged += ReminderNotifier;
@@ -33,7 +45,7 @@ namespace Dem1se.CustomReminders
         }
 
         ///<summary> Define the behaviour after the reminder menu OkButton is pressed.</summary>
-        public void Page1OnChangedBehaviour(string message, string season, int day)
+        private void Page1OnChangedBehaviour(string message, string season, int day)
         {
             int Season = 0;
             int Year;
@@ -90,7 +102,7 @@ namespace Dem1se.CustomReminders
         }
 
         /// <summary>Define the behaviour after the Page2 OkButton menu is pressed</summary>
-        public void Page2OnChangedBehaviour(int time)
+        private void Page2OnChangedBehaviour(int time)
         {
             this.ReminderTime = time;
             // write the data to file
@@ -99,7 +111,7 @@ namespace Dem1se.CustomReminders
         }
 
         ///<summary> Defines what happens when a save is loaded</summary>
-        public void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
+        private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
         {
             // Create the data subfolder for the save for first time users. ( Avoid DirectoryNotFound Exception in OnChangedBehaviour() )
             if (!Directory.Exists(Path.Combine(Helper.DirectoryPath, "data", Constants.SaveFolderName)))
@@ -147,7 +159,7 @@ namespace Dem1se.CustomReminders
                         if (Reminder.Time == ev.NewTime)
                         {
                             Game1.addHUDMessage(new HUDMessage(Reminder.ReminderMessage, 2));
-                            Game1.playSound("questcomplete");
+                            Game1.playSound(this.NotificationSound);
                             this.Monitor.Log($"Reminder notified for {Reminder.DaysSinceStart}: {Reminder.ReminderMessage}", LogLevel.Info);
                             File.Delete(FilePathAbsolute);
                         }
@@ -179,5 +191,6 @@ namespace Dem1se.CustomReminders
     class ModConfig
     {
         public SButton Button { get; set; } = SButton.F2;
+        public bool SubtlerReminderSound { get; set; } = false;
     }
 }

@@ -5,7 +5,6 @@ using StardewValley;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace Dem1se.CustomReminders.UI
 {
@@ -44,9 +43,9 @@ namespace Dem1se.CustomReminders.UI
         /// <summary>The callback to invoke when the ok button is pressed</summary>
         private readonly Action<string, string, int> OnChanged;
 
-        private IModHelper Helper;
+        private readonly IModHelper Helper;
 
-        private SButton MenuButton;
+        private readonly SButton MenuButton;
 
         /*********
         ** Public methods
@@ -356,7 +355,7 @@ namespace Dem1se.CustomReminders.UI
         /// <summary>The callback to invoke when the birthday value changes.</summary>
         private readonly Action<int> OnChanged;
 
-        private IModHelper Helper;
+        private readonly IModHelper Helper;
 
         private readonly SButton MenuButton;
 
@@ -425,7 +424,7 @@ namespace Dem1se.CustomReminders.UI
         /// <summary>
         /// Checks if the page1 inputs are all valid
         /// </summary>
-        /// <returns>True if ok button is ready False if not</returns>
+        /// <returns>True if ok button is ready, False if not</returns>
         private bool IsOkButtonReady()
         {
             if (this.TimeTextBox.Text.Length == 4 && this.TimeTextBox.Text != null && this.TimeTextBox.Text != "" && (this.TimeTextBox.Text.ToString().EndsWith("30") || this.TimeTextBox.Text.ToString().EndsWith("00")) && (Convert.ToInt32(this.TimeTextBox.Text) >= 0600 && Convert.ToInt32(this.TimeTextBox.Text) <= 2600))
