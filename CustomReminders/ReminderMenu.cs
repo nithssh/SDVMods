@@ -404,6 +404,7 @@ namespace Dem1se.CustomReminders.UI
 
                 if (this.IsOkButtonReady())
                 {
+                    Game1.playSound("coin");
                     this.OkButton.scale -= 0.25f;
                     this.OnChanged(ReminderTime);
                     this.OkButton.scale = Math.Max(0.75f, this.OkButton.scale);

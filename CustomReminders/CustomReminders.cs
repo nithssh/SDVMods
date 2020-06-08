@@ -147,7 +147,7 @@ namespace Dem1se.CustomReminders
                         if (Reminder.Time == ev.NewTime)
                         {
                             Game1.addHUDMessage(new HUDMessage(Reminder.ReminderMessage, 2));
-                            Game1.playSound("crit");
+                            Game1.playSound("questcomplete");
                             this.Monitor.Log($"Reminder notified for {Reminder.DaysSinceStart}: {Reminder.ReminderMessage}", LogLevel.Info);
                             File.Delete(FilePathAbsolute);
                         }
