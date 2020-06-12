@@ -13,9 +13,6 @@ namespace Dem1se.CustomReminders.UI
     /// Thanks to janavarro95.
     internal class ReminderMenuPage1 : IClickableMenu
     {
-        /*********
-        ** Fields
-        *********/
         /// <summary>The labels to draw.</summary>
         private readonly List<ClickableComponent> Labels = new List<ClickableComponent>();
 
@@ -47,9 +44,6 @@ namespace Dem1se.CustomReminders.UI
 
         private readonly SButton MenuButton;
 
-        /*********
-        ** Public methods
-        *********/
         /// <summary>Construct an instance.</summary>
         /// <param name="season">The initial birthday season.</param>
         /// <param name="day">The initial birthday day.</param>
@@ -76,9 +70,6 @@ namespace Dem1se.CustomReminders.UI
         }
 
 
-        /*********
-        ** Private methods
-        *********/
         /// <summary>Regenerate the UI.</summary>
         private void SetUpPositions()
         {
@@ -289,7 +280,10 @@ namespace Dem1se.CustomReminders.UI
 
             // draw menu box
             Game1.drawDialogueBox(this.xPositionOnScreen, this.yPositionOnScreen, this.width, this.height, false, true);
-            //b.Draw(Game1.daybg, new Vector2((this.xPositionOnScreen + Game1.tileSize + Game1.tileSize * 2 / 3 - 2), (this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 4)), Color.White);
+            /*
+             * b.Draw(Game1.daybg, new Vector2((this.xPositionOnScreen + Game1.tileSize + Game1.tileSize * 2 / 3 - 2), 
+             * (this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 4)), Color.White);
+             */
 
             // draw textbox
             this.ReminderTextBox.Draw(b, false);

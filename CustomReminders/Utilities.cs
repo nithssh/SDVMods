@@ -88,11 +88,11 @@ namespace Dem1se.CustomReminders.Utilities
         }
 
         /// <summary>
-        /// Makes platform sensitive relative paths from absoulute paths
+        /// Makes platform sensitive relative paths from absoulute paths.
         /// </summary>
         /// <param name="FilePathAbsolute">The file path from the directory enumerator</param>
         /// <param name="monitor">The SMAPI Monitor for logging purposed within the function</param>
-        /// <returns>Relative path that starts from mod folder.</returns>
+        /// <returns>Relative path that starts from mod folder instead of full fs path.</returns>
         public static string MakeRelativePath(string FilePathAbsolute, IMonitor monitor)
         {
             // Make relative path from absolute path
