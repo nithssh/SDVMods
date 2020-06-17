@@ -42,7 +42,7 @@ namespace Dem1se.CustomReminders.Utilities
                 }
             } while (File.Exists(Path.Combine(PathToWrite, $"reminder{ReminderCount}.json")));
         }
-        
+
         /// <summary>
         /// Returns the SDate.DaysSinceStart() int equivalent given the date season and year
         /// </summary>
@@ -130,5 +130,40 @@ namespace Dem1se.CustomReminders.Utilities
 
             return FilePathRelative;
         }
+
+        /// <summary>
+        /// Converts DaysSinceStart to pretty date format (Season Day)
+        /// </summary>
+        /// <param name="DaysSinceStart">The DaysSinceStart of the date to convert</param>
+        /// <returns></returns>
+        public static string ConvertToPrettyDate(int DaysSinceStart)
+        {
+            int RemainderAfterYears = DaysSinceStart % 112;
+            int Years = (DaysSinceStart - RemainderAfterYears) / 112;
+            int Day = RemainderAfterYears % 28;
+            int Months = (RemainderAfterYears - Day) / 28;
+            
+            string Month;
+            switch (Months)
+            {
+                case 0:
+                    Month = "Spring";
+                    break;
+                case 1:
+                    Month = "Summer";
+                    break;
+                case 2:
+                    Month = "Fall";
+                    break;
+                case 3:
+                    Month = "Winter";
+                    break;
+                default:
+                    Month = "Season";
+                    break;
+            }
+
+            return $"{Month} {Day}, Year {Years + 1}";
+        } 
     }
 }
