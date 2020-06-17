@@ -665,6 +665,7 @@ namespace Dem1se.CustomReminders.UI
             // draw new reminders button
             NewReminderButton.draw(b);
 
+            // draw the boxes hover text
             foreach (ClickableTextureComponent box in Boxes)
             {
                 if (box.containsPoint((int)CursorPosition.ScreenPixels.X, (int)CursorPosition.ScreenPixels.Y))
