@@ -130,8 +130,8 @@ namespace Dem1se.CustomReminders
                 return;
             if (Game1.activeClickableMenu != null || (!Context.IsPlayerFree) || ev.Button != Config.Button) { return; }
             Monitor.Log("Opened ReminderMenu page 1", LogLevel.Trace);
-            Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage1(Page1OnChangedBehaviour, Helper);
-            //Game1.activeClickableMenu = (IClickableMenu)new DisplayReminders(Helper, Monitor);
+            //Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage1(Page1OnChangedBehaviour, Helper);
+            Game1.activeClickableMenu = (IClickableMenu)new DisplayReminders(Helper, Monitor);
         }
 
         /// <summary> Loop that checks if any reminders are mature.</summary>
