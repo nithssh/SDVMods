@@ -367,12 +367,9 @@ namespace Dem1se.CustomReminders.UI
         private void SetupPositions()
         {
             this.Labels.Clear();
-
             this.OkButton = new ClickableTextureComponent("OK", new Rectangle(this.xPositionOnScreen + this.width - IClickableMenu.borderWidth - IClickableMenu.spaceToClearSideBorder - Game1.tileSize, this.yPositionOnScreen + this.height - IClickableMenu.borderWidth - IClickableMenu.spaceToClearTopBorder + Game1.tileSize / 4, Game1.tileSize, Game1.tileSize), "", null, Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 46), 1f);
-
             this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + 8, 1, 1), "Reminder Time: "));
             this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 3, 1, 1), $"Set the time of the reminder in 24hrs \nformat in multiples of 30 in-game minutes.\n\ne.g. 1400 (=2PM)\n     0730 (=7AM)"));
-
             this.TimeTextBox = new TextBox(null, null, Game1.smallFont, Game1.textColor)
             {
                 X = this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize,
@@ -383,7 +380,6 @@ namespace Dem1se.CustomReminders.UI
                 textLimit = 4
             };
             Game1.keyboardDispatcher.Subscriber = (IKeyboardSubscriber)this.TimeTextBox;
-
         }
 
         /// <summary>Handles the left clicks on the menu</summary>
@@ -493,21 +489,20 @@ namespace Dem1se.CustomReminders.UI
 
         private void SetUpLabelPositions()
         {
-            this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize - Game1.tileSize / 16, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize / 16, 1, 1), "12345678901234567890123456789012345"));
-            this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize - Game1.tileSize / 16, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize / 16 + Game1.tileSize * 2, 1, 1), "12345678901234567890123456789012345"));
-            this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize - Game1.tileSize / 16, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize / 16 + Game1.tileSize * 4, 1, 1), "12345678901234567890123456789012345"));
-            this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize - Game1.tileSize / 16, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize / 16 + Game1.tileSize * 6, 1, 1), "12345678901234567890123456789012345"));
-            this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize - Game1.tileSize / 16, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize / 16 + Game1.tileSize * 8, 1, 1), "12345678901234567890123456789012345"));
+            this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize - Game1.tileSize / 16, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 - Game1.tileSize / 2 + Game1.tileSize, 1, 1), "12345678901234567890123456789012345"));
+            this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize - Game1.tileSize / 16, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 + Game1.tileSize * 2 - Game1.tileSize / 2 - 8 + Game1.tileSize, 1, 1), "12345678901234567890123456789012345"));
+            this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize - Game1.tileSize / 16, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 + Game1.tileSize * 4 - Game1.tileSize / 2 - 16 + Game1.tileSize, 1, 1), "12345678901234567890123456789012345"));
+            this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize - Game1.tileSize / 16, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 + Game1.tileSize * 6 - Game1.tileSize / 2 - 24 + Game1.tileSize, 1, 1), "12345678901234567890123456789012345"));
+            this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize - Game1.tileSize / 16, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 + Game1.tileSize * 8 - Game1.tileSize / 2 - 32 + Game1.tileSize, 1, 1), "12345678901234567890123456789012345"));
         }
 
         private void SetUpBoxPositions()
         {
-            // add the boxes
-            this.Boxes.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + 16, IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * 2 - Game1.tileSize / 2, this.width - IClickableMenu.spaceToClearSideBorder * 2 - 16, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/reminderBox.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
-            this.Boxes.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + 16, IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * 4 - Game1.tileSize / 2, this.width - IClickableMenu.spaceToClearSideBorder * 2 - 16, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/reminderBox.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
-            this.Boxes.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + 16, IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * 6 - Game1.tileSize / 2, this.width - IClickableMenu.spaceToClearSideBorder * 2 - 16, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/reminderBox.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
-            this.Boxes.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + 16, IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * 8 - Game1.tileSize / 2, this.width - IClickableMenu.spaceToClearSideBorder * 2 - 16, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/reminderBox.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
-            this.Boxes.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + 16, IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * 10 - Game1.tileSize / 2, this.width - IClickableMenu.spaceToClearSideBorder * 2 - 16, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/reminderBox.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
+            this.Boxes.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + 16, this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * 1 - Game1.tileSize, this.width - IClickableMenu.spaceToClearSideBorder * 2 - 16, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/reminderBox.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
+            this.Boxes.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + 16, this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * 3 - Game1.tileSize - 8, this.width - IClickableMenu.spaceToClearSideBorder * 2 - 16, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/reminderBox.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
+            this.Boxes.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + 16, this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * 5 - Game1.tileSize - 16, this.width - IClickableMenu.spaceToClearSideBorder * 2 - 16, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/reminderBox.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
+            this.Boxes.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + 16, this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * 7 - Game1.tileSize - 24, this.width - IClickableMenu.spaceToClearSideBorder * 2 - 16, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/reminderBox.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
+            this.Boxes.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + 16, this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * 9 - Game1.tileSize - 32, this.width - IClickableMenu.spaceToClearSideBorder * 2 - 16, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/reminderBox.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
         }
 
         public override void receiveLeftClick(int x, int y, bool playSound = true)
@@ -524,7 +519,7 @@ namespace Dem1se.CustomReminders.UI
             b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.75f);
 
             // draw menu box
-            Game1.drawDialogueBox(this.xPositionOnScreen, this.yPositionOnScreen, this.width, this.height, false, true);
+            Game1.drawDialogueBox(this.xPositionOnScreen, this.yPositionOnScreen, this.width, this.height - 12, false, true);
 
             // draw boxes
             foreach (ClickableTextureComponent box in this.Boxes)
