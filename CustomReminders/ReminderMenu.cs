@@ -480,6 +480,8 @@ namespace Dem1se.CustomReminders.UI
 
         private ClickableTextureComponent NextPageButton;
         private ClickableTextureComponent PrevPageButton;
+        private ClickableComponent NoRemindersWarning;
+
         private IModHelper Helper;
         private IMonitor Monitor;
         private readonly SButton MenuButton;
@@ -496,6 +498,8 @@ namespace Dem1se.CustomReminders.UI
 
             this.NextPageButton = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + this.width + Game1.tileSize - Game1.tileSize / 2, this.yPositionOnScreen + this.height - Game1.tileSize, Game1.tileSize, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/rightArrow.png", ContentSource.ModFolder), new Rectangle(), 1.5f);
             this.PrevPageButton = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen - Game1.tileSize, this.yPositionOnScreen + this.height - Game1.tileSize, Game1.tileSize, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/leftArrow.png", ContentSource.ModFolder), new Rectangle(), 1.5f);
+
+            this.NoRemindersWarning = new ClickableComponent(new Rectangle(this.xPositionOnScreen + this.width / 2 - this.width / 4 + Game1.tileSize / 2 , this.yPositionOnScreen + this.height / 2, this.width, Game1.tileSize), "No reminders are set yet");
         }
 
         private void SetUpLabels()
@@ -506,16 +510,13 @@ namespace Dem1se.CustomReminders.UI
             if (Reminders.Count - (PageIndex * 5) >= 5)
             {
                 for (int i = 0; i < 5; i++)
-                {
                     this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize - Game1.tileSize / 16, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 + Game1.tileSize * (i * 2) - Game1.tileSize / 2 - (i * 8) + Game1.tileSize, 1, 1), Reminders[i + (PageIndex * 5)].ReminderMessage));
-                }
             }
             else
             {
                 for (int i = 0; i < Reminders.Count - (PageIndex * 5); i++)
-                {
                     this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize - Game1.tileSize / 16, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 + Game1.tileSize * (i * 2) - Game1.tileSize / 2 - (i * 8) + Game1.tileSize, 1, 1), Reminders[i + (PageIndex * 5)].ReminderMessage));
-                }
+                
             }
         }
 
@@ -525,16 +526,12 @@ namespace Dem1se.CustomReminders.UI
             if (Reminders.Count - (PageIndex * 5) >= 5)
             {
                 for (int i = 0; i < 5; i++)
-                {
                     this.Boxes.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + 16, this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * (1 + (i * 2)) - Game1.tileSize - (8 * i), this.width - IClickableMenu.spaceToClearSideBorder * 2 - 16, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/reminderBox.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
-                }
             }
             else
             {
                 for (int i = 0; i < Reminders.Count - (PageIndex * 5); i++)
-                {
                     this.Boxes.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + 16, this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * (1 + (i * 2)) - Game1.tileSize - (8 * i), this.width - IClickableMenu.spaceToClearSideBorder * 2 - 16, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/reminderBox.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
-                }
             }
         }
 
@@ -567,7 +564,7 @@ namespace Dem1se.CustomReminders.UI
                     SetUpBoxes();
                 }
             }
-            
+
         }
 
         public override void draw(SpriteBatch b)
@@ -583,9 +580,7 @@ namespace Dem1se.CustomReminders.UI
 
             // draw boxes
             foreach (ClickableTextureComponent box in this.Boxes)
-            {
                 box.draw(b);
-            }
 
             // draw labels
             foreach (ClickableComponent label in this.Labels)
@@ -599,9 +594,12 @@ namespace Dem1se.CustomReminders.UI
             if (Reminders.Count > (PageIndex + 1) * 5)
                 NextPageButton.draw(b);
             if (PageIndex != 0)
-            {
                 PrevPageButton.draw(b);
-            }
+
+            // draw the warning for no reminder
+            if (Reminders.Count <= 0)
+                Utility.drawTextWithShadow(b, NoRemindersWarning.name, Game1.smallFont, new Vector2(NoRemindersWarning.bounds.X, NoRemindersWarning.bounds.Y), Game1.textColor);
+
 
             // draw cursor
             this.drawMouse(b);
