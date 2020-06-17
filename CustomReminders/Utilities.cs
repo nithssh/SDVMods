@@ -93,7 +93,7 @@ namespace Dem1se.CustomReminders.Utilities
         /// <param name="FilePathAbsolute">The file path from the directory enumerator</param>
         /// <param name="monitor">The SMAPI Monitor for logging purposed within the function</param>
         /// <returns>Relative path that starts from mod folder instead of full fs path.</returns>
-        public static string MakeRelativePath(string FilePathAbsolute, IMonitor monitor)
+        public static string MakeRelativePath(string FilePathAbsolute)
         {
             // Make relative path from absolute path
             string FilePathRelative = "";
@@ -103,7 +103,6 @@ namespace Dem1se.CustomReminders.Utilities
             // windows style
             if (Constants.TargetPlatform.ToString() == "Windows")
             {
-                monitor.Log("Parsing the paths Windows style", LogLevel.Trace);
                 FilePathAbsoulute_Parts = FilePathAbsolute.Split('\\');
                 FilePathIndex = Array.IndexOf(FilePathAbsoulute_Parts, "data");
                 for (int i = FilePathIndex; i < FilePathAbsoulute_Parts.Length; i++)
@@ -116,7 +115,6 @@ namespace Dem1se.CustomReminders.Utilities
             //unix style
             else if (Constants.TargetPlatform.ToString() == "Mac" || Constants.TargetPlatform.ToString() == "Linux")
             {
-                monitor.Log("Parsing the paths Unix style", LogLevel.Trace);
                 FilePathAbsoulute_Parts = FilePathAbsolute.Split('/');
                 FilePathIndex = Array.IndexOf(FilePathAbsoulute_Parts, "data");
                 for (int i = FilePathIndex; i < FilePathAbsoulute_Parts.Length; i++)
@@ -128,7 +126,6 @@ namespace Dem1se.CustomReminders.Utilities
             }
             else
             {
-                monitor.Log("Invalid platform: " + Constants.TargetPlatform.ToString(), LogLevel.Error);
             }
 
             return FilePathRelative;
