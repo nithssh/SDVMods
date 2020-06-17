@@ -45,7 +45,7 @@ namespace Dem1se.CustomReminders
         }
 
         ///<summary> Define the behaviour after the reminder menu OkButton is pressed.</summary>
-        private void Page1OnChangedBehaviour(string message, string season, int day)
+        public void Page1OnChangedBehaviour(string message, string season, int day)
         {
             int Season = 0;
             int Year;
@@ -131,7 +131,6 @@ namespace Dem1se.CustomReminders
             if (Game1.activeClickableMenu != null || (!Context.IsPlayerFree) || ev.Button != Config.Button) { return; }
             Monitor.Log("Opened ReminderMenu page 1", LogLevel.Trace);
             Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage1(Page1OnChangedBehaviour, Helper);
-            //Game1.activeClickableMenu = (IClickableMenu)new DisplayReminders(Helper, Monitor);
         }
 
         /// <summary> Loop that checks if any reminders are mature.</summary>
@@ -149,7 +148,7 @@ namespace Dem1se.CustomReminders
                 try
                 {
                     // make relative path from absolute path
-                    string FilePathRelative = Utilities.Utilities.MakeRelativePath(FilePathAbsolute, Monitor);
+                    string FilePathRelative = Utilities.Utilities.MakeRelativePath(FilePathAbsolute);
 
                     // Read the reminder and notify if mature
                     this.Monitor.Log($"Processing {ev.NewTime}", LogLevel.Trace);

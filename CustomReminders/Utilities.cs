@@ -34,15 +34,17 @@ namespace Dem1se.CustomReminders.Utilities
             int ReminderCount = 0;
             do
             {
-                ReminderCount = rnd.Next(1000, 10000);
-                if (!File.Exists(Path.Combine(PathToWrite, $"reminder{ReminderCount}.json")))
+                ReminderCount = 0;
+                if (!File.Exists(Path.Combine(PathToWrite, $"reminder_{DaysSinceStart}_{Time}_{ReminderCount}.json")))
                 {
-                    File.WriteAllText(Path.Combine(PathToWrite, $"reminder{ReminderCount}.json"), SerializedReminderData);
+                    File.WriteAllText(Path.Combine(PathToWrite, $"reminder_{DaysSinceStart}_{Time}_{ReminderCount}.json"), SerializedReminderData);
                     break;
                 }
-            } while (File.Exists(Path.Combine(PathToWrite, $"reminder{ReminderCount}.json")));
+                else
+                    ReminderCount++;
+            } while (File.Exists(Path.Combine(PathToWrite, $"reminder_{DaysSinceStart}_{Time}_{ReminderCount}.json")));
         }
-        
+
         /// <summary>
         /// Returns the SDate.DaysSinceStart() int equivalent given the date season and year
         /// </summary>
@@ -88,12 +90,12 @@ namespace Dem1se.CustomReminders.Utilities
         }
 
         /// <summary>
-        /// Makes platform sensitive relative paths from absoulute paths
+        /// Makes platform sensitive relative paths from absoulute paths.
         /// </summary>
         /// <param name="FilePathAbsolute">The file path from the directory enumerator</param>
         /// <param name="monitor">The SMAPI Monitor for logging purposed within the function</param>
-        /// <returns>Relative path that starts from mod folder.</returns>
-        public static string MakeRelativePath(string FilePathAbsolute, IMonitor monitor)
+        /// <returns>Relative path that starts from mod folder instead of full fs path.</returns>
+        public static string MakeRelativePath(string FilePathAbsolute)
         {
             // Make relative path from absolute path
             string FilePathRelative = "";
@@ -103,7 +105,6 @@ namespace Dem1se.CustomReminders.Utilities
             // windows style
             if (Constants.TargetPlatform.ToString() == "Windows")
             {
-                monitor.Log("Parsing the paths Windows style", LogLevel.Trace);
                 FilePathAbsoulute_Parts = FilePathAbsolute.Split('\\');
                 FilePathIndex = Array.IndexOf(FilePathAbsoulute_Parts, "data");
                 for (int i = FilePathIndex; i < FilePathAbsoulute_Parts.Length; i++)
@@ -116,7 +117,6 @@ namespace Dem1se.CustomReminders.Utilities
             //unix style
             else if (Constants.TargetPlatform.ToString() == "Mac" || Constants.TargetPlatform.ToString() == "Linux")
             {
-                monitor.Log("Parsing the paths Unix style", LogLevel.Trace);
                 FilePathAbsoulute_Parts = FilePathAbsolute.Split('/');
                 FilePathIndex = Array.IndexOf(FilePathAbsoulute_Parts, "data");
                 for (int i = FilePathIndex; i < FilePathAbsoulute_Parts.Length; i++)
@@ -128,10 +128,125 @@ namespace Dem1se.CustomReminders.Utilities
             }
             else
             {
-                monitor.Log("Invalid platform: " + Constants.TargetPlatform.ToString(), LogLevel.Error);
             }
 
             return FilePathRelative;
+        }
+
+        /// <summary>
+        /// Converts DaysSinceStart to pretty date format (Season Day)
+        /// </summary>
+        /// <param name="DaysSinceStart">The DaysSinceStart of the date to convert</param>
+        /// <returns></returns>
+        public static string ConvertToPrettyDate(int DaysSinceStart)
+        {
+            int RemainderAfterYears = DaysSinceStart % 112;
+            int Years = (DaysSinceStart - RemainderAfterYears) / 112;
+            int Day = RemainderAfterYears % 28;
+            int Months;
+            if (Day == 0)
+                Day = 28;
+            Months = (RemainderAfterYears - Day) / 28;
+
+            string Month;
+            switch (Months)
+            {
+                case 0:
+                    Month = "Spring";
+                    break;
+                case 1:
+                    Month = "Summer";
+                    break;
+                case 2:
+                    Month = "Fall";
+                    break;
+                case 3:
+                    Month = "Winter";
+                    break;
+                default:
+                    Month = "Season";
+                    break;
+            }
+
+            // this is a special case (winter 28)
+            if (Months == -1)
+            {
+                Month = "Winter";
+                Years--;
+            }
+
+            return $"{Month} {Day}, Year {Years + 1}";
+        }
+
+        /// <summary>
+        /// Converts the 24hrs time int to 12hrs string
+        /// </summary>
+        /// <param name="TimeIn24"></param>
+        /// <returns></returns>
+        public static string ConvertToPrettyTime(int TimeIn24)
+        {
+            string PrettyTime;
+            if (TimeIn24 <= 1230)
+            {
+                PrettyTime = Convert.ToString(TimeIn24).Replace('0', ' ');
+                PrettyTime = PrettyTime.Trim();
+                PrettyTime += " AM";
+                if (TimeIn24 >= 1200)
+                    PrettyTime.Replace("AM", "PM");
+                return PrettyTime;
+            }
+            else
+            {
+                PrettyTime = Convert.ToString(TimeIn24 - 1200).Replace('0', ' ');
+                PrettyTime = PrettyTime.Trim();
+                PrettyTime += " PM";
+                return PrettyTime;
+            }
+        }
+        
+        /// <summary>
+        /// Estimates the amount of pixels a string will be wide.
+        /// </summary>
+        /// <param name="reminderMessage">The string to estimate for</param>
+        /// <returns>{int} The pixel count of estimated witdth the string would take</returns>
+        public static int EstimateStringDimension(string reminderMessage)
+        {
+            int Width = 0;
+            char[] Characters = reminderMessage.ToCharArray();
+            
+            // add time number
+            if (Characters[1] == ' ')
+                // single digit time
+                Width += 20;
+            else
+                // double digit time
+                Width += 40;
+
+            // add space
+            Width += 24;
+
+            // add AM/PM
+            Width += 68;
+
+            // add season
+            if (reminderMessage.Contains("Spring")) { Width += 189; }
+            else if (reminderMessage.Contains("Summer")) { Width += 196; }
+            else if (reminderMessage.Contains("Fall")) { Width += 135; }
+            else { Width += 186; }
+
+            // add space
+            Width += 24;
+
+            // add two digits
+            Width += 40;
+
+            // add year
+            Width += 156;
+
+            // add two spaces
+            Width += 48;
+
+            return Width;
         }
     }
 }
