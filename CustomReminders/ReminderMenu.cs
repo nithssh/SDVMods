@@ -560,7 +560,7 @@ namespace Dem1se.CustomReminders.UI
                 for (int i = 0; i < 5; i++)
                 {
                     this.Boxes.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + 16, this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * (1 + (i * 2)) - Game1.tileSize - (8 * i), this.width - IClickableMenu.spaceToClearSideBorder * 2 - 32, Game1.tileSize * 2 - 16), Helper.Content.Load<Texture2D>("assets/reminderBox.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
-                    this.Boxes[i].hoverText = Utilities.Utilities.ConvertToPrettyDate(Reminders[i + (PageIndex * 5)].DaysSinceStart);
+                    this.Boxes[i].hoverText = Utilities.Utilities.ConvertToPrettyTime(Reminders[i + (PageIndex * 5)].Time) + ", " + Utilities.Utilities.ConvertToPrettyDate(Reminders[i + (PageIndex * 5)].DaysSinceStart);
                 }
             }
             // Setup the boxes for the last page
@@ -569,7 +569,7 @@ namespace Dem1se.CustomReminders.UI
                 for (int i = 0; i < Reminders.Count - (PageIndex * 5); i++)
                 {
                     this.Boxes.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + 16, this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * (1 + (i * 2)) - Game1.tileSize - (8 * i), this.width - IClickableMenu.spaceToClearSideBorder * 2 - 16, Game1.tileSize * 2 - 16), Helper.Content.Load<Texture2D>("assets/reminderBox.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
-                    this.Boxes[i].hoverText = Utilities.Utilities.ConvertToPrettyDate(Reminders[i + (PageIndex * 5)].DaysSinceStart);
+                    this.Boxes[i].hoverText = Utilities.Utilities.ConvertToPrettyTime(Reminders[i + (PageIndex * 5)].Time) + ", " + Utilities.Utilities.ConvertToPrettyDate(Reminders[i + (PageIndex * 5)].DaysSinceStart);
                 }
             }
         }
@@ -673,8 +673,8 @@ namespace Dem1se.CustomReminders.UI
                     {
                         int x = Game1.getMouseX() + 32;
                         int y = Game1.getMouseY() + 32 + 16;
-                        IClickableMenu.drawTextureBox(b, Game1.menuTexture, new Rectangle(0, 256, 60, 60), x, y - 16, Game1.tileSize * 6 + 40, Game1.tileSize + 16, Color.White, 1f, true);
-                        SpriteText.drawString(b, box.hoverText, x + 16, y, 9999, -1, 99, 1f, 0.88f, false, -1, "", 8, SpriteText.ScrollTextAlignment.Left);
+                        IClickableMenu.drawTextureBox(b, Game1.menuTexture, new Rectangle(0, 256, 60, 60), x, y - 16, Utilities.Utilities.EstimateStringDimension(box.hoverText) + 8, Game1.tileSize + 16, Color.White, 1f, true);
+                        SpriteText.drawString(b, box.hoverText, x + 32, y, 999, -1, 99, 1f, 0.88f, false, -1, "", 8, SpriteText.ScrollTextAlignment.Left);
                     }
                 }
             }

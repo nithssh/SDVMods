@@ -203,10 +203,50 @@ namespace Dem1se.CustomReminders.Utilities
                 return PrettyTime;
             }
         }
-        /*
+        
+        /// <summary>
+        /// Estimates the amount of pixels a string will be wide.
+        /// </summary>
+        /// <param name="reminderMessage">The string to estimate for</param>
+        /// <returns>{int} The pixel count of estimated witdth the string would take</returns>
         public static int EstimateStringDimension(string reminderMessage)
         {
+            int Width = 0;
+            char[] Characters = reminderMessage.ToCharArray();
+            
+            // add time number
+            if (Characters[1] == ' ')
+                // single digit time
+                Width += 20;
+            else
+                // double digit time
+                Width += 40;
 
-        }*/
+            // add space
+            Width += 24;
+
+            // add AM/PM
+            Width += 68;
+
+            // add season
+            if (reminderMessage.Contains("Spring")) { Width += 189; }
+            else if (reminderMessage.Contains("Summer")) { Width += 196; }
+            else if (reminderMessage.Contains("Fall")) { Width += 135; }
+            else { Width += 186; }
+
+            // add space
+            Width += 24;
+
+            // add two digits
+            Width += 40;
+
+            // add year
+            Width += 156;
+
+            // add two spaces
+            Width += 48;
+
+            return Width;
+        }
     }
 }
