@@ -143,7 +143,10 @@ namespace Dem1se.CustomReminders.Utilities
             int RemainderAfterYears = DaysSinceStart % 112;
             int Years = (DaysSinceStart - RemainderAfterYears) / 112;
             int Day = RemainderAfterYears % 28;
-            int Months = (RemainderAfterYears - Day) / 28;
+            int Months;
+            if (Day == 0)
+                Day = 28;
+            Months = (RemainderAfterYears - Day) / 28;
 
             string Month;
             switch (Months)
@@ -163,6 +166,13 @@ namespace Dem1se.CustomReminders.Utilities
                 default:
                     Month = "Season";
                     break;
+            }
+
+            // this is a special case (winter 28)
+            if (Months == -1)
+            {
+                Month = "Winter";
+                Years--;
             }
 
             return $"{Month} {Day}, Year {Years + 1}";
@@ -193,5 +203,10 @@ namespace Dem1se.CustomReminders.Utilities
                 return PrettyTime;
             }
         }
+        /*
+        public static int EstimateStringDimension(string reminderMessage)
+        {
+
+        }*/
     }
 }
