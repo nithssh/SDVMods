@@ -5,6 +5,7 @@ using StardewValley;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Dem1se.CustomReminders.UI
 {
@@ -475,28 +476,41 @@ namespace Dem1se.CustomReminders.UI
     {
         private List<ClickableComponent> Labels = new List<ClickableComponent>();
         private List<ClickableTextureComponent> Boxes = new List<ClickableTextureComponent>();
+        private List<ReminderModel> Reminders = new List<ReminderModel>();
+
+        private ClickableTextureComponent NextPageButton;
+        private ClickableTextureComponent PrevPageButton;
         private IModHelper Helper;
+        private IMonitor Monitor;
         private readonly SButton MenuButton;
+        private int PageIndex = 0;
 
         public DisplayReminders(IModHelper helper, IMonitor monitor)
             : base(Game1.viewport.Width / 2 - (632 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize, 632 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize)
         {
             this.Helper = helper;
+            this.Monitor = monitor;
             this.MenuButton = Utilities.Utilities.GetMenuButton();
-            SetUpLabelPositions();
-            SetUpBoxPositions();
+            SetUpLabels();
+            SetUpBoxes();
+
+            this.NextPageButton = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + this.width + Game1.tileSize - Game1.tileSize / 2, this.yPositionOnScreen + this.height - Game1.tileSize, Game1.tileSize, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/rightArrow.png", ContentSource.ModFolder), new Rectangle(), 1.5f);
+            this.PrevPageButton = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen - Game1.tileSize, this.yPositionOnScreen + this.height - Game1.tileSize, Game1.tileSize, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/leftArrow.png", ContentSource.ModFolder), new Rectangle(), 1.5f);
         }
 
-        private void SetUpLabelPositions()
+        private void SetUpLabels()
         {
-            this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize - Game1.tileSize / 16, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 - Game1.tileSize / 2 + Game1.tileSize, 1, 1), "12345678901234567890123456789012345"));
-            this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize - Game1.tileSize / 16, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 + Game1.tileSize * 2 - Game1.tileSize / 2 - 8 + Game1.tileSize, 1, 1), "12345678901234567890123456789012345"));
-            this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize - Game1.tileSize / 16, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 + Game1.tileSize * 4 - Game1.tileSize / 2 - 16 + Game1.tileSize, 1, 1), "12345678901234567890123456789012345"));
-            this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize - Game1.tileSize / 16, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 + Game1.tileSize * 6 - Game1.tileSize / 2 - 24 + Game1.tileSize, 1, 1), "12345678901234567890123456789012345"));
-            this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize - Game1.tileSize / 16, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 + Game1.tileSize * 8 - Game1.tileSize / 2 - 32 + Game1.tileSize, 1, 1), "12345678901234567890123456789012345"));
+            Reminders.Clear();
+            PopulateRemindersList();
+            this.Labels.Clear();
+            this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize - Game1.tileSize / 16, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 - Game1.tileSize / 2 + Game1.tileSize, 1, 1), Reminders[0 + (PageIndex * 5)].ReminderMessage));
+            this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize - Game1.tileSize / 16, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 + Game1.tileSize * 2 - Game1.tileSize / 2 - 8 + Game1.tileSize, 1, 1), Reminders[1 + (PageIndex * 5)].ReminderMessage));
+            this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize - Game1.tileSize / 16, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 + Game1.tileSize * 4 - Game1.tileSize / 2 - 16 + Game1.tileSize, 1, 1), Reminders[2 + (PageIndex * 5)].ReminderMessage));
+            this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize - Game1.tileSize / 16, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 + Game1.tileSize * 6 - Game1.tileSize / 2 - 24 + Game1.tileSize, 1, 1), Reminders[3 + (PageIndex * 5)].ReminderMessage));
+            this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize - Game1.tileSize / 16, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 + Game1.tileSize * 8 - Game1.tileSize / 2 - 32 + Game1.tileSize, 1, 1), Reminders[4 + (PageIndex * 5)].ReminderMessage));
         }
 
-        private void SetUpBoxPositions()
+        private void SetUpBoxes()
         {
             this.Boxes.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + 16, this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * 1 - Game1.tileSize, this.width - IClickableMenu.spaceToClearSideBorder * 2 - 16, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/reminderBox.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
             this.Boxes.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + 16, this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * 3 - Game1.tileSize - 8, this.width - IClickableMenu.spaceToClearSideBorder * 2 - 16, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/reminderBox.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
@@ -505,11 +519,33 @@ namespace Dem1se.CustomReminders.UI
             this.Boxes.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + 16, this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * 9 - Game1.tileSize - 32, this.width - IClickableMenu.spaceToClearSideBorder * 2 - 16, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/reminderBox.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
         }
 
-        public override void receiveLeftClick(int x, int y, bool playSound = true)
+        private void PopulateRemindersList()
         {
-
+            foreach (string AbsoulutePath in Directory.GetFiles(Path.Combine(Helper.DirectoryPath, "data", Constants.SaveFolderName)))
+            {
+                string RelativePath = Utilities.Utilities.MakeRelativePath(AbsoulutePath, Monitor);
+                Reminders.Add(Helper.Data.ReadJsonFile<ReminderModel>(RelativePath));
+            }
         }
 
+        public override void receiveLeftClick(int x, int y, bool playSound = true)
+        {
+            if (NextPageButton.containsPoint(x, y))
+            {
+                if (Reminders.Count > (PageIndex + 1) * 5)
+                {
+                    this.PageIndex += 1;
+                }
+            }
+            else if (PrevPageButton.containsPoint(x, y))
+            {
+                if (PageIndex != 0)
+                {
+                    this.PageIndex -= 1;
+                }
+            }
+            SetUpLabels();
+        }
         public override void draw(SpriteBatch b)
         {
             // supress the Menu button
@@ -535,6 +571,12 @@ namespace Dem1se.CustomReminders.UI
                 Utility.drawTextWithShadow(b, label.name, Game1.smallFont, new Vector2(label.bounds.X, label.bounds.Y), color);
                 if (text.Length > 0)
                     Utility.drawTextWithShadow(b, text, Game1.smallFont, new Vector2((label.bounds.X + Game1.tileSize / 3) - Game1.smallFont.MeasureString(text).X / 2f, (label.bounds.Y + Game1.tileSize / 2)), color);
+            }
+            if (Reminders.Count > (PageIndex + 1) * 5)
+                NextPageButton.draw(b);
+            if (PageIndex != 0)
+            {
+                PrevPageButton.draw(b);
             }
 
             // draw cursor
