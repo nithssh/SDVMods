@@ -34,13 +34,15 @@ namespace Dem1se.CustomReminders.Utilities
             int ReminderCount = 0;
             do
             {
-                ReminderCount = rnd.Next(1000, 10000);
-                if (!File.Exists(Path.Combine(PathToWrite, $"reminder{ReminderCount}.json")))
+                ReminderCount = 0;
+                if (!File.Exists(Path.Combine(PathToWrite, $"reminder_{DaysSinceStart}_{Time}_{ReminderCount}.json")))
                 {
-                    File.WriteAllText(Path.Combine(PathToWrite, $"reminder{ReminderCount}.json"), SerializedReminderData);
+                    File.WriteAllText(Path.Combine(PathToWrite, $"reminder_{DaysSinceStart}_{Time}_{ReminderCount}.json"), SerializedReminderData);
                     break;
                 }
-            } while (File.Exists(Path.Combine(PathToWrite, $"reminder{ReminderCount}.json")));
+                else
+                    ReminderCount++;
+            } while (File.Exists(Path.Combine(PathToWrite, $"reminder_{DaysSinceStart}_{Time}_{ReminderCount}.json")));
         }
 
         /// <summary>
@@ -142,7 +144,7 @@ namespace Dem1se.CustomReminders.Utilities
             int Years = (DaysSinceStart - RemainderAfterYears) / 112;
             int Day = RemainderAfterYears % 28;
             int Months = (RemainderAfterYears - Day) / 28;
-            
+
             string Month;
             switch (Months)
             {
@@ -164,6 +166,32 @@ namespace Dem1se.CustomReminders.Utilities
             }
 
             return $"{Month} {Day}, Year {Years + 1}";
-        } 
+        }
+
+        /// <summary>
+        /// Converts the 24hrs time int to 12hrs string
+        /// </summary>
+        /// <param name="TimeIn24"></param>
+        /// <returns></returns>
+        public static string ConvertToPrettyTime(int TimeIn24)
+        {
+            string PrettyTime;
+            if (TimeIn24 <= 1230)
+            {
+                PrettyTime = Convert.ToString(TimeIn24).Replace('0', ' ');
+                PrettyTime = PrettyTime.Trim();
+                PrettyTime += " AM";
+                if (TimeIn24 >= 1200)
+                    PrettyTime.Replace("AM", "PM");
+                return PrettyTime;
+            }
+            else
+            {
+                PrettyTime = Convert.ToString(TimeIn24 - 1200).Replace('0', ' ');
+                PrettyTime = PrettyTime.Trim();
+                PrettyTime += " PM";
+                return PrettyTime;
+            }
+        }
     }
 }
