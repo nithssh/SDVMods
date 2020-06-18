@@ -21,7 +21,6 @@ namespace Dem1se.CustomReminders.Utilities
         /// <param name="Time">The time of the reminder in 24hrs format</param>
         public static void WriteToFile(string ReminderMessage, int DaysSinceStart, int Time, IModHelper Helper)
         {
-            Random rnd = new Random();
             ReminderModel ReminderData = new ReminderModel()
             {
                 DaysSinceStart = DaysSinceStart,
@@ -34,7 +33,6 @@ namespace Dem1se.CustomReminders.Utilities
             int ReminderCount = 0;
             do
             {
-                ReminderCount = 0;
                 if (!File.Exists(Path.Combine(PathToWrite, $"reminder_{DaysSinceStart}_{Time}_{ReminderCount}.json")))
                 {
                     File.WriteAllText(Path.Combine(PathToWrite, $"reminder_{DaysSinceStart}_{Time}_{ReminderCount}.json"), SerializedReminderData);

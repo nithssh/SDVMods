@@ -45,7 +45,6 @@ namespace Dem1se.CustomReminders.UI
         private readonly Action<string, string, int> OnChanged;
 
         private readonly IModHelper Helper;
-
         private readonly SButton MenuButton;
 
         /// <summary>Construct an instance.</summary>
@@ -351,21 +350,15 @@ namespace Dem1se.CustomReminders.UI
     {
         /// <summary>The lables to draw</summary>
         private readonly List<ClickableComponent> Labels = new List<ClickableComponent>();
-
         /// <summary>The Ok button to draw</summary>
         private ClickableTextureComponent OkButton;
-
         /// <summary>The TextBox to enter the time</summary>
         private TextBox TimeTextBox;
-
         /// <summary>Field that contains the Time inputed</summary>
         internal int ReminderTime = 0;
-
         /// <summary>The callback to invoke when the birthday value changes.</summary>
         private readonly Action<int> OnChanged;
-
         private readonly IModHelper Helper;
-
         private readonly SButton MenuButton;
 
         /// <summary>The callback function that gets called when ok buttong is pressed</summary>
@@ -503,7 +496,7 @@ namespace Dem1se.CustomReminders.UI
         ///<summary>This is required for switching to New Reminders menu (for its constructor requires this call back function)</summary>
         private readonly Action<string, string, int> Page1OnChangeBehaviour;
 
-        private IModHelper Helper;
+        private readonly IModHelper Helper;
         private readonly SButton MenuButton;
         private ICursorPosition CursorPosition;
         private int PageIndex = 0;
