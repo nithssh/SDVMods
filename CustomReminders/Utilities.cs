@@ -31,16 +31,17 @@ namespace Dem1se.CustomReminders.Utilities
             string PathToWrite = Path.Combine(Helper.DirectoryPath, "data", Constants.SaveFolderName);
             string SerializedReminderData = JsonConvert.SerializeObject(ReminderData, Formatting.Indented);
             int ReminderCount = 0;
-            do
+            bool bWritten = false;
+            while (!bWritten)
             {
                 if (!File.Exists(Path.Combine(PathToWrite, $"reminder_{DaysSinceStart}_{Time}_{ReminderCount}.json")))
                 {
                     File.WriteAllText(Path.Combine(PathToWrite, $"reminder_{DaysSinceStart}_{Time}_{ReminderCount}.json"), SerializedReminderData);
-                    break;
+                    bWritten = true;
                 }
                 else
                     ReminderCount++;
-            } while (File.Exists(Path.Combine(PathToWrite, $"reminder_{DaysSinceStart}_{Time}_{ReminderCount}.json")));
+            } 
         }
 
         /// <summary>
