@@ -186,22 +186,49 @@ namespace Dem1se.CustomReminders.Utilities
         public static string ConvertToPrettyTime(int TimeIn24)
         {
             string PrettyTime;
-            if (TimeIn24 <= 1230)
+            if (TimeIn24 <= 1230) // Pre noon
             {
-                PrettyTime = Convert.ToString(TimeIn24).Replace('0', ' ');
-                PrettyTime = PrettyTime.Trim();
-                PrettyTime += " AM";
-                if (TimeIn24 >= 1200)
-                    PrettyTime.Replace("AM", "PM");
-                return PrettyTime;
+                PrettyTime = Convert.ToString(TimeIn24);
+                if (PrettyTime.EndsWith("00")) // ends with 00
+                {
+                    PrettyTime = PrettyTime.Replace("00", " ");
+                    if (PrettyTime.StartsWith("0"))
+                        PrettyTime = PrettyTime.Replace("0", " ");
+                    PrettyTime = PrettyTime.Trim();
+                    PrettyTime += " AM";
+                }
+                else // ends with 30
+                {
+                    PrettyTime = PrettyTime.Replace("30", ":30");
+                    if (PrettyTime.StartsWith("0"))
+                        PrettyTime = PrettyTime.Replace("0", " ");
+                    PrettyTime = PrettyTime.Trim();
+                    PrettyTime += " AM";
+                    if (TimeIn24 == 1230)
+                        PrettyTime = PrettyTime.Replace("AM", "PM");
+                }
             }
-            else
+            else // after noon
             {
-                PrettyTime = Convert.ToString(TimeIn24 - 1200).Replace('0', ' ');
-                PrettyTime = PrettyTime.Trim();
-                PrettyTime += " PM";
-                return PrettyTime;
+                PrettyTime = Convert.ToString(TimeIn24 - 1200);
+                if (PrettyTime.EndsWith("00")) // ends with 00
+                {
+                    PrettyTime = PrettyTime.Replace("00", " ");
+                    if (PrettyTime.StartsWith("0"))
+                        PrettyTime = PrettyTime.Replace("0", " ");
+                    PrettyTime = PrettyTime.Trim();
+                    PrettyTime += " PM";
+                }
+                else // ends with 30
+                {
+                    PrettyTime = PrettyTime.Replace("30", ":30");
+                    if (PrettyTime.StartsWith("0"))
+                        PrettyTime = PrettyTime.Replace("0", " ");
+                    PrettyTime = PrettyTime.Trim();
+                    PrettyTime += " PM";
+                }
             }
+            return PrettyTime;
         }
         
         /// <summary>
