@@ -21,7 +21,7 @@ namespace Dem1se.CustomReminders.Utilities
         /// <param name="Time">The time of the reminder in 24hrs format</param>
         public static void WriteToFile(string ReminderMessage, int DaysSinceStart, int Time, IModHelper Helper)
         {
-            ReminderModel ReminderData = new ReminderModel()
+            ReminderModel ReminderData = new ReminderModel
             {
                 DaysSinceStart = DaysSinceStart,
                 ReminderMessage = ReminderMessage,
@@ -125,10 +125,6 @@ namespace Dem1se.CustomReminders.Utilities
                 // Remove the trailing slash in Relative path
                 FilePathRelative = FilePathRelative.Remove(FilePathRelative.LastIndexOf("/"));
             }
-            else
-            {
-            }
-
             return FilePathRelative;
         }
 

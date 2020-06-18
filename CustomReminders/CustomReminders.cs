@@ -63,6 +63,9 @@ namespace Dem1se.CustomReminders
                 case "winter":
                     Season = 3;
                     break;
+                default:
+                    // just here for code quality
+                    break;
             }
             Game1.exitActiveMenu();
             // Convert to DaysSinceStart

@@ -81,7 +81,6 @@ namespace Dem1se.CustomReminders.UI
             this.OkButton = new ClickableTextureComponent("OK", new Rectangle(this.xPositionOnScreen + this.width - IClickableMenu.borderWidth - IClickableMenu.spaceToClearSideBorder - Game1.tileSize, this.yPositionOnScreen + this.height - IClickableMenu.borderWidth - IClickableMenu.spaceToClearTopBorder + Game1.tileSize / 4, Game1.tileSize, Game1.tileSize), "", null, Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 46), 1f);
             this.DisplayRemindersButton = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen - Game1.tileSize * 5 - IClickableMenu.spaceToClearSideBorder * 2, this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder, Game1.tileSize * 5 + Game1.tileSize / 4 + Game1.tileSize / 8, Game1.tileSize + Game1.tileSize / 8), Helper.Content.Load<Texture2D>("assets/DisplayReminders.png", ContentSource.ModFolder), new Rectangle(), 1.5f);
             this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + 8, 1, 1), "Reminder Message: "));
-            //this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + Game1.tileSize / 4 + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 3 + 8, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + Game1.tileSize, Game1.tileSize * 2, Game1.tileSize), "Birthday Date: " + this.ReminderDate));
 
             this.ReminderTextBox = new TextBox(null, null, Game1.smallFont, Game1.textColor)
             {
@@ -243,11 +242,6 @@ namespace Dem1se.CustomReminders.UI
             this.ReminderTextBox.Update();
         }
 
-        /// <summary>The method invoked when the player right-clicks on the lookup UI.</summary>
-        /// <param name="x">The X-position of the cursor.</param>
-        /// <param name="y">The Y-position of the cursor.</param>
-        /// <param name="playSound">Whether to enable sound.</param>
-        public override void receiveRightClick(int x, int y, bool playSound = true) { }
 
         /// <summary>The method invoked when the player hovers the cursor over the menu.</summary>
         /// <param name="x">The X-position of the cursor.</param>
@@ -291,10 +285,6 @@ namespace Dem1se.CustomReminders.UI
 
             // draw menu box
             Game1.drawDialogueBox(this.xPositionOnScreen, this.yPositionOnScreen, this.width, this.height, false, true);
-            /*
-             * b.Draw(Game1.daybg, new Vector2((this.xPositionOnScreen + Game1.tileSize + Game1.tileSize * 2 / 3 - 2), 
-             * (this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 4)), Color.White);
-             */
 
             // draw textbox
             this.ReminderTextBox.Draw(b, false);
@@ -488,10 +478,10 @@ namespace Dem1se.CustomReminders.UI
         private List<ClickableTextureComponent> Boxes = new List<ClickableTextureComponent>();
         private List<ReminderModel> Reminders = new List<ReminderModel>();
 
-        private ClickableTextureComponent NextPageButton;
-        private ClickableTextureComponent PrevPageButton;
-        private ClickableTextureComponent NewReminderButton;
-        private ClickableComponent NoRemindersWarning;
+        private readonly ClickableTextureComponent NextPageButton;
+        private readonly ClickableTextureComponent PrevPageButton;
+        private readonly ClickableTextureComponent NewReminderButton;
+        private readonly ClickableComponent NoRemindersWarning;
 
         ///<summary>This is required for switching to New Reminders menu (for its constructor requires this call back function)</summary>
         private readonly Action<string, string, int> Page1OnChangeBehaviour;
@@ -624,6 +614,7 @@ namespace Dem1se.CustomReminders.UI
         public override void draw(SpriteBatch b)
         {
             this.CursorPosition = this.Helper.Input.GetCursorPosition();
+
             // supress the Menu button
             Helper.Input.Suppress(MenuButton);
 
