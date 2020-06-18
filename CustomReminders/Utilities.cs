@@ -243,11 +243,20 @@ namespace Dem1se.CustomReminders.Utilities
             
             // add time number
             if (Characters[1] == ' ')
-                // single digit time
+                // 1 digit time
                 Width += 20;
+            else if (Characters[1] == ':')
+                // 3 digit time
+                Width += 80; // 20 extra for colon
             else
-                // double digit time
-                Width += 40;
+            {
+                if (Characters[2] == ':')
+                    // 4 digit time
+                    Width += 100; // 20 extra for colon
+                else
+                    // 2 digit time
+                    Width += 40;
+            }
 
             // add space
             Width += 24;
