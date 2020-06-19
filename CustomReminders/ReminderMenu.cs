@@ -33,13 +33,13 @@ namespace Dem1se.CustomReminders.UI
         private ClickableTextureComponent OkButton;
 
         ///<summary> The Reminder message to display.</summary>
-        internal string ReminderMessage;
+        private string ReminderMessage;
 
         /// <summary>The season the reminder is set to.</summary>
-        internal string ReminderSeason;
+        private string ReminderSeason;
 
         /// <summary>The Date the reminder is set to.</summary>
-        internal int ReminderDate;
+        private int ReminderDate;
 
         /// <summary>The callback to invoke when the ok button is pressed</summary>
         private readonly Action<string, string, int> OnChanged;
@@ -78,6 +78,7 @@ namespace Dem1se.CustomReminders.UI
         {
             this.Labels.Clear();
             this.DayButtons.Clear();
+            
             this.OkButton = new ClickableTextureComponent("OK", new Rectangle(this.xPositionOnScreen + this.width - IClickableMenu.borderWidth - IClickableMenu.spaceToClearSideBorder - Game1.tileSize, this.yPositionOnScreen + this.height - IClickableMenu.borderWidth - IClickableMenu.spaceToClearTopBorder + Game1.tileSize / 4, Game1.tileSize, Game1.tileSize), "", null, Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 46), 1f);
             this.DisplayRemindersButton = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen - Game1.tileSize * 5 - IClickableMenu.spaceToClearSideBorder * 2, this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder, Game1.tileSize * 5 + Game1.tileSize / 4 + Game1.tileSize / 8, Game1.tileSize + Game1.tileSize / 8), Helper.Content.Load<Texture2D>("assets/DisplayReminders.png", ContentSource.ModFolder), new Rectangle(), 1.5f);
             this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + 8, 1, 1), "Reminder Message: "));
@@ -271,9 +272,6 @@ namespace Dem1se.CustomReminders.UI
                 : Math.Max(this.DisplayRemindersButton.scale - 0.02f, this.DisplayRemindersButton.baseScale);
         }
 
-    
-
-
         /// <summary>Draw the menu to the screen.</summary>
         /// <param name="b">The sprite batch.</param>
         public override void draw(SpriteBatch b)
@@ -286,15 +284,15 @@ namespace Dem1se.CustomReminders.UI
             // draw menu box
             Game1.drawDialogueBox(this.xPositionOnScreen, this.yPositionOnScreen, this.width, this.height, false, true);
 
+            // draw title scroll
+            SpriteText.drawStringWithScrollCenteredAt(b, "New Reminder", Game1.viewport.Width / 2, this.yPositionOnScreen, "New Reminder");
+
             // draw textbox
             this.ReminderTextBox.Draw(b, false);
 
             // draw day buttons
-            //if (this.ReminderSeason == "spring" || this.ReminderSeason == "summer" || this.ReminderSeason == "fall" || this.ReminderSeason == "winter")
-            {
-                foreach (ClickableTextureComponent button in this.DayButtons)
-                    button.draw(b);
-            }
+            foreach (ClickableTextureComponent button in this.DayButtons)
+                button.draw(b);
 
             // draw season buttons
             foreach (ClickableTextureComponent button in this.SeasonButtons)
@@ -623,6 +621,9 @@ namespace Dem1se.CustomReminders.UI
 
             // draw menu box
             Game1.drawDialogueBox(this.xPositionOnScreen, this.yPositionOnScreen, this.width, this.height - 12, false, true);
+
+            // draw title scroll
+            SpriteText.drawStringWithScrollCenteredAt(b, "Display Reminder", Game1.viewport.Width / 2, this.yPositionOnScreen, "Display Reminder");
 
             // draw boxes
             foreach (ClickableTextureComponent box in this.Boxes)
