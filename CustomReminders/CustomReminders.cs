@@ -12,6 +12,12 @@ namespace Dem1se.CustomReminders
     /// <summary>The mod entry point.</summary>
     public class ModEntry : Mod
     {
+        /// <summary>
+        /// Contains the save folder name for mulitplayer support.
+        /// Host generates own value, peers recieve value from host.
+        /// </summary>
+        public string SaveFolderName;
+
         /// <summary> Object with all the properties of the config.</summary>
         private ModConfig Config;
 
@@ -68,7 +74,7 @@ namespace Dem1se.CustomReminders
                     break;
             }
             Game1.exitActiveMenu();
-            // Convert to DaysSinceStart
+            // Convert to DaysSinceStart - calculate year fix.
             if (SDate.Now().SeasonIndex == Season) // same seasons
             {
                 if (SDate.Now().Day > day) // same season , past date
@@ -187,12 +193,5 @@ namespace Dem1se.CustomReminders
         public string ReminderMessage { get; set; }
         public int DaysSinceStart { get; set; }
         public int Time { get; set; }
-    }
-
-    /// <summary> Mod config.json data model </summary>
-    class ModConfig
-    {
-        public SButton Button { get; set; } = SButton.F2;
-        public bool SubtlerReminderSound { get; set; } = false;
     }
 }
