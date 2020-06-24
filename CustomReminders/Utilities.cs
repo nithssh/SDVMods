@@ -279,5 +279,23 @@ namespace Dem1se.CustomReminders.Utilities
 
             return Width;
         }
+
+        public static void DeleteReminder(int ReminderIndex, IModHelper Helper)
+        {
+            int IterationIndex = 1;
+            foreach (string path in Directory.EnumerateFiles(Path.Combine(Helper.DirectoryPath, "data", Constants.SaveFolderName)))
+            {
+                if (ReminderIndex == IterationIndex)
+                {
+                    File.Delete(path);
+                    IterationIndex++;
+                }
+                else
+                {
+                    IterationIndex++;
+                }
+            }
+            
+        }
     }
 }

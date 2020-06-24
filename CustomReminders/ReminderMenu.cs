@@ -472,6 +472,7 @@ namespace Dem1se.CustomReminders.UI
     /// </summary>
     public class DisplayReminders : IClickableMenu
     {
+        private List<ClickableTextureComponent> DeleteButtons = new List<ClickableTextureComponent>();
         private List<ClickableComponent> ReminderMessages = new List<ClickableComponent>();
         private List<ClickableTextureComponent> Boxes = new List<ClickableTextureComponent>();
         private List<ReminderModel> Reminders = new List<ReminderModel>();
@@ -501,14 +502,20 @@ namespace Dem1se.CustomReminders.UI
             this.MenuButton = Utilities.Utilities.GetMenuButton();
             this.Page1OnChangeBehaviour = Page1OnChangeBehaviour;
 
-            SetUpReminderMessages();
-            SetUpBoxes();
+            SetUpUI();
 
             this.NextPageButton = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + this.width + Game1.tileSize - Game1.tileSize / 2, this.yPositionOnScreen + this.height - Game1.tileSize, Game1.tileSize, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/rightArrow.png", ContentSource.ModFolder), new Rectangle(), 1.5f);
             this.PrevPageButton = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen - Game1.tileSize, this.yPositionOnScreen + this.height - Game1.tileSize, Game1.tileSize, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/leftArrow.png", ContentSource.ModFolder), new Rectangle(), 1.5f);
 
             this.NoRemindersWarning = new ClickableComponent(new Rectangle(this.xPositionOnScreen + this.width / 2 - this.width / 4 + Game1.tileSize / 2, this.yPositionOnScreen + this.height / 2, this.width, Game1.tileSize), "No reminders are set yet");
             this.NewReminderButton = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen - Game1.tileSize * 5 - IClickableMenu.spaceToClearSideBorder * 2, this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder, Game1.tileSize * 5 + Game1.tileSize / 4 + Game1.tileSize / 8, Game1.tileSize + Game1.tileSize / 8), Helper.Content.Load<Texture2D>("assets/NewReminder.png", ContentSource.ModFolder), new Rectangle(), 1.5f);
+        }
+
+        public void SetUpUI()
+        {
+            SetUpReminderMessages();
+            SetUpBoxes();
+            SetUpDeleteButtons();
         }
 
         /// <summary>Regenerates the reminder messages (for page switches and initializations)</summary>
@@ -555,6 +562,24 @@ namespace Dem1se.CustomReminders.UI
             }
         }
 
+        /// <summary>Regenerates the reminder messages (for page switches and initializations)</summary>
+        private void SetUpDeleteButtons()
+        {
+            this.DeleteButtons.Clear();
+            // Setup the delete buttons for pages that are not the last
+            if (Reminders.Count - (PageIndex * 5) >= 5)
+            {
+                for (int i = 0; i < 5; i++)
+                    this.DeleteButtons.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen - IClickableMenu.spaceToClearSideBorder - IClickableMenu.borderWidth + this.width - Game1.tileSize * 1, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 + Game1.tileSize * (i * 2) - Game1.tileSize / 2 - (i * 8) + Game1.tileSize, Game1.tileSize, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/deleteButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
+            }
+            // Setup the delete buttons for the last page
+            else
+            {
+                for (int i = 0; i < Reminders.Count - (PageIndex * 5); i++)
+                    this.DeleteButtons.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen - IClickableMenu.spaceToClearSideBorder - IClickableMenu.borderWidth + this.width - Game1.tileSize * 1, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 + Game1.tileSize * (i * 2) - Game1.tileSize / 2 - (i * 8) + Game1.tileSize, Game1.tileSize, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/deleteButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
+            }
+        }
+
         /// <summary>This fills the Reminders list by reading all the reminder files</summary>
         private void PopulateRemindersList()
         {
@@ -573,31 +598,42 @@ namespace Dem1se.CustomReminders.UI
         /// <param name="playSound"></param>
         public override void receiveLeftClick(int x, int y, bool playSound = true)
         {
-            // change to next page
+            // clicked next page
             if (NextPageButton.containsPoint(x, y))
             {
                 if (Reminders.Count > (PageIndex + 1) * 5)
                 {
                     this.PageIndex += 1;
-                    SetUpReminderMessages();
-                    SetUpBoxes();
+                    SetUpUI();
                 }
             }
-            // go back to previous page
+            // clicked previous page
             else if (PrevPageButton.containsPoint(x, y))
             {
                 if (PageIndex != 0)
                 {
                     this.PageIndex -= 1;
-                    SetUpReminderMessages();
-                    SetUpBoxes();
+                    SetUpUI();
                 }
             }
 
-            // switch to the new reminder page 1
+            // clicked new reminder
             if (NewReminderButton.containsPoint(x, y))
                 Game1.activeClickableMenu = new ReminderMenuPage1(this.Page1OnChangeBehaviour, Helper);
 
+            // clicked delete button
+            int reminderindex = 0;
+            foreach (ClickableTextureComponent deleteButton in this.DeleteButtons)
+            {
+                reminderindex++;
+                if (deleteButton.containsPoint(x, y))
+                {
+                    int ReminderIndex = (this.PageIndex * 5) + reminderindex;
+                    Utilities.Utilities.DeleteReminder(ReminderIndex, Helper);
+                    SetUpUI();
+                    break;
+                }
+            }
         }
 
         /// <summary>Defines what to do when hovering over UI elements</summary>
@@ -642,6 +678,12 @@ namespace Dem1se.CustomReminders.UI
                 NextPageButton.draw(b);
             if (PageIndex != 0)
                 PrevPageButton.draw(b);
+
+            // draw the delete buttons
+            foreach (ClickableTextureComponent button in this.DeleteButtons)
+            {
+                button.draw(b);
+            }
 
             // draw the warning for no reminder
             if (Reminders.Count <= 0)
