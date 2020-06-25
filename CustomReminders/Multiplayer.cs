@@ -43,7 +43,6 @@ namespace Dem1se.CustomReminders.Multiplayer
             if (Context.IsMainPlayer)
             {
                 Helper.Multiplayer.SendMessage<SaveFolderNameModel>(new SaveFolderNameModel() { SaveFolderName = Utilities.Utilities.SaveFolderName }, "SaveFolderName", modIDs: new[] { this.ModID }, playerIDs: new[] { e.Peer.PlayerID });
-                //Helper.Multiplayer.SendMessage<SaveFolderNameModel>(new SaveFolderNameModel() { SaveFolderName = Utilities.Utilities.SaveFolderName }, "SaveFolderName");
             }
         }
     }

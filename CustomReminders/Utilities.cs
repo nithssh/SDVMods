@@ -14,10 +14,17 @@ namespace Dem1se.CustomReminders.Utilities
     static class Utilities
     {
         /// <summary>
+        /// <para>
         /// Contains the save folder name for mulitplayer support.
         /// Host generates own value, peers recieve value from host.
+        /// </para>
+        /// <para>
+        /// This is a critical field, and will cause multiple exceptions across namespaces if null. 
+        /// </para>
         /// </summary>
         public static string SaveFolderName;
+
+        public static SButton MenuButton = GetMenuButton();
 
         /// <summary>
         /// This function will write the reminder to the json file reliably.
@@ -82,16 +89,23 @@ namespace Dem1se.CustomReminders.Utilities
         /// <returns>the button that opens menu as SButton</returns>
         public static SButton GetMenuButton()
         {
-            var SaveFile = XDocument.Load(Path.Combine(Constants.CurrentSavePath, Utilities.SaveFolderName));
-            var query = from xml in SaveFile.Descendants("menuButton")
-                        select xml.Element("InputButton").Element("key").Value;
-            string MenuString = "";
-            foreach (string Key in query)
+            if (Context.IsMainPlayer)
             {
-                MenuString = Key;
+                var SaveFile = XDocument.Load(Path.Combine(Constants.CurrentSavePath, Constants.SaveFolderName));
+                var query = from xml in SaveFile.Descendants("menuButton")
+                            select xml.Element("InputButton").Element("key").Value;
+                string MenuString = "";
+                foreach (string Key in query)
+                {
+                    MenuString = Key;
+                }
+                SButton MenuButton = (SButton)Enum.Parse(typeof(SButton), MenuString);
+                return MenuButton;
             }
-            SButton MenuButton = (SButton)Enum.Parse(typeof(SButton), MenuString);
-            return MenuButton;
+            else
+            {
+                return SButton.E;
+            }
         }
 
         /// <summary>
@@ -286,6 +300,11 @@ namespace Dem1se.CustomReminders.Utilities
             return Width;
         }
 
+        /// <summary>
+        /// Deletes the reminder of the specified index. Index being the serial position of reminder file in directory.
+        /// </summary>
+        /// <param name="ReminderIndex">Zero-indexed serial position of reminder file in directory</param>
+        /// <param name="Helper">IModHelper instance for its fields</param>
         public static void DeleteReminder(int ReminderIndex, IModHelper Helper)
         {
             int IterationIndex = 1;

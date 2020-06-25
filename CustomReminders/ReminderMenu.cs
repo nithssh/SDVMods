@@ -45,7 +45,6 @@ namespace Dem1se.CustomReminders.UI
         private readonly Action<string, string, int> OnChanged;
 
         private readonly IModHelper Helper;
-        private readonly SButton MenuButton;
 
         /// <summary>Construct an instance.</summary>
         /// <param name="season">The initial birthday season.</param>
@@ -56,8 +55,6 @@ namespace Dem1se.CustomReminders.UI
         {
             this.OnChanged = onChanged;
             this.Helper = Helper;
-            //this.MenuButton = Utilities.Utilities.GetMenuButton();
-
             this.SetUpPositions();
         }
 
@@ -276,7 +273,7 @@ namespace Dem1se.CustomReminders.UI
         /// <param name="b">The sprite batch.</param>
         public override void draw(SpriteBatch b)
         {
-            Helper.Input.Suppress(MenuButton);
+            Helper.Input.Suppress(Utilities.Utilities.MenuButton);
 
             //draw screen fade
             b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.75f);
@@ -347,7 +344,6 @@ namespace Dem1se.CustomReminders.UI
         /// <summary>The callback to invoke when the birthday value changes.</summary>
         private readonly Action<int> OnChanged;
         private readonly IModHelper Helper;
-        private readonly SButton MenuButton;
 
         /// <summary>The callback function that gets called when ok buttong is pressed</summary>
         public ReminderMenuPage2(Action<int> OnChanged, IModHelper Helper)
@@ -427,7 +423,7 @@ namespace Dem1se.CustomReminders.UI
         public override void draw(SpriteBatch b)
         {
             // supress the Menu button
-            Helper.Input.Suppress(MenuButton);
+            Helper.Input.Suppress(Utilities.Utilities.MenuButton);
 
             // draw screen fade
             b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.75f);
@@ -486,7 +482,6 @@ namespace Dem1se.CustomReminders.UI
         private readonly Action<string, string, int> Page1OnChangeBehaviour;
 
         private readonly IModHelper Helper;
-        private readonly SButton MenuButton;
         private ICursorPosition CursorPosition;
         private int PageIndex = 0;
 
@@ -650,7 +645,7 @@ namespace Dem1se.CustomReminders.UI
             this.CursorPosition = this.Helper.Input.GetCursorPosition();
 
             // supress the Menu button
-            Helper.Input.Suppress(MenuButton);
+            Helper.Input.Suppress(Utilities.Utilities.MenuButton);
 
             // draw screen fade
             b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.75f);
