@@ -14,6 +14,12 @@ namespace Dem1se.CustomReminders.Utilities
     static class Utilities
     {
         /// <summary>
+        /// Contains the save folder name for mulitplayer support.
+        /// Host generates own value, peers recieve value from host.
+        /// </summary>
+        public static string SaveFolderName;
+
+        /// <summary>
         /// This function will write the reminder to the json file reliably.
         /// </summary>
         /// <param name="ReminderMessage">The message that will pop up in reminder</param>
@@ -28,7 +34,7 @@ namespace Dem1se.CustomReminders.Utilities
                 Time = Time
             };
 
-            string PathToWrite = Path.Combine(Helper.DirectoryPath, "data", Constants.SaveFolderName);
+            string PathToWrite = Path.Combine(Helper.DirectoryPath, "data", Utilities.SaveFolderName);
             string SerializedReminderData = JsonConvert.SerializeObject(ReminderData, Formatting.Indented);
             int ReminderCount = 0;
             bool bWritten = false;
@@ -76,7 +82,7 @@ namespace Dem1se.CustomReminders.Utilities
         /// <returns>the button that opens menu as SButton</returns>
         public static SButton GetMenuButton()
         {
-            var SaveFile = XDocument.Load(Path.Combine(Constants.CurrentSavePath, Constants.SaveFolderName));
+            var SaveFile = XDocument.Load(Path.Combine(Constants.CurrentSavePath, Utilities.SaveFolderName));
             var query = from xml in SaveFile.Descendants("menuButton")
                         select xml.Element("InputButton").Element("key").Value;
             string MenuString = "";
@@ -283,7 +289,7 @@ namespace Dem1se.CustomReminders.Utilities
         public static void DeleteReminder(int ReminderIndex, IModHelper Helper)
         {
             int IterationIndex = 1;
-            foreach (string path in Directory.EnumerateFiles(Path.Combine(Helper.DirectoryPath, "data", Constants.SaveFolderName)))
+            foreach (string path in Directory.EnumerateFiles(Path.Combine(Helper.DirectoryPath, "data", Utilities.SaveFolderName)))
             {
                 if (ReminderIndex == IterationIndex)
                 {

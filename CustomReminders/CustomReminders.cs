@@ -12,11 +12,7 @@ namespace Dem1se.CustomReminders
     /// <summary>The mod entry point.</summary>
     public class ModEntry : Mod
     {
-        /// <summary>
-        /// Contains the save folder name for mulitplayer support.
-        /// Host generates own value, peers recieve value from host.
-        /// </summary>
-        public string SaveFolderName;
+        private Dem1se.CustomReminders.Multiplayer.Multiplayer Multiplayer;
 
         /// <summary> Object with all the properties of the config.</summary>
         private ModConfig Config;
@@ -44,10 +40,14 @@ namespace Dem1se.CustomReminders
                 this.NotificationSound = "questcomplete";
             }
 
+            Multiplayer = new Multiplayer.Multiplayer(Helper, Monitor);
+
             // Binds the event with method.
             helper.Events.Input.ButtonPressed += OnButtonPressed;
             helper.Events.GameLoop.TimeChanged += ReminderNotifier;
             helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
+            helper.Events.Multiplayer.ModMessageReceived += Multiplayer.OnModMessageReceived;
+            helper.Events.Multiplayer.PeerContextReceived += Multiplayer.OnPeerConnected;
         }
 
         ///<summary> Define the behaviour after the reminder menu OkButton is pressed.</summary>
@@ -122,11 +122,16 @@ namespace Dem1se.CustomReminders
         ///<summary> Defines what happens when a save is loaded</summary>
         private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
         {
+            // set the SaveFolderName field if multiplayer host or singleplayer
+            if (Context.IsMainPlayer)
+            {
+                Utilities.Utilities.SaveFolderName = Constants.SaveFolderName;
+            }
             // Create the data subfolder for the save for first time users. ( Avoid DirectoryNotFound Exception in OnChangedBehaviour() )
-            if (!Directory.Exists(Path.Combine(Helper.DirectoryPath, "data", Constants.SaveFolderName)))
+            if (!Directory.Exists(Path.Combine(Helper.DirectoryPath, "data", Utilities.Utilities.SaveFolderName)))
             {
                 Monitor.Log("Reminders directory not found. Creating directory.", LogLevel.Info);
-                Directory.CreateDirectory(Path.Combine(Helper.DirectoryPath, "data", Constants.SaveFolderName));
+                Directory.CreateDirectory(Path.Combine(Helper.DirectoryPath, "data", Utilities.Utilities.SaveFolderName));
                 Monitor.Log("Reminders directory created successfully.", LogLevel.Info);
             }
         }
@@ -152,7 +157,7 @@ namespace Dem1se.CustomReminders
             // Loops through all the reminder files and evaluates if they are current.
             #region CoreReminderLoop
             SDate CurrentDate = SDate.Now();
-            foreach (string FilePathAbsolute in Directory.EnumerateFiles(Path.Combine(this.Helper.DirectoryPath, "data", Constants.SaveFolderName)))
+            foreach (string FilePathAbsolute in Directory.EnumerateFiles(Path.Combine(this.Helper.DirectoryPath, "data", Utilities.Utilities.SaveFolderName)))
             {
                 try
                 {

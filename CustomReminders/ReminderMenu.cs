@@ -56,7 +56,7 @@ namespace Dem1se.CustomReminders.UI
         {
             this.OnChanged = onChanged;
             this.Helper = Helper;
-            this.MenuButton = Utilities.Utilities.GetMenuButton();
+            //this.MenuButton = Utilities.Utilities.GetMenuButton();
 
             this.SetUpPositions();
         }
@@ -355,7 +355,7 @@ namespace Dem1se.CustomReminders.UI
         {
             this.Helper = Helper;
             this.OnChanged = OnChanged;
-            this.MenuButton = Utilities.Utilities.GetMenuButton();
+            //this.MenuButton = Utilities.Utilities.GetMenuButton();
             this.SetupPositions();
         }
 
@@ -499,7 +499,7 @@ namespace Dem1se.CustomReminders.UI
             : base(Game1.viewport.Width / 2 - (632 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize, 632 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize)
         {
             this.Helper = helper;
-            this.MenuButton = Utilities.Utilities.GetMenuButton();
+            //this.MenuButton = Utilities.Utilities.GetMenuButton();
             this.Page1OnChangeBehaviour = Page1OnChangeBehaviour;
 
             SetUpUI();
@@ -583,7 +583,7 @@ namespace Dem1se.CustomReminders.UI
         /// <summary>This fills the Reminders list by reading all the reminder files</summary>
         private void PopulateRemindersList()
         {
-            foreach (string AbsoulutePath in Directory.GetFiles(Path.Combine(Helper.DirectoryPath, "data", Constants.SaveFolderName)))
+            foreach (string AbsoulutePath in Directory.GetFiles(Path.Combine(Helper.DirectoryPath, "data", Utilities.Utilities.SaveFolderName)))
             {
                 string RelativePath = Utilities.Utilities.MakeRelativePath(AbsoulutePath);
                 Reminders.Add(Helper.Data.ReadJsonFile<ReminderModel>(RelativePath));
