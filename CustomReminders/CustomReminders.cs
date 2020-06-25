@@ -20,7 +20,7 @@ namespace Dem1se.CustomReminders
         private int ReminderDate;
         private int ReminderTime;
         private string NotificationSound;
-        
+
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
@@ -193,6 +193,7 @@ namespace Dem1se.CustomReminders
                 Utilities.Data.SaveFolderName = Constants.SaveFolderName;
             }
             Utilities.Data.Helper = Helper;
+            Utilities.Data.Monitor = Monitor;
         }
     }
 }

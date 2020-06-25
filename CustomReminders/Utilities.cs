@@ -285,6 +285,7 @@ namespace Dem1se.CustomReminders.Utilities
         public static IModHelper Helper;
 
         /// <summary>IMonitor instance for classes to access without need it be a parameter everywhere.</summary>
+        // assigned in SetUpStatics() in CustomReminders.cs
         public static IMonitor Monitor;
 
         /// <summary>
