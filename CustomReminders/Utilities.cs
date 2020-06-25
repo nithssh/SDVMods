@@ -280,12 +280,21 @@ namespace Dem1se.CustomReminders.Utilities
     /// <summary>Contains data values that are used across classes and namespaces</summary>
     static class Data
     {
+        static Data()
+        {
+            // set the SaveFolderName field if multiplayer host or singleplayer
+            if (Context.IsMainPlayer)
+            {
+                Data.SaveFolderName = Constants.SaveFolderName;
+            }
+        }
+
         /// <summary>IModHelper instance for classes to access without need it be an parameter everywhere.</summary>
-        // assigned in SetUpStatics() in CustomReminders.cs
+        /// <remarks>Assigned in SetUpStatics() in CustomReminders.cs</remarks>
         public static IModHelper Helper;
 
         /// <summary>IMonitor instance for classes to access without need it be a parameter everywhere.</summary>
-        // assigned in SetUpStatics() in CustomReminders.cs
+        /// <remarks>Assigned in SetUpStatics() in CustomReminders.cs</remarks>
         public static IMonitor Monitor;
 
         /// <summary>

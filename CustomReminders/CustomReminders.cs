@@ -187,11 +187,6 @@ namespace Dem1se.CustomReminders
         /// <summary>Initializes values in Utilities namespace.</summary>
         private void SetUpStatics()
         {
-            // set the SaveFolderName field if multiplayer host or singleplayer
-            if (Context.IsMainPlayer)
-            {
-                Utilities.Data.SaveFolderName = Constants.SaveFolderName;
-            }
             Utilities.Data.Helper = Helper;
             Utilities.Data.Monitor = Monitor;
         }
