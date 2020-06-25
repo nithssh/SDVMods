@@ -17,47 +17,26 @@ namespace Dem1se.CustomReminders.UI
     {
         private ClickableTextureComponent DisplayRemindersButton;
 
-        /// <summary>The labels to draw.</summary>
         private readonly List<ClickableComponent> Labels = new List<ClickableComponent>();
-
-        /// <summary>The season buttons to draw.</summary>
         private readonly List<ClickableTextureComponent> SeasonButtons = new List<ClickableTextureComponent>();
-
-        /// <summary>The day buttons to draw.</summary>
         private readonly List<ClickableTextureComponent> DayButtons = new List<ClickableTextureComponent>();
 
-        /// <summary> The Textboxes to draw </summary>
         private TextBox ReminderTextBox;
-
-        /// <summary>The OK button to draw.</summary>
         private ClickableTextureComponent OkButton;
 
-        ///<summary> The Reminder message to display.</summary>
         private string ReminderMessage;
-
-        /// <summary>The season the reminder is set to.</summary>
         private string ReminderSeason;
-
-        /// <summary>The Date the reminder is set to.</summary>
         private int ReminderDate;
 
         /// <summary>The callback to invoke when the ok button is pressed</summary>
         private readonly Action<string, string, int> OnChanged;
 
-        private readonly IModHelper Helper;
-        private readonly SButton MenuButton;
-
-        /// <summary>Construct an instance.</summary>
-        /// <param name="season">The initial birthday season.</param>
-        /// <param name="day">The initial birthday day.</param>
-        /// <param name="onChanged">The callback to invoke when the birthday value changes.</param>
-        public ReminderMenuPage1(Action<string, string, int> onChanged, IModHelper Helper)
+        /// <summary>Construct an instance of the first page.</summary>
+        /// <param name="onChanged"></param>
+        public ReminderMenuPage1(Action<string, string, int> onChanged)
             : base(Game1.viewport.Width / 2 - (632 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize, 632 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize)
         {
             this.OnChanged = onChanged;
-            this.Helper = Helper;
-            this.MenuButton = Utilities.Utilities.GetMenuButton();
-
             this.SetUpPositions();
         }
 
@@ -78,9 +57,9 @@ namespace Dem1se.CustomReminders.UI
         {
             this.Labels.Clear();
             this.DayButtons.Clear();
-            
+
             this.OkButton = new ClickableTextureComponent("OK", new Rectangle(this.xPositionOnScreen + this.width - IClickableMenu.borderWidth - IClickableMenu.spaceToClearSideBorder - Game1.tileSize, this.yPositionOnScreen + this.height - IClickableMenu.borderWidth - IClickableMenu.spaceToClearTopBorder + Game1.tileSize / 4, Game1.tileSize, Game1.tileSize), "", null, Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 46), 1f);
-            this.DisplayRemindersButton = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen - Game1.tileSize * 5 - IClickableMenu.spaceToClearSideBorder * 2, this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder, Game1.tileSize * 5 + Game1.tileSize / 4 + Game1.tileSize / 8, Game1.tileSize + Game1.tileSize / 8), Helper.Content.Load<Texture2D>("assets/DisplayReminders.png", ContentSource.ModFolder), new Rectangle(), 1.5f);
+            this.DisplayRemindersButton = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen - Game1.tileSize * 5 - IClickableMenu.spaceToClearSideBorder * 2, this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder, Game1.tileSize * 5 + Game1.tileSize / 4 + Game1.tileSize / 8, Game1.tileSize + Game1.tileSize / 8), Utilities.Data.Helper.Content.Load<Texture2D>("assets/DisplayReminders.png", ContentSource.ModFolder), new Rectangle(), 1.5f);
             this.Labels.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + 8, 1, 1), "Reminder Message: "));
 
             this.ReminderTextBox = new TextBox(null, null, Game1.smallFont, Game1.textColor)
@@ -238,7 +217,7 @@ namespace Dem1se.CustomReminders.UI
             }
 
             if (DisplayRemindersButton.containsPoint(x, y))
-                Game1.activeClickableMenu = new DisplayReminders(Helper, this.OnChanged);
+                Game1.activeClickableMenu = new DisplayReminders(this.OnChanged);
 
             this.ReminderTextBox.Update();
         }
@@ -266,7 +245,7 @@ namespace Dem1se.CustomReminders.UI
             this.OkButton.scale = this.OkButton.containsPoint(x, y) && this.IsOkButtonReady()
                 ? Math.Min(this.OkButton.scale + 0.02f, this.OkButton.baseScale + 0.1f)
                 : Math.Max(this.OkButton.scale - 0.02f, this.OkButton.baseScale);
-            
+
             this.DisplayRemindersButton.scale = this.DisplayRemindersButton.containsPoint(x, y)
                 ? Math.Min(this.DisplayRemindersButton.scale + 0.02f, this.DisplayRemindersButton.baseScale + 0.1f)
                 : Math.Max(this.DisplayRemindersButton.scale - 0.02f, this.DisplayRemindersButton.baseScale);
@@ -276,7 +255,7 @@ namespace Dem1se.CustomReminders.UI
         /// <param name="b">The sprite batch.</param>
         public override void draw(SpriteBatch b)
         {
-            Helper.Input.Suppress(MenuButton);
+            Utilities.Data.Helper.Input.Suppress(Utilities.Data.MenuButton);
 
             //draw screen fade
             b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.75f);
@@ -336,26 +315,23 @@ namespace Dem1se.CustomReminders.UI
     /// </summary>
     internal class ReminderMenuPage2 : IClickableMenu
     {
-        /// <summary>The lables to draw</summary>
         private readonly List<ClickableComponent> Labels = new List<ClickableComponent>();
-        /// <summary>The Ok button to draw</summary>
-        private ClickableTextureComponent OkButton;
-        /// <summary>The TextBox to enter the time</summary>
+        
         private TextBox TimeTextBox;
+        private ClickableTextureComponent OkButton;
+        
         /// <summary>Field that contains the Time inputed</summary>
         internal int ReminderTime = 0;
+        
         /// <summary>The callback to invoke when the birthday value changes.</summary>
         private readonly Action<int> OnChanged;
-        private readonly IModHelper Helper;
-        private readonly SButton MenuButton;
 
         /// <summary>The callback function that gets called when ok buttong is pressed</summary>
-        public ReminderMenuPage2(Action<int> OnChanged, IModHelper Helper)
+        public ReminderMenuPage2(Action<int> OnChanged)
             : base(Game1.viewport.Width / 2 - (632 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize, 632 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize)
         {
-            this.Helper = Helper;
             this.OnChanged = OnChanged;
-            this.MenuButton = Utilities.Utilities.GetMenuButton();
+            //this.MenuButton = Utilities.Utilities.GetMenuButton();
             this.SetupPositions();
         }
 
@@ -427,7 +403,7 @@ namespace Dem1se.CustomReminders.UI
         public override void draw(SpriteBatch b)
         {
             // supress the Menu button
-            Helper.Input.Suppress(MenuButton);
+            Utilities.Data.Helper.Input.Suppress(Utilities.Data.MenuButton);
 
             // draw screen fade
             b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.75f);
@@ -472,10 +448,10 @@ namespace Dem1se.CustomReminders.UI
     /// </summary>
     public class DisplayReminders : IClickableMenu
     {
-        private List<ClickableTextureComponent> DeleteButtons = new List<ClickableTextureComponent>();
-        private List<ClickableComponent> ReminderMessages = new List<ClickableComponent>();
-        private List<ClickableTextureComponent> Boxes = new List<ClickableTextureComponent>();
-        private List<ReminderModel> Reminders = new List<ReminderModel>();
+        private readonly List<ClickableTextureComponent> DeleteButtons = new List<ClickableTextureComponent>();
+        private readonly List<ClickableComponent> ReminderMessages = new List<ClickableComponent>();
+        private readonly List<ClickableTextureComponent> Boxes = new List<ClickableTextureComponent>();
+        private readonly List<ReminderModel> Reminders = new List<ReminderModel>();
 
         private readonly ClickableTextureComponent NextPageButton;
         private readonly ClickableTextureComponent PrevPageButton;
@@ -485,30 +461,24 @@ namespace Dem1se.CustomReminders.UI
         ///<summary>This is required for switching to New Reminders menu (for its constructor requires this call back function)</summary>
         private readonly Action<string, string, int> Page1OnChangeBehaviour;
 
-        private readonly IModHelper Helper;
-        private readonly SButton MenuButton;
         private ICursorPosition CursorPosition;
         private int PageIndex = 0;
 
-        /// <summary>
-        /// Construct an instance
-        /// </summary>
-        /// <param name="helper">The Helper that provides easy access to some useful methods and fields</param>
+        /// <summary>Construct an instance.</summary>
         /// <param name="Page1OnChangeBehaviour">Required to switch to the New Reminder menu (as its constructor requires this callback function)</param>
-        public DisplayReminders(IModHelper helper, Action<string, string, int> Page1OnChangeBehaviour)
+        public DisplayReminders(Action<string, string, int> Page1OnChangeBehaviour)
             : base(Game1.viewport.Width / 2 - (632 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize, 632 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize)
         {
-            this.Helper = helper;
-            this.MenuButton = Utilities.Utilities.GetMenuButton();
+            //this.MenuButton = Utilities.Utilities.GetMenuButton();
             this.Page1OnChangeBehaviour = Page1OnChangeBehaviour;
 
             SetUpUI();
 
-            this.NextPageButton = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + this.width + Game1.tileSize - Game1.tileSize / 2, this.yPositionOnScreen + this.height - Game1.tileSize, Game1.tileSize, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/rightArrow.png", ContentSource.ModFolder), new Rectangle(), 1.5f);
-            this.PrevPageButton = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen - Game1.tileSize, this.yPositionOnScreen + this.height - Game1.tileSize, Game1.tileSize, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/leftArrow.png", ContentSource.ModFolder), new Rectangle(), 1.5f);
+            this.NextPageButton = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + this.width + Game1.tileSize - Game1.tileSize / 2, this.yPositionOnScreen + this.height - Game1.tileSize, Game1.tileSize, Game1.tileSize), Utilities.Data.Helper.Content.Load<Texture2D>("assets/rightArrow.png", ContentSource.ModFolder), new Rectangle(), 1.5f);
+            this.PrevPageButton = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen - Game1.tileSize, this.yPositionOnScreen + this.height - Game1.tileSize, Game1.tileSize, Game1.tileSize), Utilities.Data.Helper.Content.Load<Texture2D>("assets/leftArrow.png", ContentSource.ModFolder), new Rectangle(), 1.5f);
 
             this.NoRemindersWarning = new ClickableComponent(new Rectangle(this.xPositionOnScreen + this.width / 2 - this.width / 4 + Game1.tileSize / 2, this.yPositionOnScreen + this.height / 2, this.width, Game1.tileSize), "No reminders are set yet");
-            this.NewReminderButton = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen - Game1.tileSize * 5 - IClickableMenu.spaceToClearSideBorder * 2, this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder, Game1.tileSize * 5 + Game1.tileSize / 4 + Game1.tileSize / 8, Game1.tileSize + Game1.tileSize / 8), Helper.Content.Load<Texture2D>("assets/NewReminder.png", ContentSource.ModFolder), new Rectangle(), 1.5f);
+            this.NewReminderButton = new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen - Game1.tileSize * 5 - IClickableMenu.spaceToClearSideBorder * 2, this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder, Game1.tileSize * 5 + Game1.tileSize / 4 + Game1.tileSize / 8, Game1.tileSize + Game1.tileSize / 8), Utilities.Data.Helper.Content.Load<Texture2D>("assets/NewReminder.png", ContentSource.ModFolder), new Rectangle(), 1.5f);
         }
 
         public void SetUpUI()
@@ -547,8 +517,8 @@ namespace Dem1se.CustomReminders.UI
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    this.Boxes.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + 16, this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * (1 + (i * 2)) - Game1.tileSize - (8 * i), this.width - IClickableMenu.spaceToClearSideBorder * 2 - 32, Game1.tileSize * 2 - 16), Helper.Content.Load<Texture2D>("assets/reminderBox.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
-                    this.Boxes[i].hoverText = Utilities.Utilities.ConvertToPrettyTime(Reminders[i + (PageIndex * 5)].Time) + ", " + Utilities.Utilities.ConvertToPrettyDate(Reminders[i + (PageIndex * 5)].DaysSinceStart);
+                    this.Boxes.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + 16, this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * (1 + (i * 2)) - Game1.tileSize - (8 * i), this.width - IClickableMenu.spaceToClearSideBorder * 2 - 32, Game1.tileSize * 2 - 16), Utilities.Data.Helper.Content.Load<Texture2D>("assets/reminderBox.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
+                    this.Boxes[i].hoverText = Utilities.Converts.ConvertToPrettyTime(Reminders[i + (PageIndex * 5)].Time) + ", " + Utilities.Converts.ConvertToPrettyDate(Reminders[i + (PageIndex * 5)].DaysSinceStart);
                 }
             }
             // Setup the boxes for the last page
@@ -556,8 +526,8 @@ namespace Dem1se.CustomReminders.UI
             {
                 for (int i = 0; i < Reminders.Count - (PageIndex * 5); i++)
                 {
-                    this.Boxes.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + 16, this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * (1 + (i * 2)) - Game1.tileSize - (8 * i), this.width - IClickableMenu.spaceToClearSideBorder * 2 - 16, Game1.tileSize * 2 - 16), Helper.Content.Load<Texture2D>("assets/reminderBox.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
-                    this.Boxes[i].hoverText = Utilities.Utilities.ConvertToPrettyTime(Reminders[i + (PageIndex * 5)].Time) + ", " + Utilities.Utilities.ConvertToPrettyDate(Reminders[i + (PageIndex * 5)].DaysSinceStart);
+                    this.Boxes.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + 16, this.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * (1 + (i * 2)) - Game1.tileSize - (8 * i), this.width - IClickableMenu.spaceToClearSideBorder * 2 - 16, Game1.tileSize * 2 - 16), Utilities.Data.Helper.Content.Load<Texture2D>("assets/reminderBox.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
+                    this.Boxes[i].hoverText = Utilities.Converts.ConvertToPrettyTime(Reminders[i + (PageIndex * 5)].Time) + ", " + Utilities.Converts.ConvertToPrettyDate(Reminders[i + (PageIndex * 5)].DaysSinceStart);
                 }
             }
         }
@@ -570,23 +540,23 @@ namespace Dem1se.CustomReminders.UI
             if (Reminders.Count - (PageIndex * 5) >= 5)
             {
                 for (int i = 0; i < 5; i++)
-                    this.DeleteButtons.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen - IClickableMenu.spaceToClearSideBorder - IClickableMenu.borderWidth + this.width - Game1.tileSize * 1, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 + Game1.tileSize * (i * 2) - Game1.tileSize / 2 - (i * 8) + Game1.tileSize, Game1.tileSize, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/deleteButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
+                    this.DeleteButtons.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen - IClickableMenu.spaceToClearSideBorder - IClickableMenu.borderWidth + this.width - Game1.tileSize * 1, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 + Game1.tileSize * (i * 2) - Game1.tileSize / 2 - (i * 8) + Game1.tileSize, Game1.tileSize, Game1.tileSize), Utilities.Data.Helper.Content.Load<Texture2D>("assets/deleteButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
             }
             // Setup the delete buttons for the last page
             else
             {
                 for (int i = 0; i < Reminders.Count - (PageIndex * 5); i++)
-                    this.DeleteButtons.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen - IClickableMenu.spaceToClearSideBorder - IClickableMenu.borderWidth + this.width - Game1.tileSize * 1, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 + Game1.tileSize * (i * 2) - Game1.tileSize / 2 - (i * 8) + Game1.tileSize, Game1.tileSize, Game1.tileSize), Helper.Content.Load<Texture2D>("assets/deleteButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
+                    this.DeleteButtons.Add(new ClickableTextureComponent(new Rectangle(this.xPositionOnScreen - IClickableMenu.spaceToClearSideBorder - IClickableMenu.borderWidth + this.width - Game1.tileSize * 1, this.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 + Game1.tileSize * (i * 2) - Game1.tileSize / 2 - (i * 8) + Game1.tileSize, Game1.tileSize, Game1.tileSize), Utilities.Data.Helper.Content.Load<Texture2D>("assets/deleteButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
             }
         }
 
         /// <summary>This fills the Reminders list by reading all the reminder files</summary>
         private void PopulateRemindersList()
         {
-            foreach (string AbsoulutePath in Directory.GetFiles(Path.Combine(Helper.DirectoryPath, "data", Constants.SaveFolderName)))
+            foreach (string AbsoulutePath in Directory.GetFiles(Path.Combine(Utilities.Data.Helper.DirectoryPath, "data", Utilities.Data.SaveFolderName)))
             {
-                string RelativePath = Utilities.Utilities.MakeRelativePath(AbsoulutePath);
-                Reminders.Add(Helper.Data.ReadJsonFile<ReminderModel>(RelativePath));
+                string RelativePath = Utilities.Extras.MakeRelativePath(AbsoulutePath);
+                Reminders.Add(Utilities.Data.Helper.Data.ReadJsonFile<ReminderModel>(RelativePath));
             }
         }
 
@@ -619,7 +589,7 @@ namespace Dem1se.CustomReminders.UI
 
             // clicked new reminder
             if (NewReminderButton.containsPoint(x, y))
-                Game1.activeClickableMenu = new ReminderMenuPage1(this.Page1OnChangeBehaviour, Helper);
+                Game1.activeClickableMenu = new ReminderMenuPage1(this.Page1OnChangeBehaviour);
 
             // clicked delete button
             int reminderindex = 0;
@@ -629,7 +599,7 @@ namespace Dem1se.CustomReminders.UI
                 if (deleteButton.containsPoint(x, y))
                 {
                     int ReminderIndex = (this.PageIndex * 5) + reminderindex;
-                    Utilities.Utilities.DeleteReminder(ReminderIndex, Helper);
+                    Utilities.Files.DeleteReminder(ReminderIndex);
                     SetUpUI();
                     break;
                 }
@@ -647,10 +617,10 @@ namespace Dem1se.CustomReminders.UI
         /// <summary>The draw calls for the UI elements</summary>
         public override void draw(SpriteBatch b)
         {
-            this.CursorPosition = this.Helper.Input.GetCursorPosition();
+            this.CursorPosition = Utilities.Data.Helper.Input.GetCursorPosition();
 
             // supress the Menu button
-            Helper.Input.Suppress(MenuButton);
+            Utilities.Data.Helper.Input.Suppress(Utilities.Data.MenuButton);
 
             // draw screen fade
             b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.75f);
@@ -701,7 +671,7 @@ namespace Dem1se.CustomReminders.UI
                     {
                         int x = Game1.getMouseX() + 32;
                         int y = Game1.getMouseY() + 32 + 16;
-                        IClickableMenu.drawTextureBox(b, Game1.menuTexture, new Rectangle(0, 256, 60, 60), x, y - 16, Utilities.Utilities.EstimateStringDimension(box.hoverText) + 8, Game1.tileSize + 16, Color.White, 1f, true);
+                        IClickableMenu.drawTextureBox(b, Game1.menuTexture, new Rectangle(0, 256, 60, 60), x, y - 16, Utilities.Extras.EstimateStringDimension(box.hoverText) + 8, Game1.tileSize + 16, Color.White, 1f, true);
                         SpriteText.drawString(b, box.hoverText, x + 32, y, 999, -1, 99, 1f, 0.88f, false, -1, "", 8, SpriteText.ScrollTextAlignment.Left);
                     }
                 }
