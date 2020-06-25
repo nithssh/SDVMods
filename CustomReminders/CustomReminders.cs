@@ -12,16 +12,15 @@ namespace Dem1se.CustomReminders
     /// <summary>The mod entry point.</summary>
     public class ModEntry : Mod
     {
-        private Dem1se.CustomReminders.Multiplayer.Multiplayer Multiplayer;
-
         /// <summary> Object with all the properties of the config.</summary>
         private ModConfig Config;
+
 
         private string ReminderMessage;
         private int ReminderDate;
         private int ReminderTime;
         private string NotificationSound;
-
+        
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
@@ -29,7 +28,7 @@ namespace Dem1se.CustomReminders
             // Load the Config
             this.Config = this.Helper.ReadConfig<ModConfig>();
             Monitor.Log("Config loaded and read.", LogLevel.Trace);
-            
+
             // Set the notification sound
             if (Config.SubtlerReminderSound)
             {
@@ -40,14 +39,12 @@ namespace Dem1se.CustomReminders
                 this.NotificationSound = "questcomplete";
             }
 
-            Multiplayer = new Multiplayer.Multiplayer(Helper, Monitor);
-
             // Binds the event with method.
             helper.Events.Input.ButtonPressed += OnButtonPressed;
             helper.Events.GameLoop.TimeChanged += ReminderNotifier;
             helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
-            helper.Events.Multiplayer.ModMessageReceived += Multiplayer.OnModMessageReceived;
-            helper.Events.Multiplayer.PeerContextReceived += Multiplayer.OnPeerConnected;
+            helper.Events.Multiplayer.ModMessageReceived += Multiplayer.Multiplayer.OnModMessageReceived;
+            helper.Events.Multiplayer.PeerContextReceived += Multiplayer.Multiplayer.OnPeerConnected;
         }
 
         ///<summary> Define the behaviour after the reminder menu OkButton is pressed.</summary>
@@ -80,33 +77,33 @@ namespace Dem1se.CustomReminders
                 if (SDate.Now().Day > day) // same season , past date
                 {
                     Year = SDate.Now().Year + 1;
-                    this.ReminderDate = Utilities.Utilities.ConvertToDays(day, Season, Year);
+                    this.ReminderDate = Utilities.Converts.ConvertToDays(day, Season, Year);
                 }
                 else if (SDate.Now().Day == day) // same season, same date
                 {
                     Year = SDate.Now().Year;
-                    this.ReminderDate = Utilities.Utilities.ConvertToDays(day, Season, Year);
+                    this.ReminderDate = Utilities.Converts.ConvertToDays(day, Season, Year);
                 }
                 else // same season, Future Date
                 {
                     Year = SDate.Now().Year;
-                    this.ReminderDate = Utilities.Utilities.ConvertToDays(day, Season, Year);
+                    this.ReminderDate = Utilities.Converts.ConvertToDays(day, Season, Year);
                 }
             }
             else if (SDate.Now().SeasonIndex > Season) // past season
             {
                 Year = SDate.Now().Year + 1;
-                this.ReminderDate = Utilities.Utilities.ConvertToDays(day, Season, Year);
+                this.ReminderDate = Utilities.Converts.ConvertToDays(day, Season, Year);
             }
             else // future season
             {
                 Year = SDate.Now().Year;
-                this.ReminderDate = Utilities.Utilities.ConvertToDays(day, Season, Year);
+                this.ReminderDate = Utilities.Converts.ConvertToDays(day, Season, Year);
             }
             this.ReminderMessage = message;
             Monitor.Log("First page completed. Date: " + season + " " + this.ReminderDate + " Time: " + this.ReminderTime + "Message: " + this.ReminderMessage, LogLevel.Trace);
             // open the second page
-            Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage2(Page2OnChangedBehaviour, Helper);
+            Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage2(Page2OnChangedBehaviour);
 
         }
 
@@ -115,23 +112,19 @@ namespace Dem1se.CustomReminders
         {
             this.ReminderTime = time;
             // write the data to file
-            Utilities.Utilities.WriteToFile(this.ReminderMessage, this.ReminderDate, this.ReminderTime, Helper);
+            Utilities.Files.WriteToFile(this.ReminderMessage, this.ReminderDate, this.ReminderTime);
             Monitor.Log("Saved the reminder: '" + this.ReminderMessage + "' for " + this.ReminderDate + " at " + this.ReminderTime, LogLevel.Info);
         }
 
         ///<summary> Defines what happens when a save is loaded</summary>
         private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
         {
-            // set the SaveFolderName field if multiplayer host or singleplayer
-            if (Context.IsMainPlayer)
-            {
-                Utilities.Utilities.SaveFolderName = Constants.SaveFolderName;
-            }
+            SetUpStatics();
             // Create the data subfolder for the save for first time users. ( Avoid DirectoryNotFound Exception in OnChangedBehaviour() )
-            if (!Directory.Exists(Path.Combine(Helper.DirectoryPath, "data", Utilities.Utilities.SaveFolderName)))
+            if (!Directory.Exists(Path.Combine(Helper.DirectoryPath, "data", Utilities.Data.SaveFolderName)))
             {
                 Monitor.Log("Reminders directory not found. Creating directory.", LogLevel.Info);
-                Directory.CreateDirectory(Path.Combine(Helper.DirectoryPath, "data", Utilities.Utilities.SaveFolderName));
+                Directory.CreateDirectory(Path.Combine(Helper.DirectoryPath, "data", Utilities.Data.SaveFolderName));
                 Monitor.Log("Reminders directory created successfully.", LogLevel.Info);
             }
         }
@@ -144,7 +137,7 @@ namespace Dem1se.CustomReminders
                 return;
             if (Game1.activeClickableMenu != null || (!Context.IsPlayerFree) || ev.Button != Config.Button) { return; }
             Monitor.Log("Opened ReminderMenu page 1", LogLevel.Trace);
-            Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage1(Page1OnChangedBehaviour, Helper);
+            Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage1(Page1OnChangedBehaviour);
         }
 
         /// <summary> Loop that checks if any reminders are mature.</summary>
@@ -157,12 +150,12 @@ namespace Dem1se.CustomReminders
             // Loops through all the reminder files and evaluates if they are current.
             #region CoreReminderLoop
             SDate CurrentDate = SDate.Now();
-            foreach (string FilePathAbsolute in Directory.EnumerateFiles(Path.Combine(this.Helper.DirectoryPath, "data", Utilities.Utilities.SaveFolderName)))
+            foreach (string FilePathAbsolute in Directory.EnumerateFiles(Path.Combine(this.Helper.DirectoryPath, "data", Utilities.Data.SaveFolderName)))
             {
                 try
                 {
                     // make relative path from absolute path
-                    string FilePathRelative = Utilities.Utilities.MakeRelativePath(FilePathAbsolute);
+                    string FilePathRelative = Utilities.Extras.MakeRelativePath(FilePathAbsolute);
 
                     // Read the reminder and notify if mature
                     this.Monitor.Log($"Processing {ev.NewTime}", LogLevel.Trace);
@@ -190,13 +183,16 @@ namespace Dem1se.CustomReminders
             }
             #endregion
         }
-    }
 
-    /// <summary> Data model for reminders </summary>
-    class ReminderModel
-    {
-        public string ReminderMessage { get; set; }
-        public int DaysSinceStart { get; set; }
-        public int Time { get; set; }
+        /// <summary>Initializes values in Utilities namespace.</summary>
+        private void SetUpStatics()
+        {
+            // set the SaveFolderName field if multiplayer host or singleplayer
+            if (Context.IsMainPlayer)
+            {
+                Utilities.Data.SaveFolderName = Constants.SaveFolderName;
+            }
+            Utilities.Data.Helper = Helper;
+        }
     }
 }

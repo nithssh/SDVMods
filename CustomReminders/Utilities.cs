@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using StardewModdingAPI;
-using StardewModdingAPI.Utilities;
 using System;
 using System.IO;
 using System.Linq;
@@ -8,106 +7,9 @@ using System.Xml.Linq;
 
 namespace Dem1se.CustomReminders.Utilities
 {
-    /// <summary>
-    /// Contains some useful functions that other classes use.
-    /// </summary>
-    static class Utilities
+    /// <summary>Contains some useful functions that other classes use.</summary>
+    static class Extras
     {
-        /// <summary>
-        /// <para>
-        /// Contains the save folder name for mulitplayer support.
-        /// Host generates own value, peers recieve value from host.
-        /// </para>
-        /// <para>
-        /// This is a critical field, and will cause multiple exceptions across namespaces if null. 
-        /// </para>
-        /// </summary>
-        public static string SaveFolderName;
-
-        public static SButton MenuButton = GetMenuButton();
-
-        /// <summary>
-        /// This function will write the reminder to the json file reliably.
-        /// </summary>
-        /// <param name="ReminderMessage">The message that will pop up in reminder</param>
-        /// <param name="DaysSinceStart">The date converted to DaysSinceStart</param>
-        /// <param name="Time">The time of the reminder in 24hrs format</param>
-        public static void WriteToFile(string ReminderMessage, int DaysSinceStart, int Time, IModHelper Helper)
-        {
-            ReminderModel ReminderData = new ReminderModel
-            {
-                DaysSinceStart = DaysSinceStart,
-                ReminderMessage = ReminderMessage,
-                Time = Time
-            };
-
-            string PathToWrite = Path.Combine(Helper.DirectoryPath, "data", Utilities.SaveFolderName);
-            string SerializedReminderData = JsonConvert.SerializeObject(ReminderData, Formatting.Indented);
-            int ReminderCount = 0;
-            bool bWritten = false;
-            while (!bWritten)
-            {
-                if (!File.Exists(Path.Combine(PathToWrite, $"reminder_{DaysSinceStart}_{Time}_{ReminderCount}.json")))
-                {
-                    File.WriteAllText(Path.Combine(PathToWrite, $"reminder_{DaysSinceStart}_{Time}_{ReminderCount}.json"), SerializedReminderData);
-                    bWritten = true;
-                }
-                else
-                    ReminderCount++;
-            } 
-        }
-
-        /// <summary>
-        /// Returns the SDate.DaysSinceStart() int equivalent given the date season and year
-        /// </summary>
-        /// <param name="date"></param>
-        /// <param name="season"></param>
-        /// <param name="year"></param>
-        /// <returns>Returns int of DaysSinceStart</returns>
-        public static int ConvertToDays(int date, int season, int year)
-        {
-            int DaysSinceStart = (season * 28) + ((year - 1) * 112) + date;
-            return DaysSinceStart;
-        }
-
-        /// <summary>
-        /// Returns the SDate.DaysSinceStart() int equivalent given the date season and year
-        /// </summary>
-        /// <param name="date">The date in int, 1 to 28</param>
-        /// <param name="season">The season in int, where 1 is summer, ... , winter is 4</param>
-        /// <returns>Returns int of DaysSinceStart</returns>
-        public static int ConvertToDays(int date, int season)
-        {
-            int year = SDate.Now().Year;
-            int DaysSinceStart = (season * 28) + ((year - 1) * 112) + date;
-            return DaysSinceStart;
-        }
-
-        /// <summary>
-        /// Returns the button that is set to open the menu in current save.
-        /// </summary>
-        /// <returns>the button that opens menu as SButton</returns>
-        public static SButton GetMenuButton()
-        {
-            if (Context.IsMainPlayer)
-            {
-                var SaveFile = XDocument.Load(Path.Combine(Constants.CurrentSavePath, Constants.SaveFolderName));
-                var query = from xml in SaveFile.Descendants("menuButton")
-                            select xml.Element("InputButton").Element("key").Value;
-                string MenuString = "";
-                foreach (string Key in query)
-                {
-                    MenuString = Key;
-                }
-                SButton MenuButton = (SButton)Enum.Parse(typeof(SButton), MenuString);
-                return MenuButton;
-            }
-            else
-            {
-                return SButton.E;
-            }
-        }
-
         /// <summary>
         /// Makes platform sensitive relative paths from absoulute paths.
         /// </summary>
@@ -146,6 +48,77 @@ namespace Dem1se.CustomReminders.Utilities
                 FilePathRelative = FilePathRelative.Remove(FilePathRelative.LastIndexOf("/"));
             }
             return FilePathRelative;
+        }
+
+        /// <summary>
+        /// Estimates the amount of pixels a string will be wide.
+        /// </summary>
+        /// <param name="reminderMessage">The string to estimate for</param>
+        /// <returns>{int} The pixel count of estimated witdth the string would take</returns>
+        public static int EstimateStringDimension(string reminderMessage)
+        {
+            int Width = 0;
+            char[] Characters = reminderMessage.ToCharArray();
+
+            // add time number
+            if (Characters[1] == ' ')
+                // 1 digit time
+                Width += 20;
+            else if (Characters[1] == ':')
+                // 3 digit time
+                Width += 80; // 20 extra for colon
+            else
+            {
+                if (Characters[2] == ':')
+                    // 4 digit time
+                    Width += 100; // 20 extra for colon
+                else
+                    // 2 digit time
+                    Width += 40;
+            }
+
+            // add space
+            Width += 24;
+
+            // add AM/PM
+            Width += 68;
+
+            // add season
+            if (reminderMessage.Contains("Spring")) { Width += 189; }
+            else if (reminderMessage.Contains("Summer")) { Width += 196; }
+            else if (reminderMessage.Contains("Fall")) { Width += 135; }
+            else { Width += 186; }
+
+            // add space
+            Width += 24;
+
+            // add two digits
+            Width += 40;
+
+            // add year
+            Width += 156;
+
+            // add two spaces
+            Width += 48;
+
+            return Width;
+        }
+    }
+
+    /// <summary>Contains methods related to parsing/converting formats for data of this mod.</summary>
+    static class Converts
+    {
+        /// <summary>
+        /// Returns the SDate.DaysSinceStart() int equivalent given the date season and year
+        /// </summary>
+        /// <param name="date"></param>
+        /// <param name="season"></param>
+        /// <param name="year"></param>
+        /// <returns>Returns int of DaysSinceStart</returns>
+        public static int ConvertToDays(int date, int season, int year)
+        {
+            int DaysSinceStart = (season * 28) + ((year - 1) * 112) + date;
+            return DaysSinceStart;
         }
 
         /// <summary>
@@ -245,59 +218,40 @@ namespace Dem1se.CustomReminders.Utilities
             }
             return PrettyTime;
         }
-        
+    }
+
+    /// <summary>Contains methods related to reading and writing to files for this mod.</summary>
+    static class Files
+    {
         /// <summary>
-        /// Estimates the amount of pixels a string will be wide.
+        /// This function will write the reminder to the json file reliably.
         /// </summary>
-        /// <param name="reminderMessage">The string to estimate for</param>
-        /// <returns>{int} The pixel count of estimated witdth the string would take</returns>
-        public static int EstimateStringDimension(string reminderMessage)
+        /// <param name="ReminderMessage">The message that will pop up in reminder</param>
+        /// <param name="DaysSinceStart">The date converted to DaysSinceStart</param>
+        /// <param name="Time">The time of the reminder in 24hrs format</param>
+        public static void WriteToFile(string ReminderMessage, int DaysSinceStart, int Time)
         {
-            int Width = 0;
-            char[] Characters = reminderMessage.ToCharArray();
-            
-            // add time number
-            if (Characters[1] == ' ')
-                // 1 digit time
-                Width += 20;
-            else if (Characters[1] == ':')
-                // 3 digit time
-                Width += 80; // 20 extra for colon
-            else
+            ReminderModel ReminderData = new ReminderModel
             {
-                if (Characters[2] == ':')
-                    // 4 digit time
-                    Width += 100; // 20 extra for colon
+                DaysSinceStart = DaysSinceStart,
+                ReminderMessage = ReminderMessage,
+                Time = Time
+            };
+
+            string PathToWrite = Path.Combine(Data.Helper.DirectoryPath, "data", Data.SaveFolderName);
+            string SerializedReminderData = JsonConvert.SerializeObject(ReminderData, Formatting.Indented);
+            int ReminderCount = 0;
+            bool bWritten = false;
+            while (!bWritten)
+            {
+                if (!File.Exists(Path.Combine(PathToWrite, $"reminder_{DaysSinceStart}_{Time}_{ReminderCount}.json")))
+                {
+                    File.WriteAllText(Path.Combine(PathToWrite, $"reminder_{DaysSinceStart}_{Time}_{ReminderCount}.json"), SerializedReminderData);
+                    bWritten = true;
+                }
                 else
-                    // 2 digit time
-                    Width += 40;
+                    ReminderCount++;
             }
-
-            // add space
-            Width += 24;
-
-            // add AM/PM
-            Width += 68;
-
-            // add season
-            if (reminderMessage.Contains("Spring")) { Width += 189; }
-            else if (reminderMessage.Contains("Summer")) { Width += 196; }
-            else if (reminderMessage.Contains("Fall")) { Width += 135; }
-            else { Width += 186; }
-
-            // add space
-            Width += 24;
-
-            // add two digits
-            Width += 40;
-
-            // add year
-            Width += 156;
-
-            // add two spaces
-            Width += 48;
-
-            return Width;
         }
 
         /// <summary>
@@ -305,10 +259,10 @@ namespace Dem1se.CustomReminders.Utilities
         /// </summary>
         /// <param name="ReminderIndex">Zero-indexed serial position of reminder file in directory</param>
         /// <param name="Helper">IModHelper instance for its fields</param>
-        public static void DeleteReminder(int ReminderIndex, IModHelper Helper)
+        public static void DeleteReminder(int ReminderIndex)
         {
             int IterationIndex = 1;
-            foreach (string path in Directory.EnumerateFiles(Path.Combine(Helper.DirectoryPath, "data", Utilities.SaveFolderName)))
+            foreach (string path in Directory.EnumerateFiles(Path.Combine(Data.Helper.DirectoryPath, "data", Data.SaveFolderName)))
             {
                 if (ReminderIndex == IterationIndex)
                 {
@@ -320,7 +274,56 @@ namespace Dem1se.CustomReminders.Utilities
                     IterationIndex++;
                 }
             }
-            
+        }
+    }
+
+    /// <summary>Contains data values that are used across classes and namespaces</summary>
+    static class Data
+    {
+        /// <summary>IModHelper instance for classes to access without need it be an parameter everywhere.</summary>
+        // assigned in SetUpStatics() in CustomReminders.cs
+        public static IModHelper Helper;
+
+        /// <summary>IMonitor instance for classes to access without need it be a parameter everywhere.</summary>
+        public static IMonitor Monitor;
+
+        /// <summary>
+        /// <para>
+        /// Contains the save folder name for mulitplayer support.
+        /// Host generates own value, peers recieve value from host.
+        /// </para>
+        /// <para>
+        /// This is a critical field, and will cause multiple exceptions across namespaces if null. 
+        /// </para>
+        /// </summary>
+        public static string SaveFolderName;
+
+        /// <summary>The menu button of the player, required for supressing</summary>
+        public static SButton MenuButton = GetMenuButton();
+
+        /// <summary>
+        /// Returns the button that is set to open the menu in current save.
+        /// </summary>
+        /// <returns>the button that opens menu as SButton</returns>
+        private static SButton GetMenuButton()
+        {
+            if (Context.IsMainPlayer)
+            {
+                var SaveFile = XDocument.Load(Path.Combine(Constants.CurrentSavePath, Constants.SaveFolderName));
+                var query = from xml in SaveFile.Descendants("menuButton")
+                            select xml.Element("InputButton").Element("key").Value;
+                string MenuString = "";
+                foreach (string Key in query)
+                {
+                    MenuString = Key;
+                }
+                SButton MenuButton = (SButton)Enum.Parse(typeof(SButton), MenuString);
+                return MenuButton;
+            }
+            else
+            {
+                return SButton.E;
+            }
         }
     }
 }

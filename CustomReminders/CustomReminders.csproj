@@ -67,7 +67,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ModConfig.cs" />
+    <Compile Include="DataModels.cs" />
     <Compile Include="Multiplayer.cs" />
     <Compile Include="CustomReminders.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

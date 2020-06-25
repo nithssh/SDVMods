@@ -4,31 +4,19 @@ using StardewModdingAPI.Events;
 namespace Dem1se.CustomReminders.Multiplayer
 {
 
-    class Multiplayer
+    static class Multiplayer
     {
-        /// <summary>The unique ID of this mod.</summary>
-        private readonly string ModID;
-        private readonly IModHelper Helper;
-        private readonly IMonitor Monitor;
-
-        public Multiplayer(IModHelper Helper, IMonitor monitor)
-        {
-            this.Helper = Helper;
-            this.Monitor = monitor;
-            this.ModID = this.Helper.ModRegistry.ModID;
-        }
-
         /// <summary>
         /// Used by the peers to recieve and set the value for Utilities.Utilities.SaveFolderName field
         /// </summary>
         /// <param name="sender">Sender of the event</param>
         /// <param name="e">Contains all the data/args of the event</param>
-        public void OnModMessageReceived(object sender, ModMessageReceivedEventArgs e)
+        public static void OnModMessageReceived(object sender, ModMessageReceivedEventArgs e)
         {
-            if (e.FromModID == this.ModID && e.Type == "SaveFolderName")
+            if (e.FromModID == Utilities.Data.Helper.ModRegistry.ModID && e.Type == "SaveFolderName")
             {
                 SaveFolderNameModel message = e.ReadAs<SaveFolderNameModel>();
-                Utilities.Utilities.SaveFolderName = message.SaveFolderName;
+                Utilities.Data.SaveFolderName = message.SaveFolderName;
             }
         }
 
@@ -38,11 +26,11 @@ namespace Dem1se.CustomReminders.Multiplayer
         /// </summary>
         /// <param name="sender">The sender of the event</param>
         /// <param name="e">Contains all the arguments of PeerConnectedEvent</param>
-        public void OnPeerConnected(object sender, PeerContextReceivedEventArgs e)
+        public static void OnPeerConnected(object sender, PeerContextReceivedEventArgs e)
         {
             if (Context.IsMainPlayer)
             {
-                Helper.Multiplayer.SendMessage<SaveFolderNameModel>(new SaveFolderNameModel() { SaveFolderName = Utilities.Utilities.SaveFolderName }, "SaveFolderName", modIDs: new[] { this.ModID }, playerIDs: new[] { e.Peer.PlayerID });
+                Utilities.Data.Helper.Multiplayer.SendMessage<SaveFolderNameModel>(new SaveFolderNameModel() { SaveFolderName = Utilities.Data.SaveFolderName }, "SaveFolderName", modIDs: new[] { Utilities.Data.Helper.ModRegistry.ModID }, playerIDs: new[] { e.Peer.PlayerID });
             }
         }
     }
