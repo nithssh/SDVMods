@@ -12,9 +12,8 @@ namespace Dem1se.CustomReminders
     /// <summary>The mod entry point.</summary>
     public class ModEntry : Mod
     {
-        /// <summary> Object with all the properties of the config.</summary>
+        /// <summary> Object containing the read data from config file.</summary>
         private ModConfig Config;
-
 
         private string ReminderMessage;
         private int ReminderDate;
@@ -135,7 +134,7 @@ namespace Dem1se.CustomReminders
             // ignore if player hasn't loaded a save yet
             if (!Context.IsWorldReady)
                 return;
-            if (Game1.activeClickableMenu != null || (!Context.IsPlayerFree) || ev.Button != Config.Button) { return; }
+            if (Game1.activeClickableMenu != null || (!Context.IsPlayerFree) || ev.Button != Config.CustomRemindersButton) { return; }
             Monitor.Log("Opened ReminderMenu page 1", LogLevel.Trace);
             Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage1(Page1OnChangedBehaviour);
         }
@@ -187,6 +186,11 @@ namespace Dem1se.CustomReminders
         /// <summary>Initializes values in Utilities namespace.</summary>
         private void SetUpStatics()
         {
+            // set the MenuButton field if multiplayer peer
+            if (!Context.IsMainPlayer)
+            {
+                Utilities.Data.MenuButton = Config.FarmhandInventoryButton;
+            }
             Utilities.Data.Helper = Helper;
             Utilities.Data.Monitor = Monitor;
         }

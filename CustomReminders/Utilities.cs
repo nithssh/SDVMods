@@ -328,12 +328,12 @@ namespace Dem1se.CustomReminders.Utilities
                     MenuString = Key;
                 }
                 SButton MenuButton = (SButton)Enum.Parse(typeof(SButton), MenuString);
-                return MenuButton;
             }
             else
             {
-                return SButton.E;
+                // assigned in SetUpStatics() in CustomReminders.cs
             }
+                return MenuButton;
         }
     }
 }
