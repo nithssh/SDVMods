@@ -27,7 +27,7 @@ namespace Dem1se.CustomReminders
             // Load the Config
             this.Config = this.Helper.ReadConfig<ModConfig>();
             Monitor.Log("Config loaded and read.", LogLevel.Trace);
-
+            SetUpStatics();
             // Set the notification sound
             if (Config.SubtlerReminderSound)
             {
@@ -118,7 +118,6 @@ namespace Dem1se.CustomReminders
         ///<summary> Defines what happens when a save is loaded</summary>
         private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
         {
-            SetUpStatics();
             // Create the data subfolder for the save for first time users. ( Avoid DirectoryNotFound Exception in OnChangedBehaviour() )
             if (!Directory.Exists(Path.Combine(Helper.DirectoryPath, "data", Utilities.Data.SaveFolderName)))
             {
