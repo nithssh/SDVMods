@@ -27,7 +27,10 @@ namespace Dem1se.CustomReminders
             // Load the Config
             this.Config = this.Helper.ReadConfig<ModConfig>();
             Monitor.Log("Config loaded and read.", LogLevel.Trace);
-            SetUpStatics();
+
+            Utilities.Data.Helper = Helper;
+            Utilities.Data.Monitor = Monitor;
+
             // Set the notification sound
             if (Config.SubtlerReminderSound)
             {
@@ -118,6 +121,18 @@ namespace Dem1se.CustomReminders
         ///<summary> Defines what happens when a save is loaded</summary>
         private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
         {
+            // set the SaveFolderName field if multiplayer host or singleplayer
+            if (Context.IsMainPlayer)
+            {
+                Utilities.Data.SaveFolderName = Constants.SaveFolderName;
+                Utilities.Data.MenuButton = Utilities.Data.GetMenuButton();     
+            }
+            else
+            {
+                // SaveFolderName will be assigned on peerContextRecieved
+                Utilities.Data.MenuButton = Config.FarmhandInventoryButton;
+            }
+
             // Create the data subfolder for the save for first time users. ( Avoid DirectoryNotFound Exception in OnChangedBehaviour() )
             if (!Directory.Exists(Path.Combine(Helper.DirectoryPath, "data", Utilities.Data.SaveFolderName)))
             {
@@ -180,18 +195,6 @@ namespace Dem1se.CustomReminders
                 }
             }
             #endregion
-        }
-
-        /// <summary>Initializes values in Utilities namespace.</summary>
-        private void SetUpStatics()
-        {
-            // set the MenuButton field if multiplayer peer
-            if (!Context.IsMainPlayer)
-            {
-                Utilities.Data.MenuButton = Config.FarmhandInventoryButton;
-            }
-            Utilities.Data.Helper = Helper;
-            Utilities.Data.Monitor = Monitor;
         }
     }
 }

@@ -280,15 +280,6 @@ namespace Dem1se.CustomReminders.Utilities
     /// <summary>Contains data values that are used across classes and namespaces</summary>
     static class Data
     {
-        static Data()
-        {
-            // set the SaveFolderName field if multiplayer host or singleplayer
-            if (Context.IsMainPlayer)
-            {
-                Data.SaveFolderName = Constants.SaveFolderName;
-            }
-        }
-
         /// <summary>IModHelper instance for classes to access without need it be an parameter everywhere.</summary>
         /// <remarks>Assigned in SetUpStatics() in CustomReminders.cs</remarks>
         public static IModHelper Helper;
@@ -315,7 +306,7 @@ namespace Dem1se.CustomReminders.Utilities
         /// Returns the button that is set to open the menu in current save.
         /// </summary>
         /// <returns>the button that opens menu as SButton</returns>
-        private static SButton GetMenuButton()
+        public static SButton GetMenuButton()
         {
             if (Context.IsMainPlayer)
             {
@@ -328,12 +319,14 @@ namespace Dem1se.CustomReminders.Utilities
                     MenuString = Key;
                 }
                 SButton MenuButton = (SButton)Enum.Parse(typeof(SButton), MenuString);
+                return MenuButton;
             }
             else
             {
-                // assigned in SetUpStatics() in CustomReminders.cs
+                // default just in case.
+                // assigned in OnSaveLoaded() in CustomReminders.cs
+                return SButton.E;
             }
-                return MenuButton;
         }
     }
 }
