@@ -179,7 +179,15 @@ namespace Dem1se.CustomReminders.Utilities
                 PrettyTime = Convert.ToString(TimeIn24);
                 if (PrettyTime.EndsWith("00")) // ends with 00
                 {
-                    PrettyTime = PrettyTime.Remove(2);
+                    if (TimeIn24 <= 930)
+                    {
+                        PrettyTime = PrettyTime.Remove(1);
+                    }
+                    else
+                    {
+                        PrettyTime = PrettyTime.Remove(2);
+                    }
+                    
                     if (PrettyTime.StartsWith("0"))
                         PrettyTime = PrettyTime.Replace("0", " ");
                     PrettyTime = PrettyTime.Trim();
@@ -294,12 +302,12 @@ namespace Dem1se.CustomReminders.Utilities
         /// Host generates own value, peers recieve value from host.
         /// </para>
         /// <para>
-        /// This is a critical field, and will cause multiple exceptions across namespaces if null. 
+        /// This is a critical field, and will cause multiple exceptions across namespaces and classes if null. 
         /// </para>
         /// </summary>
         public static string SaveFolderName;
 
-        /// <summary>The menu button of the player, required for supressing</summary>
+        /// <summary>The menu button of the player, required for suppressing</summary>
         public static SButton MenuButton = GetMenuButton();
 
         /// <summary>

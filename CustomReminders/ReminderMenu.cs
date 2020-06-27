@@ -629,7 +629,7 @@ namespace Dem1se.CustomReminders.UI
             Game1.drawDialogueBox(this.xPositionOnScreen, this.yPositionOnScreen, this.width, this.height - 12, false, true);
 
             // draw title scroll
-            SpriteText.drawStringWithScrollCenteredAt(b, "Display Reminder", Game1.viewport.Width / 2, this.yPositionOnScreen, "Display Reminder");
+            SpriteText.drawStringWithScrollCenteredAt(b, "Display Reminders", Game1.viewport.Width / 2, this.yPositionOnScreen, "Display Reminder");
 
             // draw boxes
             foreach (ClickableTextureComponent box in this.Boxes)
