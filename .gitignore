@@ -16,14 +16,17 @@
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
-[Rr]elease/
+#[Rr]elease/
 [Rr]eleases/
 x64/
-x86/
+#x86/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
 bld/
-[Bb]in/
+CustomReminders/[Bb]in/Release/
+CustomReminders/[Bb]in/x86/Release/*.dll
+CustomReminders/[Bb]in/x86/Release/*.xml
+CustomReminders/[Bb]in/x86/Release/*.txt
 [Oo]bj/
 [Ll]og/
 
