@@ -49,75 +49,6 @@ namespace Dem1se.CustomReminders
             helper.Events.Multiplayer.PeerContextReceived += Multiplayer.Multiplayer.OnPeerConnected;
         }
 
-        ///<summary> Define the behaviour after the reminder menu OkButton is pressed.</summary>
-        public void Page1OnChangedBehaviour(string message, string season, int day)
-        {
-            int Season = 0;
-            int Year;
-            switch (season)
-            {
-                case "spring":
-                    Season = 0;
-                    break;
-                case "summer":
-                    Season = 1;
-                    break;
-                case "fall":
-                    Season = 2;
-                    break;
-                case "winter":
-                    Season = 3;
-                    break;
-                default:
-                    // just here for code quality
-                    break;
-            }
-            Game1.exitActiveMenu();
-            // Convert to DaysSinceStart - calculate year fix.
-            if (SDate.Now().SeasonIndex == Season) // same seasons
-            {
-                if (SDate.Now().Day > day) // same season , past date
-                {
-                    Year = SDate.Now().Year + 1;
-                    this.ReminderDate = Utilities.Converts.ConvertToDays(day, Season, Year);
-                }
-                else if (SDate.Now().Day == day) // same season, same date
-                {
-                    Year = SDate.Now().Year;
-                    this.ReminderDate = Utilities.Converts.ConvertToDays(day, Season, Year);
-                }
-                else // same season, Future Date
-                {
-                    Year = SDate.Now().Year;
-                    this.ReminderDate = Utilities.Converts.ConvertToDays(day, Season, Year);
-                }
-            }
-            else if (SDate.Now().SeasonIndex > Season) // past season
-            {
-                Year = SDate.Now().Year + 1;
-                this.ReminderDate = Utilities.Converts.ConvertToDays(day, Season, Year);
-            }
-            else // future season
-            {
-                Year = SDate.Now().Year;
-                this.ReminderDate = Utilities.Converts.ConvertToDays(day, Season, Year);
-            }
-            this.ReminderMessage = message;
-            Monitor.Log("First page completed. Date: " + season + " " + this.ReminderDate + " Time: " + this.ReminderTime + "Message: " + this.ReminderMessage, LogLevel.Trace);
-            // open the second page
-            Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage2(Page2OnChangedBehaviour);
-
-        }
-
-        /// <summary>Define the behaviour after the Page2 OkButton menu is pressed</summary>
-        private void Page2OnChangedBehaviour(int time)
-        {
-            this.ReminderTime = time;
-            // write the data to file
-            Utilities.Files.WriteToFile(this.ReminderMessage, this.ReminderDate, this.ReminderTime);
-            Monitor.Log("Saved the reminder: '" + this.ReminderMessage + "' for " + this.ReminderDate + " at " + this.ReminderTime, LogLevel.Info);
-        }
-
         ///<summary> Defines what happens when a save is loaded</summary>
         private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
         {
@@ -125,7 +56,7 @@ namespace Dem1se.CustomReminders
             if (Context.IsMainPlayer)
             {
                 Utilities.Data.SaveFolderName = Constants.SaveFolderName;
-                Utilities.Data.MenuButton = Utilities.Data.GetMenuButton();     
+                Utilities.Data.MenuButton = Utilities.Data.GetMenuButton();
             }
             else
             {
@@ -150,7 +81,70 @@ namespace Dem1se.CustomReminders
                 return;
             if (Game1.activeClickableMenu != null || (!Context.IsPlayerFree) || ev.Button != Config.CustomRemindersButton) { return; }
             Monitor.Log("Opened ReminderMenu page 1", LogLevel.Trace);
-            Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage1(Page1OnChangedBehaviour);
+            Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage1((string message, string season, int day) =>
+            {
+                int Season = 0;
+                int Year;
+                switch (season)
+                {
+                    case "spring":
+                        Season = 0;
+                        break;
+                    case "summer":
+                        Season = 1;
+                        break;
+                    case "fall":
+                        Season = 2;
+                        break;
+                    case "winter":
+                        Season = 3;
+                        break;
+                    default:
+                        // just here for code quality
+                        break;
+                }
+                Game1.exitActiveMenu();
+                // Convert to DaysSinceStart - calculate year fix.
+                if (SDate.Now().SeasonIndex == Season) // same seasons
+                {
+                    if (SDate.Now().Day > day) // same season , past date
+                    {
+                        Year = SDate.Now().Year + 1;
+                        this.ReminderDate = Utilities.Converts.ConvertToDays(day, Season, Year);
+                    }
+                    else if (SDate.Now().Day == day) // same season, same date
+                    {
+                        Year = SDate.Now().Year;
+                        this.ReminderDate = Utilities.Converts.ConvertToDays(day, Season, Year);
+                    }
+                    else // same season, Future Date
+                    {
+                        Year = SDate.Now().Year;
+                        this.ReminderDate = Utilities.Converts.ConvertToDays(day, Season, Year);
+                    }
+                }
+                else if (SDate.Now().SeasonIndex > Season) // past season
+                {
+                    Year = SDate.Now().Year + 1;
+                    this.ReminderDate = Utilities.Converts.ConvertToDays(day, Season, Year);
+                }
+                else // future season
+                {
+                    Year = SDate.Now().Year;
+                    this.ReminderDate = Utilities.Converts.ConvertToDays(day, Season, Year);
+                }
+                this.ReminderMessage = message;
+                Monitor.Log("First page completed. Date: " + season + " " + this.ReminderDate + " Time: " + this.ReminderTime + "Message: " + this.ReminderMessage, LogLevel.Trace);
+                // open the second page
+                Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage2((int time) =>
+                {
+                    this.ReminderTime = time;
+                    // write the data to file
+                    Utilities.Files.WriteToFile(this.ReminderMessage, this.ReminderDate, this.ReminderTime);
+                    Monitor.Log("Saved the reminder: '" + this.ReminderMessage + "' for " + this.ReminderDate + " at " + this.ReminderTime, LogLevel.Info);
+                });
+
+            });
         }
 
         /// <summary> Loop that checks if any reminders are mature.</summary>
