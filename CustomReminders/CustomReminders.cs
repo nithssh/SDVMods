@@ -15,31 +15,35 @@ namespace Dem1se.CustomReminders
         /// <summary> Object containing the read data from config file.</summary>
         private ModConfig Config;
 
-        private string ReminderMessage;
-        private int ReminderDate;
-        private int ReminderTime;
-        private string NotificationSound;
+        /* These are all the fields that hold the values of the reminder */
+        protected string ReminderMessage;
+        protected int ReminderDate;
+        protected int ReminderTime;
+
+        protected string NotificationSound;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
             // Load the Config
-            this.Config = this.Helper.ReadConfig<ModConfig>();
-            Monitor.Log("Config loaded and read.", LogLevel.Trace);
+            Config = Helper.ReadConfig<ModConfig>();
+            Monitor.Log("Config loaded and read.");
 
+            // set up statics (utilities.cs)
             Utilities.Data.Helper = Helper;
             Utilities.Data.Monitor = Monitor;
 
             // Set the notification sound
             if (Config.SubtlerReminderSound)
             {
-                this.NotificationSound = "crit";
+                NotificationSound = "crit";
             }
             else
             {
-                this.NotificationSound = "questcomplete";
+                NotificationSound = "questcomplete";
             }
+            Monitor.Log($"Notification sound set to {NotificationSound}.");
 
             // Binds the event with method.
             helper.Events.Input.ButtonPressed += OnButtonPressed;
@@ -80,24 +84,24 @@ namespace Dem1se.CustomReminders
             if (!Context.IsWorldReady)
                 return;
             if (Game1.activeClickableMenu != null || (!Context.IsPlayerFree) || ev.Button != Config.CustomRemindersButton) { return; }
-            Monitor.Log("Opened ReminderMenu page 1", LogLevel.Trace);
-            Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage1((string message, string season, int day) =>
+            Monitor.Log("Opening ReminderMenu page 1");
+            Game1.activeClickableMenu = new NewReminder_Page1((string message, string season, int day) =>
             {
-                int Season = 0;
-                int Year;
+                int seasonIndex = 0;
+                int year;
                 switch (season)
                 {
                     case "spring":
-                        Season = 0;
+                        seasonIndex = 0;
                         break;
                     case "summer":
-                        Season = 1;
+                        seasonIndex = 1;
                         break;
                     case "fall":
-                        Season = 2;
+                        seasonIndex = 2;
                         break;
                     case "winter":
-                        Season = 3;
+                        seasonIndex = 3;
                         break;
                     default:
                         // just here for code quality
@@ -105,43 +109,43 @@ namespace Dem1se.CustomReminders
                 }
                 Game1.exitActiveMenu();
                 // Convert to DaysSinceStart - calculate year fix.
-                if (SDate.Now().SeasonIndex == Season) // same seasons
+                if (SDate.Now().SeasonIndex == seasonIndex) // same seasons
                 {
                     if (SDate.Now().Day > day) // same season , past date
                     {
-                        Year = SDate.Now().Year + 1;
-                        this.ReminderDate = Utilities.Converts.ConvertToDays(day, Season, Year);
+                        year = SDate.Now().Year + 1;
+                        ReminderDate = Utilities.Converts.ConvertToDays(day, seasonIndex, year);
                     }
                     else if (SDate.Now().Day == day) // same season, same date
                     {
-                        Year = SDate.Now().Year;
-                        this.ReminderDate = Utilities.Converts.ConvertToDays(day, Season, Year);
+                        year = SDate.Now().Year;
+                        ReminderDate = Utilities.Converts.ConvertToDays(day, seasonIndex, year);
                     }
                     else // same season, Future Date
                     {
-                        Year = SDate.Now().Year;
-                        this.ReminderDate = Utilities.Converts.ConvertToDays(day, Season, Year);
+                        year = SDate.Now().Year;
+                        ReminderDate = Utilities.Converts.ConvertToDays(day, seasonIndex, year);
                     }
                 }
-                else if (SDate.Now().SeasonIndex > Season) // past season
+                else if (SDate.Now().SeasonIndex > seasonIndex) // past season
                 {
-                    Year = SDate.Now().Year + 1;
-                    this.ReminderDate = Utilities.Converts.ConvertToDays(day, Season, Year);
+                    year = SDate.Now().Year + 1;
+                    ReminderDate = Utilities.Converts.ConvertToDays(day, seasonIndex, year);
                 }
                 else // future season
                 {
-                    Year = SDate.Now().Year;
-                    this.ReminderDate = Utilities.Converts.ConvertToDays(day, Season, Year);
+                    year = SDate.Now().Year;
+                    ReminderDate = Utilities.Converts.ConvertToDays(day, seasonIndex, year);
                 }
-                this.ReminderMessage = message;
-                Monitor.Log("First page completed. Date: " + season + " " + this.ReminderDate + " Time: " + this.ReminderTime + "Message: " + this.ReminderMessage, LogLevel.Trace);
+                ReminderMessage = message;
+                Monitor.Log("First page completed. Opening second page now.");
                 // open the second page
-                Game1.activeClickableMenu = (IClickableMenu)new ReminderMenuPage2((int time) =>
+                Game1.activeClickableMenu = (IClickableMenu)new NewReminder_Page2((int time) =>
                 {
-                    this.ReminderTime = time;
+                    ReminderTime = time;
                     // write the data to file
-                    Utilities.Files.WriteToFile(this.ReminderMessage, this.ReminderDate, this.ReminderTime);
-                    Monitor.Log("Saved the reminder: '" + this.ReminderMessage + "' for " + this.ReminderDate + " at " + this.ReminderTime, LogLevel.Info);
+                    Utilities.Files.WriteToFile(ReminderMessage, ReminderDate, ReminderTime);
+                    Monitor.Log($"Saved new reminder: {ReminderMessage} for {season} {day} at {Utilities.Converts.ConvertToPrettyTime(ReminderTime)}.", LogLevel.Info);
                 });
 
             });
@@ -151,34 +155,35 @@ namespace Dem1se.CustomReminders
         private void ReminderNotifier(object sender, TimeChangedEventArgs ev)
         {
             // returns function if game time isn't multiple of 30 in-game minutes.
-            string TimeString = Convert.ToString(ev.NewTime);
-            if (!(TimeString.EndsWith("30") || TimeString.EndsWith("00"))) { return; }
+            string timeString = Convert.ToString(ev.NewTime);
+            if (!(timeString.EndsWith("30") || timeString.EndsWith("00"))) { return; }
 
             // Loops through all the reminder files and evaluates if they are current.
             #region CoreReminderLoop
-            SDate CurrentDate = SDate.Now();
-            foreach (string FilePathAbsolute in Directory.EnumerateFiles(Path.Combine(this.Helper.DirectoryPath, "data", Utilities.Data.SaveFolderName)))
+            SDate currentDate = SDate.Now();
+            foreach (string filePathAbsolute in Directory.EnumerateFiles(Path.Combine(Helper.DirectoryPath, "data", Utilities.Data.SaveFolderName)))
             {
                 try
                 {
                     // make relative path from absolute path
-                    string FilePathRelative = Utilities.Extras.MakeRelativePath(FilePathAbsolute);
+                    string filePathRelative = Utilities.Extras.MakeRelativePath(filePathAbsolute);
 
                     // Read the reminder and notify if mature
-                    this.Monitor.Log($"Processing {ev.NewTime}", LogLevel.Trace);
-                    ReminderModel Reminder = Helper.Data.ReadJsonFile<ReminderModel>(FilePathRelative);
-                    if (Reminder.DaysSinceStart == CurrentDate.DaysSinceStart)
+                    Monitor.Log($"Processing {ev.NewTime}");
+                    ReminderModel Reminder = Helper.Data.ReadJsonFile<ReminderModel>(filePathRelative);
+                    if (Reminder.DaysSinceStart == currentDate.DaysSinceStart)
                     {
                         if (Reminder.Time == ev.NewTime)
                         {
                             Game1.addHUDMessage(new HUDMessage(Reminder.ReminderMessage, 2));
-                            Game1.playSound(this.NotificationSound);
-                            this.Monitor.Log($"Reminder notified for {Reminder.DaysSinceStart}: {Reminder.ReminderMessage}", LogLevel.Info);
-                            File.Delete(FilePathAbsolute);
+                            Game1.playSound(NotificationSound);
+                            Monitor.Log($"Reminder notified for {Reminder.DaysSinceStart}: {Reminder.ReminderMessage}", LogLevel.Info);
+                            File.Delete(filePathAbsolute);
                         }
+                        // this is a very rare case and wont happen normally but included just in case (to avoid sedimentary files)
                         else if (Reminder.DaysSinceStart < SDate.Now().DaysSinceStart)
                         {
-                            File.Delete(FilePathAbsolute);
+                            File.Delete(filePathAbsolute);
                             Monitor.Log("Deleted old, useless reminder", LogLevel.Info);
                         }
                     }
