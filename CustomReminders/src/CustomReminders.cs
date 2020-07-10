@@ -3,7 +3,6 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
-using StardewValley.Menus;
 using System;
 using System.IO;
 
@@ -138,9 +137,9 @@ namespace Dem1se.CustomReminders
                     ReminderDate = Utilities.Converts.ConvertToDays(day, seasonIndex, year);
                 }
                 ReminderMessage = message;
-                Monitor.Log("First page completed. Opening second page now.");
                 // open the second page
-                Game1.activeClickableMenu = (IClickableMenu)new NewReminder_Page2((int time) =>
+                Monitor.Log("First page completed. Opening second page now.");
+                Game1.activeClickableMenu = new NewReminder_Page2((int time) =>
                 {
                     ReminderTime = time;
                     // write the data to file
@@ -180,7 +179,8 @@ namespace Dem1se.CustomReminders
                             Monitor.Log($"Reminder notified for {Reminder.DaysSinceStart}: {Reminder.ReminderMessage}", LogLevel.Info);
                             File.Delete(filePathAbsolute);
                         }
-                        // this is a very rare case and wont happen normally but included just in case (to avoid sedimentary files)
+                        /* this is a very rare case and won't happen normally, but I've still included it just in case 
+                         * (to avoid sedimentary files hogging the performance somehow) */
                         else if (Reminder.DaysSinceStart < SDate.Now().DaysSinceStart)
                         {
                             File.Delete(filePathAbsolute);

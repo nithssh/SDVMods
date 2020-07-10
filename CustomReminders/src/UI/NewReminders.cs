@@ -162,7 +162,7 @@ namespace Dem1se.CustomReminders.UI
         /// <returns>True if ok button is ready False if not</returns>
         private bool IsOkButtonReady()
         {
-            if (ReminderDate != 0 && ReminderSeason != "" && ReminderTextBox.Text != null && ReminderTextBox.Text != "")
+            if (ReminderDate != 0 && !string.IsNullOrEmpty(ReminderSeason) && ReminderTextBox.Text != null && !string.IsNullOrEmpty(ReminderTextBox.Text))
             {
                 return true;
             }
@@ -289,7 +289,7 @@ namespace Dem1se.CustomReminders.UI
             }
 
             // draw OK button
-            if (ReminderDate != 0 && ReminderSeason != "" && IsOkButtonReady())
+            if (ReminderDate != 0 && !string.IsNullOrEmpty(ReminderSeason) && IsOkButtonReady())
                 OkButton.draw(b);
             else
             {
@@ -356,7 +356,7 @@ namespace Dem1se.CustomReminders.UI
             TimeTextBox.Update();
             if (OkButton.containsPoint(x, y))
             {
-                if (TimeTextBox.Text == "" || TimeTextBox.Text == null) return;
+                if (!string.IsNullOrEmpty(TimeTextBox.Text)) return;
                 ReminderTime = Convert.ToInt32(TimeTextBox.Text);
 
                 if (IsOkButtonReady())
@@ -385,7 +385,7 @@ namespace Dem1se.CustomReminders.UI
         /// <returns>True if ok button is ready, False if not</returns>
         private bool IsOkButtonReady()
         {
-            if (TimeTextBox.Text.Length == 4 && TimeTextBox.Text != null && TimeTextBox.Text != "" && (TimeTextBox.Text.ToString().EndsWith("30") || TimeTextBox.Text.ToString().EndsWith("00")) && (Convert.ToInt32(TimeTextBox.Text) >= 0600 && Convert.ToInt32(TimeTextBox.Text) <= 2600))
+            if (TimeTextBox.Text.Length == 4 && !string.IsNullOrEmpty(TimeTextBox.Text) && (TimeTextBox.Text.ToString().EndsWith("30") || TimeTextBox.Text.ToString().EndsWith("00")) && (Convert.ToInt32(TimeTextBox.Text) >= 0600 && Convert.ToInt32(TimeTextBox.Text) <= 2600))
             {
                 return true;
             }
