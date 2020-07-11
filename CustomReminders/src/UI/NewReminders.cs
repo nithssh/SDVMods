@@ -313,6 +313,7 @@ namespace Dem1se.CustomReminders.UI
     {
         private readonly List<ClickableComponent> Labels = new List<ClickableComponent>();
 
+        private List<ClickableTextureComponent> Hours = new List<ClickableTextureComponent>();
         private ClickableComponent CurrentChoiceDisplay;
         private ClickableTextureComponent OkButton;
 
@@ -353,20 +354,19 @@ namespace Dem1se.CustomReminders.UI
             Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + width - IClickableMenu.spaceToClearSideBorder - IClickableMenu.borderWidth - Game1.tileSize - 16 * 2 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 4, 1, 1), "30"));
 
             // Hour
-            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + (width / 2) - Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 3, 1, 1), "1"));
-            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + (width / 2) - Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 4, 1, 1), "2"));
-            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + (width / 2) - Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 5, 1, 1), "3"));
-            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + (width / 2) - Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 6, 1, 1), "4"));
-            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + (width / 2) - Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 7, 1, 1), "5"));
-            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + (width / 2) - Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 8, 1, 1), "6"));
+            Hours.Add(new ClickableTextureComponent(new Rectangle(xPositionOnScreen + (width / 2) - Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 3, Game1.tileSize, Game1.tileSize), Utilities.Data.Helper.Content.Load<Texture2D>("assets/1HourButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom / 2));
+            Hours.Add(new ClickableTextureComponent(new Rectangle(xPositionOnScreen + (width / 2) - Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 4, Game1.tileSize, Game1.tileSize), Utilities.Data.Helper.Content.Load<Texture2D>("assets/2HourButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom / 2));
+            Hours.Add(new ClickableTextureComponent(new Rectangle(xPositionOnScreen + (width / 2) - Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 5, Game1.tileSize, Game1.tileSize), Utilities.Data.Helper.Content.Load<Texture2D>("assets/3HourButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom / 2));
+            Hours.Add(new ClickableTextureComponent(new Rectangle(xPositionOnScreen + (width / 2) - Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 6, Game1.tileSize, Game1.tileSize), Utilities.Data.Helper.Content.Load<Texture2D>("assets/4HourButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom / 2));
+            Hours.Add(new ClickableTextureComponent(new Rectangle(xPositionOnScreen + (width / 2) - Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 7, Game1.tileSize, Game1.tileSize), Utilities.Data.Helper.Content.Load<Texture2D>("assets/5HourButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom / 2));
+            Hours.Add(new ClickableTextureComponent(new Rectangle(xPositionOnScreen + (width / 2) - Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 8, Game1.tileSize, Game1.tileSize), Utilities.Data.Helper.Content.Load<Texture2D>("assets/6HourButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom / 2));
             
-            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + (width / 2) + Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 3, 1, 1), "7"));
-            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + (width / 2) + Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 4, 1, 1), "8"));
-            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + (width / 2) + Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 5, 1, 1), "9"));
-            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + (width / 2) + Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 6, 1, 1), "10"));
-            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + (width / 2) + Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 7, 1, 1), "11"));
-            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + (width / 2) + Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 8, 1, 1), "12"));
-
+            Hours.Add(new ClickableTextureComponent(new Rectangle(xPositionOnScreen + (width / 2) + Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 3, Game1.tileSize, Game1.tileSize), Utilities.Data.Helper.Content.Load<Texture2D>("assets/7HourButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom / 2));
+            Hours.Add(new ClickableTextureComponent(new Rectangle(xPositionOnScreen + (width / 2) + Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 4, Game1.tileSize, Game1.tileSize), Utilities.Data.Helper.Content.Load<Texture2D>("assets/8HourButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom / 2));
+            Hours.Add(new ClickableTextureComponent(new Rectangle(xPositionOnScreen + (width / 2) + Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 5, Game1.tileSize, Game1.tileSize), Utilities.Data.Helper.Content.Load<Texture2D>("assets/9HourButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom / 2));
+            Hours.Add(new ClickableTextureComponent(new Rectangle(xPositionOnScreen + (width / 2) + Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 6, Game1.tileSize, Game1.tileSize), Utilities.Data.Helper.Content.Load<Texture2D>("assets/10HourButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom / 2));
+            Hours.Add(new ClickableTextureComponent(new Rectangle(xPositionOnScreen + (width / 2) + Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 7, Game1.tileSize, Game1.tileSize), Utilities.Data.Helper.Content.Load<Texture2D>("assets/11HourButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom / 2));
+            Hours.Add(new ClickableTextureComponent(new Rectangle(xPositionOnScreen + (width / 2) + Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 8, Game1.tileSize, Game1.tileSize), Utilities.Data.Helper.Content.Load<Texture2D>("assets/12HourButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom / 2));
         }
 
         /// <summary>Handles the left clicks on the menu</summary>
@@ -376,7 +376,7 @@ namespace Dem1se.CustomReminders.UI
             {
                 //if (!string.IsNullOrEmpty(TimeTextBox.Text)) return;
                 //ReminderTime = Convert.ToInt32(TimeTextBox.Text);
-
+                
                 if (IsOkButtonReady())
                 {
                     Game1.playSound("coin");
@@ -426,6 +426,11 @@ namespace Dem1se.CustomReminders.UI
 
             // draw textbox
             Utility.drawTextWithShadow(b, CurrentChoiceDisplay.name, Game1.smallFont, new Vector2(CurrentChoiceDisplay.bounds.X, CurrentChoiceDisplay.bounds.Y), Color.Black);
+
+            foreach (ClickableTextureComponent button in Hours)
+            {
+                button.draw(b);
+            }
 
             // draw labels
             foreach (ClickableComponent label in Labels)
