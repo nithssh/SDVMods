@@ -313,7 +313,7 @@ namespace Dem1se.CustomReminders.UI
     {
         private readonly List<ClickableComponent> Labels = new List<ClickableComponent>();
 
-        private TextBox TimeTextBox;
+        private ClickableComponent CurrentChoiceDisplay;
         private ClickableTextureComponent OkButton;
 
         /// <summary>Field that contains the Time inputed</summary>
@@ -326,8 +326,7 @@ namespace Dem1se.CustomReminders.UI
         public NewReminder_Page2(Action<int> onChange)
             : base(Game1.viewport.Width / 2 - (632 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize, 632 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize)
         {
-            this.OnChanged = onChange;
-            //this.MenuButton = Utilities.Utilities.GetMenuButton();
+            OnChanged = onChange;
             SetupPositions();
         }
 
@@ -335,29 +334,48 @@ namespace Dem1se.CustomReminders.UI
         private void SetupPositions()
         {
             Labels.Clear();
+            
+            // Ok button
             OkButton = new ClickableTextureComponent("OK", new Rectangle(xPositionOnScreen + width - IClickableMenu.borderWidth - IClickableMenu.spaceToClearSideBorder - Game1.tileSize, yPositionOnScreen + height - IClickableMenu.borderWidth - IClickableMenu.spaceToClearTopBorder + Game1.tileSize / 4, Game1.tileSize, Game1.tileSize), "", null, Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 46), 1f);
+            
+            // Titles
             Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + 8, 1, 1), "Reminder Time: "));
-            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 3, 1, 1), $"Set the time of the reminder in 24hrs \nformat in multiples of 30 in-game minutes.\n\ne.g. 1400 (=2PM)\n     0730 (=7AM)"));
-            TimeTextBox = new TextBox(null, null, Game1.smallFont, Game1.textColor)
-            {
-                X = xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize,
-                Y = yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + IClickableMenu.borderWidth - Game1.tileSize / 4 + Game1.tileSize + Game1.tileSize / 2,
-                Width = 384 + Game1.tileSize,
-                Height = 180,
-                numbersOnly = true,
-                textLimit = 4
-            };
-            Game1.keyboardDispatcher.Subscriber = (IKeyboardSubscriber)TimeTextBox;
+            
+            // Current Choice
+            CurrentChoiceDisplay = new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + Game1.tileSize - Game1.tileSize / 8 + 8, 1, 1), "CurrentTimeDisplay");
+            
+            // AM or PM
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 3, 1, 1), "AM"));
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 4, 1, 1), "PM"));
+            
+            // Minutes
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + width - IClickableMenu.spaceToClearSideBorder - IClickableMenu.borderWidth - Game1.tileSize - 16 * 2 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 3, 1, 1), "00"));
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + width - IClickableMenu.spaceToClearSideBorder - IClickableMenu.borderWidth - Game1.tileSize - 16 * 2 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 4, 1, 1), "30"));
+
+            // Hour
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + (width / 2) - Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 3, 1, 1), "1"));
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + (width / 2) - Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 4, 1, 1), "2"));
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + (width / 2) - Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 5, 1, 1), "3"));
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + (width / 2) - Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 6, 1, 1), "4"));
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + (width / 2) - Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 7, 1, 1), "5"));
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + (width / 2) - Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 8, 1, 1), "6"));
+            
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + (width / 2) + Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 3, 1, 1), "7"));
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + (width / 2) + Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 4, 1, 1), "8"));
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + (width / 2) + Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 5, 1, 1), "9"));
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + (width / 2) + Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 6, 1, 1), "10"));
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + (width / 2) + Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 7, 1, 1), "11"));
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + (width / 2) + Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 8, 1, 1), "12"));
+
         }
 
         /// <summary>Handles the left clicks on the menu</summary>
         public override void receiveLeftClick(int x, int y, bool playSound = true)
         {
-            TimeTextBox.Update();
             if (OkButton.containsPoint(x, y))
             {
-                if (!string.IsNullOrEmpty(TimeTextBox.Text)) return;
-                ReminderTime = Convert.ToInt32(TimeTextBox.Text);
+                //if (!string.IsNullOrEmpty(TimeTextBox.Text)) return;
+                //ReminderTime = Convert.ToInt32(TimeTextBox.Text);
 
                 if (IsOkButtonReady())
                 {
@@ -368,7 +386,6 @@ namespace Dem1se.CustomReminders.UI
                     Game1.exitActiveMenu();
                 }
             }
-            TimeTextBox.Update();
         }
 
         /// <summary>Defines what to do when hovering over UI elements</summary>
@@ -385,11 +402,11 @@ namespace Dem1se.CustomReminders.UI
         /// <returns>True if ok button is ready, False if not</returns>
         private bool IsOkButtonReady()
         {
-            if (TimeTextBox.Text.Length == 4 && !string.IsNullOrEmpty(TimeTextBox.Text) && (TimeTextBox.Text.ToString().EndsWith("30") || TimeTextBox.Text.ToString().EndsWith("00")) && (Convert.ToInt32(TimeTextBox.Text) >= 0600 && Convert.ToInt32(TimeTextBox.Text) <= 2600))
+            //if (TimeTextBox.Text.Length == 4 && !string.IsNullOrEmpty(TimeTextBox.Text) && (TimeTextBox.Text.ToString().EndsWith("30") || TimeTextBox.Text.ToString().EndsWith("00")) && (Convert.ToInt32(TimeTextBox.Text) >= 0600 && Convert.ToInt32(TimeTextBox.Text) <= 2600))
             {
                 return true;
             }
-            else
+            //else
             {
                 return false;
             }
@@ -408,21 +425,12 @@ namespace Dem1se.CustomReminders.UI
             Game1.drawDialogueBox(xPositionOnScreen, yPositionOnScreen, width, height, false, true);
 
             // draw textbox
-            TimeTextBox.Draw(b, false);
+            Utility.drawTextWithShadow(b, CurrentChoiceDisplay.name, Game1.smallFont, new Vector2(CurrentChoiceDisplay.bounds.X, CurrentChoiceDisplay.bounds.Y), Color.Black);
 
             // draw labels
             foreach (ClickableComponent label in Labels)
             {
-                Color color = Color.Violet;
-                Utility.drawTextWithShadow(b, label.name, Game1.smallFont, new Vector2(label.bounds.X, label.bounds.Y), color);
-            }
-            foreach (ClickableComponent label in Labels)
-            {
-                string text = "";
-                Color color = Game1.textColor;
-                Utility.drawTextWithShadow(b, label.name, Game1.smallFont, new Vector2(label.bounds.X, label.bounds.Y), color);
-                if (text.Length > 0)
-                    Utility.drawTextWithShadow(b, text, Game1.smallFont, new Vector2((label.bounds.X + Game1.tileSize / 3) - Game1.smallFont.MeasureString(text).X / 2f, (label.bounds.Y + Game1.tileSize / 2)), color);
+                Utility.drawTextWithShadow(b, label.name, Game1.smallFont, new Vector2(label.bounds.X, label.bounds.Y), Color.Black);
             }
 
             // draw OK button
