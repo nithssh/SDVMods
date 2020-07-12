@@ -276,16 +276,10 @@ namespace Dem1se.CustomReminders.UI
             // draw labels
             foreach (ClickableComponent label in Labels)
             {
-                Color color = Color.Violet;
-                Utility.drawTextWithShadow(b, label.name, Game1.smallFont, new Vector2(label.bounds.X, label.bounds.Y), color);
-            }
-            foreach (ClickableComponent label in Labels)
-            {
-                string text = "";
-                Color color = Game1.textColor;
-                Utility.drawTextWithShadow(b, label.name, Game1.smallFont, new Vector2(label.bounds.X, label.bounds.Y), color);
-                if (text.Length > 0)
-                    Utility.drawTextWithShadow(b, text, Game1.smallFont, new Vector2((label.bounds.X + Game1.tileSize / 3) - Game1.smallFont.MeasureString(text).X / 2f, (label.bounds.Y + Game1.tileSize / 2)), color);
+                if (label.name == "Reminder Message: ")
+                    Utility.drawTextWithShadow(b, label.name, Game1.dialogueFont, new Vector2(label.bounds.X, label.bounds.Y), Color.Black);
+                else
+                    Utility.drawTextWithShadow(b, label.name, Game1.smallFont, new Vector2(label.bounds.X, label.bounds.Y), Color.Black);
             }
 
             // draw OK button
