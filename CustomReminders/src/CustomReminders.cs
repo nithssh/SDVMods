@@ -34,7 +34,7 @@ namespace Dem1se.CustomReminders
             Utilities.Data.Monitor = Monitor;
 
             // Set the notification sound
-            Config.SubtlerReminderSound ? NotificationSound = "crit" : NotificationSound = "questcomplete";    
+            NotificationSound = Config.SubtlerReminderSound ? "crit" : "questcomplete";    
             Monitor.Log($"Notification sound set to {NotificationSound}.");
 
             // Binds the event with method.
