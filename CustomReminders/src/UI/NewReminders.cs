@@ -353,12 +353,12 @@ namespace Dem1se.CustomReminders.UI
             // first row: 1-6
             for (int i = 1; i <= 6; i++)
             {
-                HoursButtons.Add(new ClickableTextureComponent($"{i}", new Rectangle(xPositionOnScreen + width / 2 - (int)(Game1.tileSize * 5.0f) + (int)(Game1.tileSize * (i * 1.25f)), yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 3, Game1.tileSize + 16, Game1.tileSize + 16), "", "", Utilities.Data.Helper.Content.Load<Texture2D>($"assets/{i}HourButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
+                HoursButtons.Add(new ClickableTextureComponent($"{i}", new Rectangle(xPositionOnScreen + width / 2 - (int)(Game1.tileSize * 5.0f) + (int)(Game1.tileSize * (i * 1.25f)), yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 3, Game1.tileSize + 16, Game1.tileSize + 16), "", "", Utilities.Data.Helper.Content.Load<Texture2D>($"assets/hourButtons/{i}HourButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
             }
             // second raw: 7-12
             for (int i = 7; i <= 12; i++)
             {
-                HoursButtons.Add(new ClickableTextureComponent($"{i}", new Rectangle(xPositionOnScreen + width / 2 - (int)(Game1.tileSize * 5.0f) + (int)(Game1.tileSize * ((i - 6) * 1.25f)), yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 4 + Game1.tileSize / 4, Game1.tileSize + 16, Game1.tileSize + 16), "", "", Utilities.Data.Helper.Content.Load<Texture2D>($"assets/{i}HourButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
+                HoursButtons.Add(new ClickableTextureComponent($"{i}", new Rectangle(xPositionOnScreen + width / 2 - (int)(Game1.tileSize * 5.0f) + (int)(Game1.tileSize * ((i - 6) * 1.25f)), yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 4 + Game1.tileSize / 4, Game1.tileSize + 16, Game1.tileSize + 16), "", "", Utilities.Data.Helper.Content.Load<Texture2D>($"assets/hourButtons/{i}HourButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
             }
         }
 
