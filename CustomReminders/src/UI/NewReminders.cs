@@ -181,7 +181,6 @@ namespace Dem1se.CustomReminders.UI
 
             ReminderTextBox.Update();
 
-            //If the season is not selected then the day buttons can't be clicked. Thanks to @Potato#5266 on the SDV discord for this tip.
             if (ReminderSeason == "spring" || ReminderSeason == "summer" || ReminderSeason == "fall" || ReminderSeason == "winter")
             {
                 foreach (ClickableTextureComponent button in DayButtons)
@@ -276,16 +275,10 @@ namespace Dem1se.CustomReminders.UI
             // draw labels
             foreach (ClickableComponent label in Labels)
             {
-                Color color = Color.Violet;
-                Utility.drawTextWithShadow(b, label.name, Game1.smallFont, new Vector2(label.bounds.X, label.bounds.Y), color);
-            }
-            foreach (ClickableComponent label in Labels)
-            {
-                string text = "";
-                Color color = Game1.textColor;
-                Utility.drawTextWithShadow(b, label.name, Game1.smallFont, new Vector2(label.bounds.X, label.bounds.Y), color);
-                if (text.Length > 0)
-                    Utility.drawTextWithShadow(b, text, Game1.smallFont, new Vector2((label.bounds.X + Game1.tileSize / 3) - Game1.smallFont.MeasureString(text).X / 2f, (label.bounds.Y + Game1.tileSize / 2)), color);
+                if (label.name == "Reminder Message: ")
+                    Utility.drawTextWithShadow(b, label.name, Game1.dialogueFont, new Vector2(label.bounds.X, label.bounds.Y), Color.Black);
+                else
+                    Utility.drawTextWithShadow(b, label.name, Game1.smallFont, new Vector2(label.bounds.X, label.bounds.Y), Color.Black);
             }
 
             // draw OK button
@@ -311,13 +304,18 @@ namespace Dem1se.CustomReminders.UI
     /// </summary>
     internal class NewReminder_Page2 : IClickableMenu
     {
+        // title and the error message
         private readonly List<ClickableComponent> Labels = new List<ClickableComponent>();
 
-        private TextBox TimeTextBox;
+        private readonly List<ClickableTextureComponent> MinutesAndMeridiemList = new List<ClickableTextureComponent>();
+        private readonly List<ClickableTextureComponent> HoursButtons = new List<ClickableTextureComponent>();
+        private ClickableComponent CurrentChoiceDisplay;
         private ClickableTextureComponent OkButton;
 
         /// <summary>Field that contains the Time inputed</summary>
-        internal int ReminderTime = 0;
+        private int Hours = 0;
+        private string Minutes;
+        private string Meridiem;
 
         /// <summary>The callback to invoke when the birthday value changes.</summary>
         private readonly Action<int> OnChanged;
@@ -326,49 +324,117 @@ namespace Dem1se.CustomReminders.UI
         public NewReminder_Page2(Action<int> onChange)
             : base(Game1.viewport.Width / 2 - (632 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize, 632 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize)
         {
-            this.OnChanged = onChange;
-            //this.MenuButton = Utilities.Utilities.GetMenuButton();
+            OnChanged = onChange;
             SetupPositions();
         }
 
         /// <summary>Generates the UI</summary>
         private void SetupPositions()
         {
-            Labels.Clear();
+            // Ok button
             OkButton = new ClickableTextureComponent("OK", new Rectangle(xPositionOnScreen + width - IClickableMenu.borderWidth - IClickableMenu.spaceToClearSideBorder - Game1.tileSize, yPositionOnScreen + height - IClickableMenu.borderWidth - IClickableMenu.spaceToClearTopBorder + Game1.tileSize / 4, Game1.tileSize, Game1.tileSize), "", null, Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 46), 1f);
+
+            // Titles
             Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + 8, 1, 1), "Reminder Time: "));
-            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 3, 1, 1), $"Set the time of the reminder in 24hrs \nformat in multiples of 30 in-game minutes.\n\ne.g. 1400 (=2PM)\n     0730 (=7AM)"));
-            TimeTextBox = new TextBox(null, null, Game1.smallFont, Game1.textColor)
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * 2 - Game1.tileSize / 8 + 8, 1, 1), "", "error"));
+
+            // Current Choice
+            CurrentChoiceDisplay = new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + Game1.tileSize - Game1.tileSize / 8 + 8, 1, 1), "CurrentTimeDisplay");
+
+            // AM or PM
+            MinutesAndMeridiemList.Add(new ClickableTextureComponent("00", new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 6, Game1.tileSize * 2 + 16, Game1.tileSize + 8), "", "", Utilities.Data.Helper.Content.Load<Texture2D>("assets/00.png", ContentSource.ModFolder), new Rectangle(), (int)(Game1.pixelZoom * 0.75f)));
+            MinutesAndMeridiemList.Add(new ClickableTextureComponent("30", new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 7 + 8, Game1.tileSize * 2 + 16, Game1.tileSize + 8), "", "", Utilities.Data.Helper.Content.Load<Texture2D>("assets/30.png", ContentSource.ModFolder), new Rectangle(), (int)(Game1.pixelZoom * 0.75f)));
+
+            // Minutes
+            MinutesAndMeridiemList.Add(new ClickableTextureComponent("AM", new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 4 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 6, Game1.tileSize * 2 + 16, Game1.tileSize + 8), "", "", Utilities.Data.Helper.Content.Load<Texture2D>("assets/AM.png", ContentSource.ModFolder), new Rectangle(), (int)(Game1.pixelZoom * 0.75f)));
+            MinutesAndMeridiemList.Add(new ClickableTextureComponent("PM", new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 4 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 7 + 8, Game1.tileSize * 2 + 16, Game1.tileSize + 8), "", "", Utilities.Data.Helper.Content.Load<Texture2D>("assets/PM.png", ContentSource.ModFolder), new Rectangle(), (int)(Game1.pixelZoom * 0.75f)));
+            
+            // Hour
+            // first row: 1-6
+            for (int i = 1; i <= 6; i++)
             {
-                X = xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize,
-                Y = yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + IClickableMenu.borderWidth - Game1.tileSize / 4 + Game1.tileSize + Game1.tileSize / 2,
-                Width = 384 + Game1.tileSize,
-                Height = 180,
-                numbersOnly = true,
-                textLimit = 4
-            };
-            Game1.keyboardDispatcher.Subscriber = (IKeyboardSubscriber)TimeTextBox;
+                HoursButtons.Add(new ClickableTextureComponent($"{i}", new Rectangle(xPositionOnScreen + width / 2 - (int)(Game1.tileSize * 5.0f) + (int)(Game1.tileSize * (i * 1.25f)), yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 3, Game1.tileSize + 16, Game1.tileSize + 16), "", "", Utilities.Data.Helper.Content.Load<Texture2D>($"assets/{i}HourButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
+            }
+            // second raw: 7-12
+            for (int i = 7; i <= 12; i++)
+            {
+                HoursButtons.Add(new ClickableTextureComponent($"{i}", new Rectangle(xPositionOnScreen + width / 2 - (int)(Game1.tileSize * 5.0f) + (int)(Game1.tileSize * ((i - 6) * 1.25f)), yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 4 + Game1.tileSize / 4, Game1.tileSize + 16, Game1.tileSize + 16), "", "", Utilities.Data.Helper.Content.Load<Texture2D>($"assets/{i}HourButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
+            }
         }
 
         /// <summary>Handles the left clicks on the menu</summary>
         public override void receiveLeftClick(int x, int y, bool playSound = true)
         {
-            TimeTextBox.Update();
+            // The 12, hour buttons
+            foreach (ClickableTextureComponent hourButton in HoursButtons)
+            {
+                if (hourButton.containsPoint(x, y))
+                {
+                    Game1.playSound("coin");
+                    hourButton.scale -= 0.25f;
+                    Hours = Convert.ToInt32(hourButton.name);
+                    hourButton.scale = Math.Max(0.75f, Game1.pixelZoom);
+                }
+            }
+
+            // AM/PM and 00/30 buttons
+            foreach (ClickableTextureComponent button in MinutesAndMeridiemList)
+            {
+                if (button.containsPoint(x, y))
+                {
+                    Game1.playSound("coin");
+                    button.scale -= 0.25f;
+                    if (button.name.EndsWith("M"))
+                    {
+                        Meridiem = button.name;
+                    }
+                    else if (button.name.EndsWith("0"))
+                    {
+                        Minutes = button.name;
+                    }
+                    button.scale = Math.Max(0.75f, Game1.pixelZoom * 0.75f);
+                }
+            }
+
+            // ok button
             if (OkButton.containsPoint(x, y))
             {
-                if (!string.IsNullOrEmpty(TimeTextBox.Text)) return;
-                ReminderTime = Convert.ToInt32(TimeTextBox.Text);
-
                 if (IsOkButtonReady())
                 {
                     Game1.playSound("coin");
                     OkButton.scale -= 0.25f;
-                    OnChanged(ReminderTime);
+                    int reminderTime = Convert.ToInt32($"{Hours}{Minutes}");
+                    if (Meridiem == "PM")
+                        reminderTime += 1200;
+                    OnChanged(reminderTime);
                     OkButton.scale = Math.Max(0.75f, OkButton.scale);
                     Game1.exitActiveMenu();
                 }
             }
-            TimeTextBox.Update();
+
+            // The error message label to say invalid time is chosen
+            if (Hours != 0 && !string.IsNullOrEmpty(Minutes) && !string.IsNullOrEmpty(Meridiem))
+            {
+                if (!IsValidTime())
+                {
+                    Labels[1].name = "The entered time is invalid";
+                }
+                else
+                {
+                    Labels[1].name = "";
+                }
+            }
+        }
+
+        private bool IsValidTime()
+        {
+            int reminderTime = Convert.ToInt32($"{Hours}{Minutes}");
+            if (Meridiem == "PM")
+                reminderTime += 1200;
+            if (reminderTime <= 2600 && reminderTime >= 600)
+                return true;
+            else
+                return false;
         }
 
         /// <summary>Defines what to do when hovering over UI elements</summary>
@@ -377,6 +443,20 @@ namespace Dem1se.CustomReminders.UI
             OkButton.scale = OkButton.containsPoint(x, y) && IsOkButtonReady()
                 ? Math.Min(OkButton.scale + 0.02f, OkButton.baseScale + 0.1f)
                 : Math.Max(OkButton.scale - 0.02f, OkButton.baseScale);
+
+            foreach (ClickableTextureComponent button in HoursButtons)
+            {
+                button.scale = button.containsPoint(x, y)
+                    ? Math.Min(button.scale + 0.02f, button.baseScale + 0.1f)
+                    : Math.Max(button.scale - 0.02f, button.baseScale);
+            }
+
+            foreach (ClickableTextureComponent button in MinutesAndMeridiemList)
+            {
+                button.scale = button.containsPoint(x, y)
+                    ? Math.Min(button.scale + 0.02f, button.baseScale + 0.1f)
+                    : Math.Max(button.scale - 0.02f, button.baseScale);
+            }
         }
 
         /// <summary>
@@ -385,9 +465,19 @@ namespace Dem1se.CustomReminders.UI
         /// <returns>True if ok button is ready, False if not</returns>
         private bool IsOkButtonReady()
         {
-            if (TimeTextBox.Text.Length == 4 && !string.IsNullOrEmpty(TimeTextBox.Text) && (TimeTextBox.Text.ToString().EndsWith("30") || TimeTextBox.Text.ToString().EndsWith("00")) && (Convert.ToInt32(TimeTextBox.Text) >= 0600 && Convert.ToInt32(TimeTextBox.Text) <= 2600))
+            if (Hours != -1 && Meridiem != null && Minutes != null)
             {
-                return true;
+                int reminderTime = Convert.ToInt32($"{Hours}{Minutes}");
+                if (Meridiem == "PM")
+                    reminderTime += 1200;
+                if (reminderTime <= 2600 && reminderTime >= 600)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {
@@ -407,22 +497,36 @@ namespace Dem1se.CustomReminders.UI
             // draw menu box
             Game1.drawDialogueBox(xPositionOnScreen, yPositionOnScreen, width, height, false, true);
 
-            // draw textbox
-            TimeTextBox.Draw(b, false);
-
-            // draw labels
-            foreach (ClickableComponent label in Labels)
+            // draw CurrentChoiceDisplay
+            if (Hours == 0 && string.IsNullOrEmpty(Minutes) && string.IsNullOrEmpty(Meridiem))
             {
-                Color color = Color.Violet;
-                Utility.drawTextWithShadow(b, label.name, Game1.smallFont, new Vector2(label.bounds.X, label.bounds.Y), color);
+                CurrentChoiceDisplay.name = "Choose the Hour, Minutes and Period";
             }
+            else
+            {
+                CurrentChoiceDisplay.name = $"{Hours}:{Minutes} {Meridiem}";
+            }
+            Utility.drawTextWithShadow(b, CurrentChoiceDisplay.name, Game1.smallFont, new Vector2(CurrentChoiceDisplay.bounds.X, CurrentChoiceDisplay.bounds.Y), Color.Black);
+
+            // draw the 12 hour buttons
+            foreach (ClickableTextureComponent button in HoursButtons)
+            {
+                button.draw(b);
+            }
+
+            // draw title and error message labels
             foreach (ClickableComponent label in Labels)
             {
-                string text = "";
-                Color color = Game1.textColor;
-                Utility.drawTextWithShadow(b, label.name, Game1.smallFont, new Vector2(label.bounds.X, label.bounds.Y), color);
-                if (text.Length > 0)
-                    Utility.drawTextWithShadow(b, text, Game1.smallFont, new Vector2((label.bounds.X + Game1.tileSize / 3) - Game1.smallFont.MeasureString(text).X / 2f, (label.bounds.Y + Game1.tileSize / 2)), color);
+                if (label.label == "error")
+                    Utility.drawTextWithShadow(b, label.name, Game1.dialogueFont, new Vector2(label.bounds.X, label.bounds.Y), Color.Red);
+                else
+                    Utility.drawTextWithShadow(b, label.name, Game1.dialogueFont, new Vector2(label.bounds.X, label.bounds.Y), Color.Black);
+            }
+
+            // draw AM/PM and Minutes buttons
+            foreach (ClickableTextureComponent button in MinutesAndMeridiemList)
+            {
+                button.draw(b);
             }
 
             // draw OK button

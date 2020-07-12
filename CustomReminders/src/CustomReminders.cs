@@ -179,8 +179,8 @@ namespace Dem1se.CustomReminders
                             Monitor.Log($"Reminder notified for {Reminder.DaysSinceStart}: {Reminder.ReminderMessage}", LogLevel.Info);
                             File.Delete(filePathAbsolute);
                         }
-                        /* this is a very rare case and won't happen normally, but I've still included it just in case 
-                         * (to avoid sedimentary files hogging the performance somehow) */
+                        /* this is a very rare case (should be impossible) and won't happen normally, but I've still included it just in case,
+                         * (to avoid sedimentary files hogging the performance unnecessarily) */
                         else if (Reminder.DaysSinceStart < SDate.Now().DaysSinceStart)
                         {
                             File.Delete(filePathAbsolute);
