@@ -320,7 +320,7 @@ namespace Dem1se.CustomReminders.UI
         private ClickableTextureComponent OkButton;
 
         /// <summary>Field that contains the Time inputed</summary>
-        private int Hours = -1;
+        private int Hours = 0;
         private string Minutes;
         private string Meridiem;
 
@@ -346,6 +346,7 @@ namespace Dem1se.CustomReminders.UI
 
             // Titles
             Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + 8, 1, 1), "Reminder Time: "));
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * 2 - Game1.tileSize / 8 + 8, 1, 1), "", "error"));
 
             // Current Choice
             CurrentChoiceDisplay = new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + Game1.tileSize - Game1.tileSize / 8 + 8, 1, 1), "CurrentTimeDisplay");
@@ -437,6 +438,29 @@ namespace Dem1se.CustomReminders.UI
                     Game1.exitActiveMenu();
                 }
             }
+
+            if (Hours != 0 && !string.IsNullOrEmpty(Minutes) && !string.IsNullOrEmpty(Meridiem))
+            {
+                if (!IsValidTime())
+                {
+                    Labels[1].name = "The entered time is invalid";
+                }
+                else
+                {
+                    Labels[1].name = "";
+                }
+            }
+        }
+
+        private bool IsValidTime()
+        {
+            int reminderTime = Convert.ToInt32($"{Hours}{Minutes}");
+            if (Meridiem == "PM")
+                reminderTime += 1200;
+            if (reminderTime <= 2600 && reminderTime >= 600)
+                return true;
+            else
+                return false;
         }
 
         /// <summary>Defines what to do when hovering over UI elements</summary>
@@ -455,7 +479,17 @@ namespace Dem1se.CustomReminders.UI
         {
             if (Hours != -1 && Meridiem != null && Minutes != null)
             {
-                return true;
+                int reminderTime = Convert.ToInt32($"{Hours}{Minutes}");
+                if (Meridiem == "PM")
+                    reminderTime += 1200;
+                if (reminderTime <= 2600 && reminderTime >= 600)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {
@@ -476,7 +510,7 @@ namespace Dem1se.CustomReminders.UI
             Game1.drawDialogueBox(xPositionOnScreen, yPositionOnScreen, width, height, false, true);
 
             // draw CurrentChoiceDisplay
-            if (Hours == -1 && string.IsNullOrEmpty(Minutes) && string.IsNullOrEmpty(Meridiem))
+            if (Hours == 0 && string.IsNullOrEmpty(Minutes) && string.IsNullOrEmpty(Meridiem))
             {
                 CurrentChoiceDisplay.name = "Choose the Hour, Minutes and Period";
             }
@@ -494,7 +528,10 @@ namespace Dem1se.CustomReminders.UI
             // draw AM/PM and Minutes labels
             foreach (ClickableComponent label in Labels)
             {
-                Utility.drawTextWithShadow(b, label.name, Game1.dialogueFont, new Vector2(label.bounds.X, label.bounds.Y), Color.Black);
+                if (label.label == "error")
+                    Utility.drawTextWithShadow(b, label.name, Game1.dialogueFont, new Vector2(label.bounds.X, label.bounds.Y), Color.Red);
+                else
+                    Utility.drawTextWithShadow(b, label.name, Game1.dialogueFont, new Vector2(label.bounds.X, label.bounds.Y), Color.Black);
             }
 
             // draw AM/PM and Minutes buttons
