@@ -399,9 +399,6 @@ namespace Dem1se.CustomReminders.UI
             // ok button
             if (OkButton.containsPoint(x, y))
             {
-                //if (!string.IsNullOrEmpty(TimeTextBox.Text)) return;
-                //ReminderTime = Convert.ToInt32(TimeTextBox.Text);
-
                 if (IsOkButtonReady())
                 {
                     Game1.playSound("coin");
