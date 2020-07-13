@@ -73,32 +73,15 @@ namespace Dem1se.CustomReminders
         private void OnButtonPressed(object sender, ButtonPressedEventArgs ev)
         {
             // ignore if player hasn't loaded a save yet
-            if (!Context.IsWorldReady)
-                return;
+            if (!Context.IsWorldReady) { return; }
             if (Game1.activeClickableMenu != null || (!Context.IsPlayerFree) || ev.Button != Config.CustomRemindersButton) { return; }
+
             Monitor.Log("Opening ReminderMenu page 1");
             Game1.activeClickableMenu = new NewReminder_Page1((string message, string season, int day) =>
             {
-                int seasonIndex = 0;
+                // have to capitalize the season due to the enum members being Pascal case and season being all lower case.
+                int seasonIndex = (int)Enum.Parse(typeof(Utilities.Season), season.Replace(season[0], char.ToUpper(season[0])));
                 int year;
-                switch (season)
-                {
-                    case "spring":
-                        seasonIndex = 0;
-                        break;
-                    case "summer":
-                        seasonIndex = 1;
-                        break;
-                    case "fall":
-                        seasonIndex = 2;
-                        break;
-                    case "winter":
-                        seasonIndex = 3;
-                        break;
-                    default:
-                        // just here for code quality
-                        break;
-                }
                 Game1.exitActiveMenu();
                 // Convert to DaysSinceStart - calculate year fix.
                 if (SDate.Now().SeasonIndex == seasonIndex) // same seasons
@@ -151,7 +134,7 @@ namespace Dem1se.CustomReminders
             if (!(timeString.EndsWith("30") || timeString.EndsWith("00"))) { return; }
 
             // Loops through all the reminder files and evaluates if they are current.
-            #region CoreReminderLoop
+            #region CoreReminderNotiferLoop
             SDate currentDate = SDate.Now();
             foreach (string filePathAbsolute in Directory.EnumerateFiles(Path.Combine(Helper.DirectoryPath, "data", Utilities.Data.SaveFolderName)))
             {

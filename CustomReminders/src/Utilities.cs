@@ -11,7 +11,7 @@ namespace Dem1se.CustomReminders.Utilities
     static class Extras
     {
         /// <summary>
-        /// Makes platform sensitive relative paths from absoulute paths.
+        /// Makes platform sensitive paths that start from the Content.ModFolder instead of the local disk from absoulute paths.
         /// </summary>
         /// <param name="filePathAbsolute">The file path from the directory enumerator</param>
         /// <param name="monitor">The SMAPI Monitor for logging purposed within the function</param>
@@ -22,31 +22,22 @@ namespace Dem1se.CustomReminders.Utilities
             string filePathRelative = "";
             string[] filePathRelativeParts;
             int filePathIndex;
-
-            // windows style
+            char delimiter;
             if (Constants.TargetPlatform.ToString() == "Windows")
-            {
-                filePathRelativeParts = filePathAbsolute.Split('\\');
-                filePathIndex = Array.IndexOf(filePathRelativeParts, "data");
-                for (int i = filePathIndex; i < filePathRelativeParts.Length; i++)
-                {
-                    filePathRelative += filePathRelativeParts[i] + "\\";
-                }
-                // Remove the trailing forward slash in Relative path
-                filePathRelative = filePathRelative.Remove(filePathRelative.LastIndexOf("\\"));
-            }
-            // unix style
+                delimiter = '\\';
             else if (Constants.TargetPlatform.ToString() == "Mac" || Constants.TargetPlatform.ToString() == "Linux")
+                delimiter = '/';
+            else
+                throw new NotSupportedException("Operating system is not Windows, Mac or Linux. Unsupported Platform");
+            
+            filePathRelativeParts = filePathAbsolute.Split(delimiter);
+            filePathIndex = Array.IndexOf(filePathRelativeParts, "data");
+            for (int i = filePathIndex; i < filePathRelativeParts.Length; i++)
             {
-                filePathRelativeParts = filePathAbsolute.Split('/');
-                filePathIndex = Array.IndexOf(filePathRelativeParts, "data");
-                for (int i = filePathIndex; i < filePathRelativeParts.Length; i++)
-                {
-                    filePathRelative += filePathRelativeParts[i] + "/";
-                }
-                // Remove the trailing slash in Relative path
-                filePathRelative = filePathRelative.Remove(filePathRelative.LastIndexOf("/"));
+                filePathRelative += filePathRelativeParts[i] + delimiter;
             }
+            // Remove the trailing slash in Relative path
+            filePathRelative = filePathRelative.Remove(filePathRelative.LastIndexOf(delimiter));
             return filePathRelative;
         }
 
@@ -59,7 +50,7 @@ namespace Dem1se.CustomReminders.Utilities
         {
             int width = 0;
             char[] characters = reminderMessage.ToCharArray();
-
+            
             // add time number
             if (characters[1] == ' ')
                 // 1 digit time
@@ -76,31 +67,23 @@ namespace Dem1se.CustomReminders.Utilities
                     // 2 digit time
                     width += 40;
             }
-
             // add space
             width += 24;
-
             // add AM/PM
             width += 68;
-
             // add season
             if (reminderMessage.Contains("Spring")) { width += 189; }
             else if (reminderMessage.Contains("Summer")) { width += 196; }
             else if (reminderMessage.Contains("Fall")) { width += 135; }
             else { width += 186; }
-
             // add space
             width += 24;
-
             // add two digits
             width += 40;
-
             // add year
             width += 156;
-
             // add two spaces
             width += 48;
-
             return width;
         }
     }
@@ -117,8 +100,7 @@ namespace Dem1se.CustomReminders.Utilities
         /// <returns>Returns int of DaysSinceStart</returns>
         public static int ConvertToDays(int date, int season, int year)
         {
-            int daysSinceStart = (season * 28) + ((year - 1) * 112) + date;
-            return daysSinceStart;
+            return (season * 28) + ((year - 1) * 112) + date;
         }
 
         /// <summary>
@@ -134,34 +116,14 @@ namespace Dem1se.CustomReminders.Utilities
             if (day == 0)
                 day = 28;
             int months = (remainderAfterYears - day) / 28;
-
-            string monthString;
-            switch (months)
-            {
-                case 0:
-                    monthString = "Spring";
-                    break;
-                case 1:
-                    monthString = "Summer";
-                    break;
-                case 2:
-                    monthString = "Fall";
-                    break;
-                case 3:
-                    monthString = "Winter";
-                    break;
-                default:
-                    monthString = "Season";
-                    break;
-            }
-
+            Season month = (Season)months;
             // this is a special case (winter 28)
             if (months == -1)
             {
-                monthString = "Winter";
+                month = (Season)3;
                 years--;
             }
-            return $"{monthString} {day}, Year {years + 1}";
+            return $"{month} {day}, Year {years + 1}";
         }
 
         /// <summary>
@@ -177,15 +139,7 @@ namespace Dem1se.CustomReminders.Utilities
                 prettyTime = Convert.ToString(timeIn24);
                 if (prettyTime.EndsWith("00")) // ends with 00
                 {
-                    if (timeIn24 <= 930)
-                    {
-                        prettyTime = prettyTime.Remove(1);
-                    }
-                    else
-                    {
-                        prettyTime = prettyTime.Remove(2);
-                    }
-                    
+                    prettyTime = timeIn24 <= 930 ? prettyTime.Remove(1) : prettyTime.Remove(2);
                     if (prettyTime.StartsWith("0"))
                         prettyTime = prettyTime.Replace("0", " ");
                     prettyTime = prettyTime.Trim();
@@ -237,13 +191,7 @@ namespace Dem1se.CustomReminders.Utilities
         /// <param name="time">The time of the reminder in 24hrs format</param>
         public static void WriteToFile(string reminderMessage, int daysSinceStart, int time)
         {
-            ReminderModel ReminderData = new ReminderModel
-            {
-                DaysSinceStart = daysSinceStart,
-                ReminderMessage = reminderMessage,
-                Time = time
-            };
-
+            ReminderModel ReminderData = new ReminderModel(reminderMessage, daysSinceStart, time);
             string pathToWrite = Path.Combine(Data.Helper.DirectoryPath, "data", Data.SaveFolderName);
             string serializedReminderData = JsonConvert.SerializeObject(ReminderData, Formatting.Indented);
             int reminderCount = 0;
@@ -276,9 +224,7 @@ namespace Dem1se.CustomReminders.Utilities
                     iterationIndex++;
                 }
                 else
-                {
                     iterationIndex++;
-                }
             }
         }
     }
@@ -334,5 +280,13 @@ namespace Dem1se.CustomReminders.Utilities
                 return SButton.E;
             }
         }
+    }
+    
+    enum Season
+    {
+        Spring,
+        Summer,
+        Fall,
+        Winter
     }
 }
