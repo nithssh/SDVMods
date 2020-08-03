@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using System;
 
-namespace Dem1se.CustomReminders.MobilePhoneAPI
+namespace Dem1se.CustomReminders.MobilePhoneModAPI
 {
     public interface IMobilePhoneApi
     {
@@ -23,12 +23,12 @@ namespace Dem1se.CustomReminders.MobilePhoneAPI
         string GetRunningApp();
         void SetRunningApp(string value);
     }
-    
-    public static class MobilePhone
+
+    public static class MobilePhoneMod
     {
         public static void HookToMobilePhoneMod(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
-            var api = Data.Helper.ModRegistry.GetApi<IMobilePhoneApi>("aedenthorn.MobilePhone");
+            IMobilePhoneApi api = Data.Helper.ModRegistry.GetApi<IMobilePhoneApi>("aedenthorn.MobilePhone");
             if (api != null)
             {
                 Texture2D appIcon = Data.Helper.Content.Load<Texture2D>(System.IO.Path.Combine("assets", "mpmIcon.png"));
@@ -37,5 +37,4 @@ namespace Dem1se.CustomReminders.MobilePhoneAPI
             }
         }
     }
-    
 }

@@ -37,7 +37,7 @@ namespace Dem1se.CustomReminders
             helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
             helper.Events.Multiplayer.ModMessageReceived += Multiplayer.Multiplayer.OnModMessageReceived;
             helper.Events.Multiplayer.PeerContextReceived += Multiplayer.Multiplayer.OnPeerConnected;
-            helper.Events.GameLoop.GameLaunched += MobilePhoneAPI.MobilePhone.HookToMobilePhoneMod;
+            helper.Events.GameLoop.GameLaunched += MobilePhoneModAPI.MobilePhoneMod.HookToMobilePhoneMod;
         }
 
         ///<summary> Defines what happens when a save is loaded</summary>
@@ -83,7 +83,7 @@ namespace Dem1se.CustomReminders
             int reminderTime;
 
             // Do the MobilePhoneMod housekeeping
-            var api = Utilities.Data.Helper.ModRegistry.GetApi<MobilePhoneAPI.IMobilePhoneApi>("aedenthorn.MobilePhone");
+            var api = Utilities.Data.Helper.ModRegistry.GetApi<MobilePhoneModAPI.IMobilePhoneApi>("aedenthorn.MobilePhone");
             if (api != null)
             {
                 api.SetAppRunning(true);
