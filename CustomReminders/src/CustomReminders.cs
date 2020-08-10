@@ -28,7 +28,7 @@ namespace Dem1se.CustomReminders
             Utilities.Data.Monitor = Monitor;
 
             // Set the notification sound
-            NotificationSound = Config.SubtlerReminderSound ? "crit" : "questcomplete";    
+            NotificationSound = Config.SubtlerReminderSound ? "crit" : "questcomplete";
             Monitor.Log($"Notification sound set to {NotificationSound}.");
 
             // Binds the event with method.
@@ -55,7 +55,8 @@ namespace Dem1se.CustomReminders
                 Utilities.Data.MenuButton = Config.FarmhandInventoryButton;
             }
 
-            // Create the data subfolder for the save for first time users. ( Avoid DirectoryNotFound Exception in OnChangedBehaviour() )
+            /* Create the data subfolder for the save for first time users. 
+             * Avoid DirectoryNotFound Exception in OnChangedBehaviour() when trying to save new reminder for first time */
             if (!Directory.Exists(Path.Combine(Helper.DirectoryPath, "data", Utilities.Data.SaveFolderName)))
             {
                 Monitor.Log("Reminders directory not found. Creating directory.", LogLevel.Info);
@@ -69,7 +70,7 @@ namespace Dem1se.CustomReminders
         {
             // ignore if player hasn't loaded a save yet
             if (!Context.IsWorldReady) { return; }
-            if (Game1.activeClickableMenu != null || (!Context.IsPlayerFree) || ev.Button != Config.CustomRemindersButton) { return; }
+            if (Game1.activeClickableMenu != null || (!Context.IsPlayerFree) || ev.Button != Config.CustomRemindersButton) return;
 
             ShowReminderMenu();
         }
@@ -77,7 +78,7 @@ namespace Dem1se.CustomReminders
         /// <summary>Create a new instance of the Reminder menus, and displays them. Called on Button press</summary>
         public static void ShowReminderMenu()
         {
-            /* These are all the fields that hold the values of the reminder */
+            /* These are all the variables that hold the values of the reminder */
             string reminderMessage;
             int reminderDate;
             int reminderTime;
@@ -93,36 +94,21 @@ namespace Dem1se.CustomReminders
             Utilities.Data.Monitor.Log("Opening ReminderMenu page 1");
             Game1.activeClickableMenu = new NewReminder_Page1((string message, string season, int day) =>
             {
-                // have to capitalize the season due to the enum members being Pascal case and season being all lower case.
-                int seasonIndex = (int)Enum.Parse(typeof(Utilities.Season), season.Replace(season[0], char.ToUpper(season[0])));
-                int year;
+                int seasonIndex = (int)Enum.Parse(typeof(Utilities.Season), season);
                 Game1.exitActiveMenu();
-                // Convert to DaysSinceStart - calculate year fix.
-                #region ContextualDate
+
+                // Convert to DaysSinceStart - Contextually choose year.
+                int year;
+
                 if (SDate.Now().SeasonIndex == seasonIndex) // same seasons
-                {
-                    if (SDate.Now().Day > day) // same season , past date
-                    {
-                        year = SDate.Now().Year + 1;
-                        reminderDate = Utilities.Converts.ConvertToDays(day, seasonIndex, year);
-                    }
-                    else // same season, same date OR same season, Future Date
-                    {
-                        year = SDate.Now().Year;
-                        reminderDate = Utilities.Converts.ConvertToDays(day, seasonIndex, year);
-                    }
-                }
+                    year = (SDate.Now().Day > day) ? SDate.Now().Year + 1 : SDate.Now().Year;
                 else if (SDate.Now().SeasonIndex > seasonIndex) // past season
-                {
                     year = SDate.Now().Year + 1;
-                    reminderDate = Utilities.Converts.ConvertToDays(day, seasonIndex, year);
-                }
                 else // future season
-                {
                     year = SDate.Now().Year;
-                    reminderDate = Utilities.Converts.ConvertToDays(day, seasonIndex, year);
-                }
-                #endregion
+
+                reminderDate = Utilities.Converts.ConvertToDays(day, seasonIndex, year);
+
                 reminderMessage = message;
                 // open the second page
                 Utilities.Data.Monitor.Log("First page completed. Opening second page now.");
@@ -146,7 +132,7 @@ namespace Dem1se.CustomReminders
         {
             // returns function if game time isn't multiple of 30 in-game minutes.
             string timeString = Convert.ToString(ev.NewTime);
-            if (!(timeString.EndsWith("30") || timeString.EndsWith("00"))) { return; }
+            if (!(timeString.EndsWith("30") || timeString.EndsWith("00"))) return;
 
             // Loops through all the reminder files and evaluates if they are current.
             #region ReminderNotifierloop
