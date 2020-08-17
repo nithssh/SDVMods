@@ -5,6 +5,7 @@ using StardewModdingAPI.Utilities;
 using StardewValley;
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace Dem1se.CustomReminders
 {
@@ -83,12 +84,17 @@ namespace Dem1se.CustomReminders
             int reminderDate;
             int reminderTime;
 
+            ModConfig config = Utilities.Data.Helper.ReadConfig<ModConfig>();
+
             // Do the MobilePhoneMod housekeeping
             var api = Utilities.Data.Helper.ModRegistry.GetApi<MobilePhoneModAPI.IMobilePhoneApi>("aedenthorn.MobilePhone");
-            if (api != null)
+            if (config.EnableMobilePhoneApp)
             {
-                api.SetAppRunning(true);
-                api.SetPhoneOpened(false);
+                if (api != null)
+                {
+                    api.SetAppRunning(true);
+                    api.SetPhoneOpened(false);
+                }
             }
 
             Utilities.Data.Monitor.Log("Opening ReminderMenu page 1");
@@ -108,7 +114,6 @@ namespace Dem1se.CustomReminders
                     year = SDate.Now().Year;
 
                 reminderDate = Utilities.Converts.ConvertToDays(day, seasonIndex, year);
-
                 reminderMessage = message;
                 // open the second page
                 Utilities.Data.Monitor.Log("First page completed. Opening second page now.");
@@ -119,12 +124,12 @@ namespace Dem1se.CustomReminders
                     Utilities.Files.WriteToFile(reminderMessage, reminderDate, reminderTime);
                     Utilities.Data.Monitor.Log($"Saved new reminder: {reminderMessage} for {season} {day} at {Utilities.Converts.ConvertToPrettyTime(reminderTime)}.", LogLevel.Info);
                 });
-
             });
 
             // MobilePhoneMod exit housekeeping
-            if (api != null)
-                api.SetAppRunning(false);
+            if (config.EnableMobilePhoneApp)
+                if (api != null)
+                    api.SetAppRunning(false);
         }
 
         /// <summary> Loop that checks if any reminders are mature.</summary>
