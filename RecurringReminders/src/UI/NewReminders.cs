@@ -12,12 +12,9 @@ namespace Dem1se.RecurringReminders.UI
     /// <summary>The menu which lets the set new reminders.</summary>
     internal class NewReminder_Page1 : IClickableMenu
     {
-        private ClickableTextureComponent DisplayRemindersButton;
-
         private readonly List<ClickableComponent> Labels = new List<ClickableComponent>();
-
+        private ClickableTextureComponent DisplayRemindersButton, OkButton;
         private TextBox ReminderMessageTextBox, ReminderIntervalTextBox;
-        protected ClickableTextureComponent OkButton;
 
         private string ReminderMessage;
         private int ReminderInterval;
@@ -53,8 +50,9 @@ namespace Dem1se.RecurringReminders.UI
 
             OkButton = new ClickableTextureComponent("OK", new Rectangle(xPositionOnScreen + width - IClickableMenu.borderWidth - IClickableMenu.spaceToClearSideBorder - Game1.tileSize, yPositionOnScreen + height - IClickableMenu.borderWidth - IClickableMenu.spaceToClearTopBorder + Game1.tileSize / 4, Game1.tileSize, Game1.tileSize), "", null, Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 46), 1f);
             DisplayRemindersButton = new ClickableTextureComponent(new Rectangle(xPositionOnScreen - Game1.tileSize * 5 - IClickableMenu.spaceToClearSideBorder * 2, yPositionOnScreen + IClickableMenu.spaceToClearTopBorder, Game1.tileSize * 5 + Game1.tileSize / 4 + Game1.tileSize / 8, Game1.tileSize + Game1.tileSize / 8), Utilities.Data.Helper.Content.Load<Texture2D>("assets/DisplayReminders.png", ContentSource.ModFolder), new Rectangle(), 1.5f);
-            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + 8, 1, 1), "Reminder Message: "));
-            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + 8 + Game1.tileSize * 3, 1, 1), "Reminder Interval: "));
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 2 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + 8, 1, 1), "Reminder Message: "));
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 2 + 4 + Game1.tileSize / 2, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + 8 + Game1.tileSize * 3, 1, 1), "Reminder Interval: "));
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + 8 + Game1.tileSize * 6, 1, 1), "Interval 1: everyday, 2: every other day, and so on..."));
             
             ReminderMessageTextBox = new TextBox(null, null, Game1.smallFont, Game1.textColor)
             {
@@ -68,7 +66,7 @@ namespace Dem1se.RecurringReminders.UI
             ReminderIntervalTextBox = new TextBox(null, null, Game1.smallFont, Game1.textColor)
             {
                 X = xPositionOnScreen + (this.width / 2) - Game1.tileSize,
-                Y = yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + IClickableMenu.borderWidth - Game1.tileSize / 4 + Game1.tileSize / 2 + Game1.tileSize * 5,
+                Y = yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + IClickableMenu.borderWidth - Game1.tileSize / 4 + Game1.tileSize / 2 + Game1.tileSize * 4,
                 Width = Game1.tileSize * 2,
                 Height = 180,
                 textLimit = 2,
