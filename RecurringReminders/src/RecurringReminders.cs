@@ -37,7 +37,6 @@ namespace Dem1se.RecurringReminders
             helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
             helper.Events.Multiplayer.ModMessageReceived += Multiplayer.Multiplayer.OnModMessageReceived;
             helper.Events.Multiplayer.PeerContextReceived += Multiplayer.Multiplayer.OnPeerConnected;
-            //helper.Events.GameLoop.GameLaunched += MobilePhoneModAPI.MobilePhoneMod.HookToMobilePhoneMod;
         }
 
         ///<summary> Defines what happens when a save is loaded</summary>
@@ -78,38 +77,24 @@ namespace Dem1se.RecurringReminders
         /// <summary>Create a new instance of the Reminder menus, and displays them. Called on Button press</summary>
         public static void ShowReminderMenu()
         {
-            /* These are all the variables that hold the values of the reminder */
-            string reminderMessage;
-            int reminderDate;
-            int reminderTime;
 
             ModConfig config = Utilities.Data.Helper.ReadConfig<ModConfig>();
             Utilities.Data.Monitor.Log("Opening ReminderMenu page 1");
-            Game1.activeClickableMenu = new NewReminder_Page1((string message, string season, int day) =>
+            Game1.activeClickableMenu = new NewReminder_Page1((string message, int reminderInterval) =>
             {
-                int seasonIndex = (int)Enum.Parse(typeof(Utilities.Season), season);
                 Game1.exitActiveMenu();
 
-                // Convert to DaysSinceStart - Contextually choose year.
-                int year;
-
-                if (SDate.Now().SeasonIndex == seasonIndex) // same seasons
-                    year = (SDate.Now().Day > day) ? SDate.Now().Year + 1 : SDate.Now().Year;
-                else if (SDate.Now().SeasonIndex > seasonIndex) // past season
-                    year = SDate.Now().Year + 1;
-                else // future season
-                    year = SDate.Now().Year;
-
-                reminderDate = Utilities.Converts.ConvertToDays(day, seasonIndex, year);
-                reminderMessage = message;
+                int reminderTime;
+                int reminderStartDate = SDate.Now().DaysSinceStart;
+                string reminderMessage = message;
                 // open the second page
                 Utilities.Data.Monitor.Log("First page completed. Opening second page now.");
                 Game1.activeClickableMenu = new NewReminder_Page2((int time) =>
                 {
                     reminderTime = time;
                     // write the data to file
-                    Utilities.Files.WriteToFile(reminderMessage, reminderDate, reminderTime);
-                    Utilities.Data.Monitor.Log($"Saved new reminder: {reminderMessage} for {season} {day} at {Utilities.Converts.ConvertToPrettyTime(reminderTime)}.", LogLevel.Info);
+                    Utilities.Files.WriteToFile(reminderMessage, reminderStartDate, reminderInterval, reminderTime);
+                    Utilities.Data.Monitor.Log($"Saved new reminder: {reminderMessage} every {reminderInterval} days at {Utilities.Converts.ConvertToPrettyTime(reminderTime)}.", LogLevel.Info);
                 });
             });
         }
@@ -133,22 +118,13 @@ namespace Dem1se.RecurringReminders
 
                     // Read the reminder and notify if mature
                     Monitor.Log($"Processing {ev.NewTime}");
-                    ReminderModel Reminder = Helper.Data.ReadJsonFile<ReminderModel>(filePathRelative);
-                    if (Reminder.DaysInterval == currentDate.DaysSinceStart)
+                    RecurringReminderModel Reminder = Helper.Data.ReadJsonFile<RecurringReminderModel>(filePathRelative);
+                    if ((SDate.Now().DaysSinceStart - Reminder.ReminderStartDate) % Reminder.DaysInterval == 0)
                     {
                         if (Reminder.Time == ev.NewTime)
                         {
                             Game1.addHUDMessage(new HUDMessage(Reminder.ReminderMessage, 2));
                             Game1.playSound(NotificationSound);
-                            Monitor.Log($"Reminder notified for {Reminder.DaysInterval}: {Reminder.ReminderMessage}", LogLevel.Info);
-                            File.Delete(filePathAbsolute);
-                        }
-                        /* this is a very rare case (should be impossible) and won't happen normally, but I've still included it just in case,
-                         * (to avoid sedimentary files hogging the performance unnecessarily) */
-                        else if (Reminder.DaysInterval < SDate.Now().DaysSinceStart)
-                        {
-                            File.Delete(filePathAbsolute);
-                            Monitor.Log("Deleted old, useless reminder", LogLevel.Info);
                         }
                     }
                 }

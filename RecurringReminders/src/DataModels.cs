@@ -10,15 +10,17 @@ namespace Dem1se.RecurringReminders
     }
 
     /// <summary> Data model for reminders </summary>
-    class ReminderModel
+    class RecurringReminderModel
     {
-        public ReminderModel(string reminderMessage, int daysInterval, int time24hrs)
+        public RecurringReminderModel(string reminderMessage, int reminderStartDate, int daysInterval, int time24hrs)
         {
             ReminderMessage = reminderMessage;
+            ReminderStartDate = reminderStartDate;
             DaysInterval = daysInterval;
             Time = time24hrs;
         }
         public string ReminderMessage { get; set; }
+        public int ReminderStartDate { get; set; }
         public int DaysInterval { get; set; }
         public int Time { get; set; }
     }

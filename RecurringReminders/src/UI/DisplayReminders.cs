@@ -16,28 +16,26 @@ namespace Dem1se.RecurringReminders.UI
     public class DisplayReminders : IClickableMenu
     {
         private readonly List<ClickableTextureComponent> DeleteButtons = new List<ClickableTextureComponent>();
-        private readonly List<ClickableComponent> ReminderMessages = new List<ClickableComponent>();
         private readonly List<ClickableTextureComponent> Boxes = new List<ClickableTextureComponent>();
-        private readonly List<ReminderModel> Reminders = new List<ReminderModel>();
+        private readonly List<ClickableComponent> ReminderMessages = new List<ClickableComponent>();
+        private readonly List<RecurringReminderModel> Reminders = new List<RecurringReminderModel>();
 
-        private readonly ClickableTextureComponent NextPageButton;
-        private readonly ClickableTextureComponent PrevPageButton;
-        private readonly ClickableTextureComponent NewReminderButton;
+        private readonly ClickableTextureComponent NextPageButton, PrevPageButton, NewReminderButton;
         private readonly ClickableComponent NoRemindersWarning;
 
         ///<summary>This is required for switching to New Reminders menu (for its constructor requires this call back function)</summary>
-        private readonly Action<string, string, int> Page1OnChangeBehaviour;
+        private readonly Action<string, int> Page1OnChangeBehaviour;
 
         private ICursorPosition CursorPosition;
         private int PageIndex = 0;
 
         /// <summary>Construct an instance.</summary>
         /// <param name="page1OnChangeBehaviour">Required to switch to the New Reminder menu (as its constructor requires this callback function)</param>
-        public DisplayReminders(Action<string, string, int> page1OnChangeBehaviour)
+        public DisplayReminders(Action<string, int> page1OnChangeBehaviour)
             : base(Game1.viewport.Width / 2 - (632 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize, 632 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize)
         {
             //this.MenuButton = Utilities.Utilities.GetMenuButton();
-            this.Page1OnChangeBehaviour = page1OnChangeBehaviour;
+            Page1OnChangeBehaviour = page1OnChangeBehaviour;
 
             SetUpUI();
 
@@ -85,7 +83,8 @@ namespace Dem1se.RecurringReminders.UI
                 for (int i = 0; i < 5; i++)
                 {
                     Boxes.Add(new ClickableTextureComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + 16, yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * (1 + (i * 2)) - Game1.tileSize - (8 * i), width - IClickableMenu.spaceToClearSideBorder * 2 - 32, Game1.tileSize * 2 - 16), Utilities.Data.Helper.Content.Load<Texture2D>("assets/reminderBox.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
-                    Boxes[i].hoverText = Utilities.Converts.ConvertToPrettyTime(Reminders[i + (PageIndex * 5)].Time) + ", " + Utilities.Converts.ConvertToPrettyDate(Reminders[i + (PageIndex * 5)].DaysInterval);
+                    //Boxes[i].hoverText = Utilities.Converts.ConvertToPrettyTime(Reminders[i + (PageIndex * 5)].Time) + ", " + Utilities.Converts.ConvertToPrettyDate(Reminders[i + (PageIndex * 5)].DaysInterval);
+                    Boxes[i].hoverText = $"Interval: {Reminders[i + (PageIndex * 5)].DaysInterval}, Time: {Utilities.Converts.ConvertToPrettyTime(Reminders[i + (PageIndex * 5)].Time)}";
                 }
             }
             // Setup the boxes for the last page
@@ -94,7 +93,8 @@ namespace Dem1se.RecurringReminders.UI
                 for (int i = 0; i < Reminders.Count - (PageIndex * 5); i++)
                 {
                     Boxes.Add(new ClickableTextureComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + 16, yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * (1 + (i * 2)) - Game1.tileSize - (8 * i), width - IClickableMenu.spaceToClearSideBorder * 2 - 16, Game1.tileSize * 2 - 16), Utilities.Data.Helper.Content.Load<Texture2D>("assets/reminderBox.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
-                    Boxes[i].hoverText = Utilities.Converts.ConvertToPrettyTime(Reminders[i + (PageIndex * 5)].Time) + ", " + Utilities.Converts.ConvertToPrettyDate(Reminders[i + (PageIndex * 5)].DaysInterval);
+                    //Boxes[i].hoverText = Utilities.Converts.ConvertToPrettyTime(Reminders[i + (PageIndex * 5)].Time) + ", " + Utilities.Converts.ConvertToPrettyDate(Reminders[i + (PageIndex * 5)].DaysInterval);
+                    Boxes[i].hoverText = $"Interval: {Reminders[i + (PageIndex * 5)].DaysInterval}, Time: {Utilities.Converts.ConvertToPrettyTime(Reminders[i + (PageIndex * 5)].Time)}";
                 }
             }
         }
@@ -123,7 +123,7 @@ namespace Dem1se.RecurringReminders.UI
             foreach (string AbsoulutePath in Directory.GetFiles(Path.Combine(Utilities.Data.Helper.DirectoryPath, "data", Utilities.Data.SaveFolderName)))
             {
                 string RelativePath = Utilities.Extras.MakeRelativePath(AbsoulutePath);
-                Reminders.Add(Utilities.Data.Helper.Data.ReadJsonFile<ReminderModel>(RelativePath));
+                Reminders.Add(Utilities.Data.Helper.Data.ReadJsonFile<RecurringReminderModel>(RelativePath));
             }
         }
 
@@ -196,7 +196,7 @@ namespace Dem1se.RecurringReminders.UI
             Game1.drawDialogueBox(xPositionOnScreen, yPositionOnScreen, width, height - 12, false, true);
 
             // draw title scroll
-            SpriteText.drawStringWithScrollCenteredAt(b, "Display Reminders", Game1.viewport.Width / 2, yPositionOnScreen, "Display Reminder");
+            SpriteText.drawStringWithScrollCenteredAt(b, "Display Recurring Reminders", Game1.viewport.Width / 2, yPositionOnScreen, "Display Recurring Reminders");
 
             // draw boxes
             foreach (ClickableTextureComponent box in Boxes)

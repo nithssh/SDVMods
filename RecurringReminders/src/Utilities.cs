@@ -29,7 +29,7 @@ namespace Dem1se.RecurringReminders.Utilities
                 delimiter = '/';
             else
                 throw new NotSupportedException("Operating system is not Windows, Mac or Linux. Unsupported Platform");
-            
+
             filePathRelativeParts = filePathAbsolute.Split(delimiter);
             filePathIndex = Array.IndexOf(filePathRelativeParts, "data");
             for (int i = filePathIndex; i < filePathRelativeParts.Length; i++)
@@ -52,31 +52,33 @@ namespace Dem1se.RecurringReminders.Utilities
             char[] characters = reminderMessage.ToCharArray();
             // keep adding arbitrary pixel values
             // add time number
-            // TODO switch case here instead
-            if (characters[1] == ' ')
+            switch (characters[1])
+            {
+            case ' ':
                 // 1 digit time
                 width += 20;
-            else if (characters[1] == ':')
+                break;
+            case ':':
                 // 3 digit time
-                width += 80; // 20 extra for colon
-            else
-            {
+                width += 80;
+                break;
+            default:
                 if (characters[2] == ':')
                     // 4 digit time
                     width += 100; // 20 extra for colon
                 else
                     // 2 digit time
                     width += 40;
+                break;
             }
+
+
             // add space
             width += 24;
             // add AM/PM
             width += 68;
-            // add season
-            if (reminderMessage.Contains("Spring")) { width += 189; }
-            else if (reminderMessage.Contains("Summer")) { width += 196; }
-            else if (reminderMessage.Contains("Fall")) { width += 135; }
-            else { width += 186; }
+
+            width += 255;
             // add space
             width += 24;
             // add two digits
@@ -190,18 +192,18 @@ namespace Dem1se.RecurringReminders.Utilities
         /// <param name="reminderMessage">The message that will pop up in reminder</param>
         /// <param name="daysSinceStart">The date converted to DaysSinceStart</param>
         /// <param name="time">The time of the reminder in 24hrs format</param>
-        public static void WriteToFile(string reminderMessage, int daysSinceStart, int time)
+        public static void WriteToFile(string reminderMessage, int reminderStartDate, int daysInterval, int time)
         {
-            ReminderModel ReminderData = new ReminderModel(reminderMessage, daysSinceStart, time);
+            RecurringReminderModel ReminderData = new RecurringReminderModel(reminderMessage, reminderStartDate, daysInterval, time);
             string pathToWrite = Path.Combine(Data.Helper.DirectoryPath, "data", Data.SaveFolderName);
             string serializedReminderData = JsonConvert.SerializeObject(ReminderData, Formatting.Indented);
             int reminderCount = 0;
             bool bWritten = false;
             while (!bWritten)
             {
-                if (!File.Exists(Path.Combine(pathToWrite, $"reminder_{daysSinceStart}_{time}_{reminderCount}.json")))
+                if (!File.Exists(Path.Combine(pathToWrite, $"reminder_{reminderStartDate}_{time}_{reminderCount}.json")))
                 {
-                    File.WriteAllText(Path.Combine(pathToWrite, $"reminder_{daysSinceStart}_{time}_{reminderCount}.json"), serializedReminderData);
+                    File.WriteAllText(Path.Combine(pathToWrite, $"reminder_{reminderStartDate}_{time}_{reminderCount}.json"), serializedReminderData);
                     bWritten = true;
                 }
                 else
@@ -282,7 +284,7 @@ namespace Dem1se.RecurringReminders.Utilities
             }
         }
     }
-    
+
     enum Season
     {
         Spring,
