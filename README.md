@@ -1,4 +1,4 @@
-# ReminderMods
+# SDVMods
 
 Collection of few reminder mods for Stardew Valley.
 
@@ -14,9 +14,9 @@ This mod contains it's own UI (menu), through which users set the reminders with
 
 A SMAPI mod to set reminders with messages that notify every set amount of days. Interval can be set on a per-reminder basis. Comes with a menu to create new reminders and another menu to view / delete currently active reminders.
 
-## Installation
+# Installation
 Download the CustomReminders mod from [NexusMods](https://www.nexusmods.com/stardewvalley/mods/6215) and install like a regular SMAPI mod (extract into `/mods` folder).
 
-## Compatability
+# Compatability
 * Tested to work in Windows/Mac/Linux
 * No known mod conflicts

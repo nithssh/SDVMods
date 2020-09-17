@@ -6,5 +6,5 @@
   "UniqueID": "Dem1se.RecurringReminders",
   "EntryDll": "RecurringReminders.dll",
   "MinimumApiVersion": "3.0.0",
-  "UpdateKeys": []
+  "UpdateKeys": [ "Nexus:6840" ]
 }
