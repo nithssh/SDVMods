@@ -123,7 +123,7 @@ namespace Dem1se.CustomReminders.Utilities
                 month = (Season)3;
                 years--;
             }
-            return $"{month} {day}, Year {years + 1}";
+            return $"{month} {day}, {Utilities.Data.Helper.Translation.Get("date.year")} {years + 1}";
         }
 
         /// <summary>

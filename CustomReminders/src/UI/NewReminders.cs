@@ -59,7 +59,7 @@ namespace Dem1se.CustomReminders.UI
 
             OkButton = new ClickableTextureComponent("OK", new Rectangle(xPositionOnScreen + width - IClickableMenu.borderWidth - IClickableMenu.spaceToClearSideBorder - Game1.tileSize, yPositionOnScreen + height - IClickableMenu.borderWidth - IClickableMenu.spaceToClearTopBorder + Game1.tileSize / 4, Game1.tileSize, Game1.tileSize), "", null, Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 46), 1f);
             DisplayRemindersButton = new ClickableTextureComponent(new Rectangle(xPositionOnScreen - Game1.tileSize * 5 - IClickableMenu.spaceToClearSideBorder * 2, yPositionOnScreen + IClickableMenu.spaceToClearTopBorder, Game1.tileSize * 5 + Game1.tileSize / 4 + Game1.tileSize / 8, Game1.tileSize + Game1.tileSize / 8), Utilities.Data.Helper.Content.Load<Texture2D>("assets/DisplayReminders.png", ContentSource.ModFolder), new Rectangle(), 1.5f);
-            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + 8, 1, 1), "Reminder Message: "));
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + 8, 1, 1), Utilities.Data.Helper.Translation.Get("new-reminder.reminder-message")));
 
             ReminderTextBox = new TextBox(null, null, Game1.smallFont, Game1.textColor)
             {
@@ -254,7 +254,7 @@ namespace Dem1se.CustomReminders.UI
             Game1.drawDialogueBox(xPositionOnScreen, yPositionOnScreen, width, height, false, true);
 
             // draw title scroll
-            SpriteText.drawStringWithScrollCenteredAt(b, "New Reminder", Game1.viewport.Width / 2, yPositionOnScreen, "New Reminder");
+            SpriteText.drawStringWithScrollCenteredAt(b, Utilities.Data.Helper.Translation.Get("new-reminder.title"), Game1.viewport.Width / 2, yPositionOnScreen, Utilities.Data.Helper.Translation.Get("new-reminder.title"));
 
             // draw textbox
             ReminderTextBox.Draw(b, false);
@@ -270,7 +270,7 @@ namespace Dem1se.CustomReminders.UI
             // draw labels
             foreach (ClickableComponent label in Labels)
             {
-                if (label.name == "Reminder Message: ")
+                if (label.name == Utilities.Data.Helper.Translation.Get("new-reminder.reminder-message"))
                     Utility.drawTextWithShadow(b, label.name, Game1.dialogueFont, new Vector2(label.bounds.X, label.bounds.Y), Color.Black);
                 else
                     Utility.drawTextWithShadow(b, label.name, Game1.smallFont, new Vector2(label.bounds.X, label.bounds.Y), Color.Black);
@@ -330,7 +330,7 @@ namespace Dem1se.CustomReminders.UI
             OkButton = new ClickableTextureComponent("OK", new Rectangle(xPositionOnScreen + width - IClickableMenu.borderWidth - IClickableMenu.spaceToClearSideBorder - Game1.tileSize, yPositionOnScreen + height - IClickableMenu.borderWidth - IClickableMenu.spaceToClearTopBorder + Game1.tileSize / 4, Game1.tileSize, Game1.tileSize), "", null, Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 46), 1f);
 
             // Titles
-            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + 8, 1, 1), "Reminder Time: "));
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + 8, 1, 1), Utilities.Data.Helper.Translation.Get("new-reminder.reminder-time")));
             Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * 2 - Game1.tileSize / 8 + 8, 1, 1), "", "error"));
 
             // Current Choice
@@ -412,7 +412,7 @@ namespace Dem1se.CustomReminders.UI
             {
                 if (!IsValidTime())
                 {
-                    Labels[1].name = "The entered time is invalid";
+                    Labels[1].name = Utilities.Data.Helper.Translation.Get("new-reminder.invalid-time");
                 }
                 else
                 {
@@ -495,7 +495,7 @@ namespace Dem1se.CustomReminders.UI
             // draw CurrentChoiceDisplay
             if (Hours == 0 && string.IsNullOrEmpty(Minutes) && string.IsNullOrEmpty(Meridiem))
             {
-                CurrentChoiceDisplay.name = "Choose the Hour, Minutes and Period";
+                CurrentChoiceDisplay.name = Utilities.Data.Helper.Translation.Get("new-reminder.instruction");
             }
             else
             {

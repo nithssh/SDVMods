@@ -5,7 +5,6 @@ using StardewModdingAPI.Utilities;
 using StardewValley;
 using System;
 using System.IO;
-using System.Runtime.CompilerServices;
 
 namespace Dem1se.CustomReminders
 {
