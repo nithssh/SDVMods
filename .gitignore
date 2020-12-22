@@ -23,6 +23,11 @@ x64/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
 bld/
+[Oo]bj/
+[Ll]og/
+
+# Everyfolder in the Bin/*/Release folders except for the required release zip(s)
+# Setup for pyModUpdater.
 CustomReminders/[Bb]in/Release/
 CustomReminders/[Bb]in/x86/Release/*.dll
 CustomReminders/[Bb]in/x86/Release/*.xml
@@ -31,8 +36,6 @@ RecurringReminders/[Bb]in/Release/
 RecurringReminders/[Bb]in/x86/Release/*.dll
 RecurringReminders/[Bb]in/x86/Release/*.xml
 RecurringReminders/[Bb]in/x86/Release/*.txt
-[Oo]bj/
-[Ll]og/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
