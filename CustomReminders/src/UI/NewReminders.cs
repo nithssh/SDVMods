@@ -10,8 +10,6 @@ using System.Collections.Generic;
 namespace Dem1se.CustomReminders.UI
 {
     /// <summary>The menu which lets the set new reminders.</summary>
-    /// Contains calendar UI code from https://github.com/janavarro95/Stardew_Valley_Mods/blob/master/GeneralMods/HappyBirthday/Framework/BirthdayMenu.cs
-    /// Thanks to janavarro95.
     internal class NewReminder_Page1 : IClickableMenu
     {
         private ClickableTextureComponent DisplayRemindersButton;
@@ -31,9 +29,12 @@ namespace Dem1se.CustomReminders.UI
         private readonly Action<string, string, int> OnChanged;
 
         /// <summary>Construct an instance of the first page.</summary>
-        /// <param name="onChanged"></param>
+        /// <param name="onChanged">
+        /// Delegate to call once once the ok button is pressed.
+        /// Contains 3 parameters for message, season and date.
+        /// </param>
         public NewReminder_Page1(Action<string, string, int> onChanged)
-            : base(Game1.viewport.Width / 2 - (632 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize, 632 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize)
+            : base((int)(Game1.viewport.Width * Game1.options.zoomLevel) / 2 - (632 + IClickableMenu.borderWidth * 2) / 2, (int)(Game1.viewport.Height * Game1.options.zoomLevel) / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize, 632 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize)
         {
             OnChanged = onChanged;
             SetUpPositions();
@@ -74,7 +75,9 @@ namespace Dem1se.CustomReminders.UI
             SeasonButtons.Add(new ClickableTextureComponent("Summer", new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 3 - Game1.tileSize / 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + (int)(Game1.tileSize * 3.10) - Game1.tileSize / 4, Game1.tileSize * 2, Game1.tileSize), "", "", Game1.mouseCursors, new Rectangle(220, 438, 32, 8), Game1.pixelZoom));
             SeasonButtons.Add(new ClickableTextureComponent("Fall", new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 5 - Game1.tileSize / 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + (int)(Game1.tileSize * 3.1) - Game1.tileSize / 4, Game1.tileSize * 2, Game1.tileSize), "", "", Game1.mouseCursors, new Rectangle(188, 447, 32, 10), Game1.pixelZoom));
             SeasonButtons.Add(new ClickableTextureComponent("Winter", new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 7 - Game1.tileSize / 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + (int)(Game1.tileSize * 3.1) - Game1.tileSize / 4, Game1.tileSize * 2, Game1.tileSize), "", "", Game1.mouseCursors, new Rectangle(220, 448, 32, 8), Game1.pixelZoom));
-            
+
+            /// Contains calendar UI code from https://github.com/janavarro95/Stardew_Valley_Mods/blob/master/GeneralMods/HappyBirthday/Framework/BirthdayMenu.cs
+            /// Thanks to janavarro95.
             #region DateCalendar
             DayButtons.Add(new ClickableTextureComponent("1", new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 - Game1.tileSize / 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * 4 - Game1.tileSize / 4, Game1.tileSize * 1, Game1.tileSize), "", "", Game1.content.Load<Texture2D>("LooseSprites\\font_bold"), new Rectangle(8, 16, 8, 12), Game1.pixelZoom));
             DayButtons.Add(new ClickableTextureComponent("2", new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 2 - Game1.tileSize / 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * 4 - Game1.tileSize / 4, Game1.tileSize * 1, Game1.tileSize), "", "", Game1.content.Load<Texture2D>("LooseSprites\\font_bold"), new Rectangle(16, 16, 8, 12), Game1.pixelZoom));
@@ -254,7 +257,14 @@ namespace Dem1se.CustomReminders.UI
             Game1.drawDialogueBox(xPositionOnScreen, yPositionOnScreen, width, height, false, true);
 
             // draw title scroll
-            SpriteText.drawStringWithScrollCenteredAt(b, Utilities.Globals.Helper.Translation.Get("new-reminder.title"), Game1.viewport.Width / 2, yPositionOnScreen, Utilities.Globals.Helper.Translation.Get("new-reminder.title"));
+            SpriteText.drawStringWithScrollCenteredAt(
+                b,
+                Utilities.Globals.Helper.Translation.Get("new-reminder.title"),
+                (int)(Game1.viewport.Width * Game1.options.zoomLevel) / 2,
+                //(int)(yPositionOnScreen * Game1.options.zoomLevel) - (int)(Game1.tileSize * (Game1.options.zoomLevel * 2) / 4), 
+                (int)(Game1.viewport.Height * Game1.options.zoomLevel) / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize - (Game1.tileSize / 4),
+                Utilities.Globals.Helper.Translation.Get("new-reminder.title")
+            );
 
             // draw textbox
             ReminderTextBox.Draw(b, false);
@@ -317,7 +327,7 @@ namespace Dem1se.CustomReminders.UI
 
         /// <summary>The callback function that gets called when ok buttong is pressed</summary>
         public NewReminder_Page2(Action<int> onChange)
-            : base(Game1.viewport.Width / 2 - (632 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize, 632 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize)
+            : base((int)(Game1.viewport.Width * Game1.options.zoomLevel) / 2 - (632 + IClickableMenu.borderWidth * 2) / 2, (int)(Game1.viewport.Height * Game1.options.zoomLevel) / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize, 632 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize)
         {
             OnChanged = onChange;
             SetupPositions();
@@ -343,14 +353,14 @@ namespace Dem1se.CustomReminders.UI
             // Minutes
             MinutesAndMeridiemList.Add(new ClickableTextureComponent("AM", new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 4 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 6, Game1.tileSize * 2 + 16, Game1.tileSize + 8), "", "", Utilities.Globals.Helper.Content.Load<Texture2D>("assets/AM.png", ContentSource.ModFolder), new Rectangle(), (int)(Game1.pixelZoom * 0.75f)));
             MinutesAndMeridiemList.Add(new ClickableTextureComponent("PM", new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 4 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 7 + 8, Game1.tileSize * 2 + 16, Game1.tileSize + 8), "", "", Utilities.Globals.Helper.Content.Load<Texture2D>("assets/PM.png", ContentSource.ModFolder), new Rectangle(), (int)(Game1.pixelZoom * 0.75f)));
-            
+
             // Hour
             // first row: 1-6
             for (int i = 1; i <= 6; i++)
             {
                 HoursButtons.Add(new ClickableTextureComponent($"{i}", new Rectangle(xPositionOnScreen + width / 2 - (int)(Game1.tileSize * 5.0f) + (int)(Game1.tileSize * (i * 1.25f)), yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 3, Game1.tileSize + 16, Game1.tileSize + 16), "", "", Utilities.Globals.Helper.Content.Load<Texture2D>($"assets/hourButtons/{i}HourButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
             }
-            // second raw: 7-12
+            // second row: 7-12
             for (int i = 7; i <= 12; i++)
             {
                 HoursButtons.Add(new ClickableTextureComponent($"{i}", new Rectangle(xPositionOnScreen + width / 2 - (int)(Game1.tileSize * 5.0f) + (int)(Game1.tileSize * ((i - 6) * 1.25f)), yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 4 + Game1.tileSize / 4, Game1.tileSize + 16, Game1.tileSize + 16), "", "", Utilities.Globals.Helper.Content.Load<Texture2D>($"assets/hourButtons/{i}HourButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
@@ -478,6 +488,17 @@ namespace Dem1se.CustomReminders.UI
             {
                 return false;
             }
+        }
+
+        /// <summary>The method called when the game window changes size.</summary>
+        /// <param name="oldBounds">The former viewport.</param>
+        /// <param name="newBounds">The new viewport.</param>
+        public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds)
+        {
+            base.gameWindowSizeChanged(oldBounds, newBounds);
+            xPositionOnScreen = Game1.viewport.Width / 2 - (632 + IClickableMenu.borderWidth * 2) / 2;
+            yPositionOnScreen = Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize;
+            SetupPositions();
         }
 
         /// <summary> Draws the UI</summary>

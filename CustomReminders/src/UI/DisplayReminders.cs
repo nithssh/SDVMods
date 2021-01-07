@@ -34,7 +34,7 @@ namespace Dem1se.CustomReminders.UI
         /// <summary>Construct an instance.</summary>
         /// <param name="page1OnChangeBehaviour">Required to switch to the New Reminder menu (as its constructor requires this callback function)</param>
         public DisplayReminders(Action<string, string, int> page1OnChangeBehaviour)
-            : base(Game1.viewport.Width / 2 - (632 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize, 632 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize)
+            : base((int)(Game1.viewport.Width * Game1.options.zoomLevel) / 2 - (632 + IClickableMenu.borderWidth * 2) / 2, (int)(Game1.viewport.Height * Game1.options.zoomLevel) / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize, 632 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize)
         {
             //this.MenuButton = Utilities.Utilities.GetMenuButton();
             this.Page1OnChangeBehaviour = page1OnChangeBehaviour;
@@ -196,7 +196,14 @@ namespace Dem1se.CustomReminders.UI
             Game1.drawDialogueBox(xPositionOnScreen, yPositionOnScreen, width, height - 12, false, true);
 
             // draw title scroll
-            SpriteText.drawStringWithScrollCenteredAt(b, Utilities.Globals.Helper.Translation.Get("display-reminder.title"), Game1.viewport.Width / 2, yPositionOnScreen, Utilities.Globals.Helper.Translation.Get("display-reminder.title"));
+            SpriteText.drawStringWithScrollCenteredAt(
+                b,
+                Utilities.Globals.Helper.Translation.Get("display-reminder.title"),
+                (int)(Game1.viewport.Width * Game1.options.zoomLevel) / 2,
+                //(int)(yPositionOnScreen * Game1.options.zoomLevel) - (int)(Game1.tileSize * (Game1.options.zoomLevel * 2) / 4), 
+                (int)(Game1.viewport.Height * Game1.options.zoomLevel) / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize - (Game1.tileSize / 4),
+                Utilities.Globals.Helper.Translation.Get("display-reminder.title")
+            );
 
             // draw boxes
             foreach (ClickableTextureComponent box in Boxes)

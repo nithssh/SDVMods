@@ -19,11 +19,11 @@ namespace Dem1se.CustomReminders
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
-            // Load the Config
+            // Load the config
             Config = Helper.ReadConfig<ModConfig>();
             Monitor.Log("Config loaded and read.");
 
-            // set up statics (utilities.cs)
+            // Set up globals (utilities.cs)
             Utilities.Globals.Helper = Helper;
             Utilities.Globals.Monitor = Monitor;
 
