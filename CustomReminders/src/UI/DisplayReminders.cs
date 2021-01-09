@@ -15,6 +15,11 @@ namespace Dem1se.CustomReminders.UI
     /// </summary>
     public class DisplayReminders : IClickableMenu
     {
+        private readonly int XPos = (int)(Game1.viewport.Width * Game1.options.zoomLevel * (1 / Game1.options.uiScale)) / 2 - (632 + IClickableMenu.borderWidth * 2) / 2;
+        private readonly int YPos = (int)(Game1.viewport.Height * Game1.options.zoomLevel * (1 / Game1.options.uiScale)) / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize;
+        private readonly int UIWidth = 632 + IClickableMenu.borderWidth * 2;
+        private readonly int UIHeight = 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize;
+
         private readonly List<ClickableTextureComponent> DeleteButtons = new List<ClickableTextureComponent>();
         private readonly List<ClickableComponent> ReminderMessages = new List<ClickableComponent>();
         private readonly List<ClickableTextureComponent> Boxes = new List<ClickableTextureComponent>();
@@ -34,9 +39,8 @@ namespace Dem1se.CustomReminders.UI
         /// <summary>Construct an instance.</summary>
         /// <param name="page1OnChangeBehaviour">Required to switch to the New Reminder menu (as its constructor requires this callback function)</param>
         public DisplayReminders(Action<string, string, int> page1OnChangeBehaviour)
-            : base((int)(Game1.viewport.Width * Game1.options.zoomLevel) / 2 - (632 + IClickableMenu.borderWidth * 2) / 2, (int)(Game1.viewport.Height * Game1.options.zoomLevel) / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize, 632 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize)
         {
-            //this.MenuButton = Utilities.Utilities.GetMenuButton();
+            base.initialize(XPos, YPos, UIWidth, UIHeight);
             this.Page1OnChangeBehaviour = page1OnChangeBehaviour;
 
             SetUpUI();
@@ -199,9 +203,8 @@ namespace Dem1se.CustomReminders.UI
             SpriteText.drawStringWithScrollCenteredAt(
                 b,
                 Utilities.Globals.Helper.Translation.Get("display-reminder.title"),
-                (int)(Game1.viewport.Width * Game1.options.zoomLevel) / 2,
-                //(int)(yPositionOnScreen * Game1.options.zoomLevel) - (int)(Game1.tileSize * (Game1.options.zoomLevel * 2) / 4), 
-                (int)(Game1.viewport.Height * Game1.options.zoomLevel) / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize - (Game1.tileSize / 4),
+                XPos + (UIWidth / 2),
+                YPos - (Game1.tileSize / 4),
                 Utilities.Globals.Helper.Translation.Get("display-reminder.title")
             );
 
@@ -214,9 +217,22 @@ namespace Dem1se.CustomReminders.UI
             {
                 string text = "";
                 Color color = Game1.textColor;
-                Utility.drawTextWithShadow(b, label.name, Game1.smallFont, new Vector2(label.bounds.X, label.bounds.Y), color);
+                Utility.drawTextWithShadow(
+                    b,
+                    label.name,
+                    Game1.smallFont,
+                    new Vector2(label.bounds.X, label.bounds.Y),
+                    color
+                );
                 if (text.Length > 0)
-                    Utility.drawTextWithShadow(b, text, Game1.smallFont, new Vector2((label.bounds.X + Game1.tileSize / 3) - Game1.smallFont.MeasureString(text).X / 2f, (label.bounds.Y + Game1.tileSize / 2)), color);
+                    Utility.drawTextWithShadow(
+                        b,
+                        text,
+                        Game1.smallFont,
+                        new Vector2((label.bounds.X + Game1.tileSize / 3) - Game1.smallFont.MeasureString(text).X / 2f,
+                        (label.bounds.Y + Game1.tileSize / 2)),
+                        color
+                    );
             }
             if (Reminders.Count > (PageIndex + 1) * 5)
                 NextPageButton.draw(b);

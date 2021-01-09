@@ -14,6 +14,11 @@ namespace Dem1se.CustomReminders.UI
     {
         private ClickableTextureComponent DisplayRemindersButton;
 
+        private readonly int XPos = (int)(Game1.viewport.Width * Game1.options.zoomLevel * ( 1 / Game1.options.uiScale)) / 2 - (632 + IClickableMenu.borderWidth * 2) / 2;
+        private readonly int YPos = (int)(Game1.viewport.Height * Game1.options.zoomLevel * (1 / Game1.options.uiScale)) / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize;
+        private readonly int UIWidth = 632 + IClickableMenu.borderWidth * 2;
+        private readonly int UIHeight = 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize;
+
         private readonly List<ClickableComponent> Labels = new List<ClickableComponent>();
         private readonly List<ClickableTextureComponent> SeasonButtons = new List<ClickableTextureComponent>();
         private readonly List<ClickableTextureComponent> DayButtons = new List<ClickableTextureComponent>();
@@ -34,8 +39,9 @@ namespace Dem1se.CustomReminders.UI
         /// Contains 3 parameters for message, season and date.
         /// </param>
         public NewReminder_Page1(Action<string, string, int> onChanged)
-            : base((int)(Game1.viewport.Width * Game1.options.zoomLevel) / 2 - (632 + IClickableMenu.borderWidth * 2) / 2, (int)(Game1.viewport.Height * Game1.options.zoomLevel) / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize, 632 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize)
+        //: base(XPos, YPos, UIWidth, UIHeight)
         {
+            base.initialize(XPos, YPos, UIWidth, UIHeight);
             OnChanged = onChanged;
             SetUpPositions();
         }
@@ -260,9 +266,8 @@ namespace Dem1se.CustomReminders.UI
             SpriteText.drawStringWithScrollCenteredAt(
                 b,
                 Utilities.Globals.Helper.Translation.Get("new-reminder.title"),
-                (int)(Game1.viewport.Width * Game1.options.zoomLevel) / 2,
-                //(int)(yPositionOnScreen * Game1.options.zoomLevel) - (int)(Game1.tileSize * (Game1.options.zoomLevel * 2) / 4), 
-                (int)(Game1.viewport.Height * Game1.options.zoomLevel) / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize - (Game1.tileSize / 4),
+                XPos + (UIWidth / 2),
+                YPos - (Game1.tileSize / 4),
                 Utilities.Globals.Helper.Translation.Get("new-reminder.title")
             );
 
@@ -312,6 +317,12 @@ namespace Dem1se.CustomReminders.UI
         // title and the error message
         private readonly List<ClickableComponent> Labels = new List<ClickableComponent>();
 
+        /// <summary>The fields that contain the UI position and size values</summary>
+        private readonly int XPos = (int)(Game1.viewport.Width * Game1.options.zoomLevel * ( 1 / Game1.options.uiScale)) / 2 - (632 + IClickableMenu.borderWidth * 2) / 2;
+        private readonly int YPos = (int)(Game1.viewport.Height * Game1.options.zoomLevel * (1 / Game1.options.uiScale)) / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize;
+        private readonly int UIWidth = 632 + IClickableMenu.borderWidth * 2;
+        private readonly int UIHeight = 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize;
+
         private readonly List<ClickableTextureComponent> MinutesAndMeridiemList = new List<ClickableTextureComponent>();
         private readonly List<ClickableTextureComponent> HoursButtons = new List<ClickableTextureComponent>();
         private ClickableComponent CurrentChoiceDisplay;
@@ -327,8 +338,8 @@ namespace Dem1se.CustomReminders.UI
 
         /// <summary>The callback function that gets called when ok buttong is pressed</summary>
         public NewReminder_Page2(Action<int> onChange)
-            : base((int)(Game1.viewport.Width * Game1.options.zoomLevel) / 2 - (632 + IClickableMenu.borderWidth * 2) / 2, (int)(Game1.viewport.Height * Game1.options.zoomLevel) / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize, 632 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize)
         {
+            base.initialize(XPos, YPos, UIWidth, UIHeight);
             OnChanged = onChange;
             SetupPositions();
         }
