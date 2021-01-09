@@ -200,13 +200,7 @@ namespace Dem1se.CustomReminders.UI
             Game1.drawDialogueBox(xPositionOnScreen, yPositionOnScreen, width, height - 12, false, true);
 
             // draw title scroll
-            SpriteText.drawStringWithScrollCenteredAt(
-                b,
-                Utilities.Globals.Helper.Translation.Get("display-reminder.title"),
-                XPos + (UIWidth / 2),
-                YPos - (Game1.tileSize / 4),
-                Utilities.Globals.Helper.Translation.Get("display-reminder.title")
-            );
+            SpriteText.drawStringWithScrollCenteredAt(b, Utilities.Globals.Helper.Translation.Get("display-reminder.title"), Game1.options.uiScale <= 1.25f ? XPos + (UIWidth / 2) : XPos - Game1.tileSize * 2 - 32, Game1.options.uiScale <= 1.25f ? YPos - (Game1.tileSize / 4) : YPos + Game1.tileSize * 3, Utilities.Globals.Helper.Translation.Get("display-reminder.title"));
 
             // draw boxes
             foreach (ClickableTextureComponent box in Boxes)

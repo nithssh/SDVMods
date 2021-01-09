@@ -14,7 +14,7 @@ namespace Dem1se.CustomReminders.UI
     {
         private ClickableTextureComponent DisplayRemindersButton;
 
-        private readonly int XPos = (int)(Game1.viewport.Width * Game1.options.zoomLevel * ( 1 / Game1.options.uiScale)) / 2 - (632 + IClickableMenu.borderWidth * 2) / 2;
+        private readonly int XPos = (int)(Game1.viewport.Width * Game1.options.zoomLevel * (1 / Game1.options.uiScale)) / 2 - (632 + IClickableMenu.borderWidth * 2) / 2;
         private readonly int YPos = (int)(Game1.viewport.Height * Game1.options.zoomLevel * (1 / Game1.options.uiScale)) / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize;
         private readonly int UIWidth = 632 + IClickableMenu.borderWidth * 2;
         private readonly int UIHeight = 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize;
@@ -39,11 +39,10 @@ namespace Dem1se.CustomReminders.UI
         /// Contains 3 parameters for message, season and date.
         /// </param>
         public NewReminder_Page1(Action<string, string, int> onChanged)
-        //: base(XPos, YPos, UIWidth, UIHeight)
         {
             base.initialize(XPos, YPos, UIWidth, UIHeight);
             OnChanged = onChanged;
-            SetUpPositions();
+            SetUpUI();
         }
 
         /// <summary>The method called when the game window changes size.</summary>
@@ -54,18 +53,26 @@ namespace Dem1se.CustomReminders.UI
             base.gameWindowSizeChanged(oldBounds, newBounds);
             xPositionOnScreen = Game1.viewport.Width / 2 - (632 + IClickableMenu.borderWidth * 2) / 2;
             yPositionOnScreen = Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize;
-            SetUpPositions();
+            SetUpUI();
         }
 
 
         /// <summary>Regenerate the UI.</summary>
-        private void SetUpPositions()
+        private void SetUpUI()
         {
             Labels.Clear();
             DayButtons.Clear();
 
             OkButton = new ClickableTextureComponent("OK", new Rectangle(xPositionOnScreen + width - IClickableMenu.borderWidth - IClickableMenu.spaceToClearSideBorder - Game1.tileSize, yPositionOnScreen + height - IClickableMenu.borderWidth - IClickableMenu.spaceToClearTopBorder + Game1.tileSize / 4, Game1.tileSize, Game1.tileSize), "", null, Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 46), 1f);
-            DisplayRemindersButton = new ClickableTextureComponent(new Rectangle(xPositionOnScreen - Game1.tileSize * 5 - IClickableMenu.spaceToClearSideBorder * 2, yPositionOnScreen + IClickableMenu.spaceToClearTopBorder, Game1.tileSize * 5 + Game1.tileSize / 4 + Game1.tileSize / 8, Game1.tileSize + Game1.tileSize / 8), Utilities.Globals.Helper.Content.Load<Texture2D>("assets/DisplayReminders.png", ContentSource.ModFolder), new Rectangle(), 1.5f);
+            DisplayRemindersButton = new ClickableTextureComponent(
+                new Rectangle(
+                    //(int)(XPos - Game1.tileSize * 5 + (Game1.tileSize / 8 * ((Game1.options.uiScale - 1.25f) / 0.05))),
+                    xPositionOnScreen - Game1.tileSize * 5 - IClickableMenu.spaceToClearSideBorder * 2,
+                    YPos + IClickableMenu.spaceToClearTopBorder,
+                    Game1.tileSize * 5 + Game1.tileSize / 4 - Game1.tileSize / 8,
+                    Game1.tileSize + Game1.tileSize / 8),
+                Utilities.Globals.Helper.Content.Load<Texture2D>("assets/DisplayReminders.png", ContentSource.ModFolder), new Rectangle(), 1.5f);
+                //Game1.options.uiScale > 1.25f ? (-2 * Game1.options.uiScale) + 4f : 1.5f);
             Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + 8, 1, 1), Utilities.Globals.Helper.Translation.Get("new-reminder.reminder-message")));
 
             ReminderTextBox = new TextBox(null, null, Game1.smallFont, Game1.textColor)
@@ -266,8 +273,8 @@ namespace Dem1se.CustomReminders.UI
             SpriteText.drawStringWithScrollCenteredAt(
                 b,
                 Utilities.Globals.Helper.Translation.Get("new-reminder.title"),
-                XPos + (UIWidth / 2),
-                YPos - (Game1.tileSize / 4),
+                Game1.options.uiScale <= 1.25f ? XPos + (UIWidth / 2) : XPos - Game1.tileSize * 2 - 32,
+                Game1.options.uiScale <= 1.25f ? YPos - (Game1.tileSize / 4) : YPos + Game1.tileSize * 3,
                 Utilities.Globals.Helper.Translation.Get("new-reminder.title")
             );
 
@@ -318,7 +325,7 @@ namespace Dem1se.CustomReminders.UI
         private readonly List<ClickableComponent> Labels = new List<ClickableComponent>();
 
         /// <summary>The fields that contain the UI position and size values</summary>
-        private readonly int XPos = (int)(Game1.viewport.Width * Game1.options.zoomLevel * ( 1 / Game1.options.uiScale)) / 2 - (632 + IClickableMenu.borderWidth * 2) / 2;
+        private readonly int XPos = (int)(Game1.viewport.Width * Game1.options.zoomLevel * (1 / Game1.options.uiScale)) / 2 - (632 + IClickableMenu.borderWidth * 2) / 2;
         private readonly int YPos = (int)(Game1.viewport.Height * Game1.options.zoomLevel * (1 / Game1.options.uiScale)) / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize;
         private readonly int UIWidth = 632 + IClickableMenu.borderWidth * 2;
         private readonly int UIHeight = 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize;
