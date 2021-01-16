@@ -5,6 +5,7 @@ using StardewModdingAPI.Utilities;
 using StardewValley;
 using System;
 using System.IO;
+using System.Collections.Generic;
 
 namespace Dem1se.CustomReminders
 {
@@ -14,6 +15,8 @@ namespace Dem1se.CustomReminders
         /// <summary> Object containing the read data from config file.</summary>
         private ModConfig Config;
         protected string NotificationSound;
+        /// <summary> List of absolute file paths to reminders that have matured and are awaiting cleanup </summary>
+        private Queue<string> DeleteQueue = new Queue<string>();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -35,9 +38,30 @@ namespace Dem1se.CustomReminders
             helper.Events.Input.ButtonPressed += OnButtonPressed;
             helper.Events.GameLoop.TimeChanged += ReminderNotifier;
             helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
+            helper.Events.GameLoop.Saved += OnSaved;
             helper.Events.Multiplayer.ModMessageReceived += Multiplayer.Multiplayer.OnModMessageReceived;
             helper.Events.Multiplayer.PeerContextReceived += Multiplayer.Multiplayer.OnPeerConnected;
             helper.Events.GameLoop.GameLaunched += MobilePhoneModAPI.MobilePhoneMod.HookToMobilePhoneMod;
+        }
+
+        /// <summary> Loops through any mature reminders since last save and deletes their file </summary>
+        //Json-x-ly Notes: Alternatively we could just parse the files again and cleanup any old entries if we'd like to avoid maintaining a collection
+        private void OnSaved(object sender, SavedEventArgs ev) 
+        {
+            for (var i = 0; i < DeleteQueue.Count; i++) 
+            {
+                string AbsolutePath = DeleteQueue.Dequeue();
+                try 
+                {
+                    if (File.Exists(AbsolutePath)) {
+                        File.Delete(AbsolutePath);
+                    }
+                } 
+                catch (Exception e)
+                {
+                    Monitor.Log(e.Message, LogLevel.Error);
+                }
+            }
         }
 
         ///<summary> Defines what happens when a save is loaded</summary>
@@ -159,6 +183,7 @@ namespace Dem1se.CustomReminders
                             Game1.playSound(NotificationSound);
                             Monitor.Log($"Reminder notified for {Reminder.DaysSinceStart}: {Reminder.ReminderMessage}", LogLevel.Info);
                             File.Delete(filePathAbsolute);
+                            DeleteQueue.Enqueue(filePathAbsolute);
                         }
                         /* this is a very rare case (should be impossible) and won't happen normally, but I've still included it just in case,
                          * (to avoid sedimentary files hogging the performance unnecessarily) */
