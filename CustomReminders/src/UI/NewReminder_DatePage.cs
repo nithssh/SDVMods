@@ -10,7 +10,7 @@ using System.Collections.Generic;
 namespace Dem1se.CustomReminders.UI
 {
     /// <summary>The menu which lets the set new reminders.</summary>
-    public class NewReminder_Page1 : IClickableMenu
+    public class NewReminder_DatePage : IClickableMenu
     {
         private ClickableTextureComponent DisplayRemindersButton;
 
@@ -39,7 +39,7 @@ namespace Dem1se.CustomReminders.UI
         /// Delegate to call once once the ok button is pressed.
         /// Contains 3 parameters for message, season and date.
         /// </param>
-        public NewReminder_Page1(Action<string, string, int, bool> onChanged)
+        public NewReminder_DatePage(Action<string, string, int, bool> onChanged)
         {
             base.initialize(XPos, YPos, UIWidth, UIHeight);
             OnChanged = onChanged;

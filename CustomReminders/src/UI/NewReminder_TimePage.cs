@@ -12,7 +12,7 @@ namespace Dem1se.CustomReminders.UI
     /// <summary>
     /// Second page of the menu that sets the reminder's time
     /// </summary>
-    public class NewReminder_Page2 : IClickableMenu
+    public class NewReminder_TimePage : IClickableMenu
     {
         // title and the error message
         private readonly List<ClickableComponent> Labels = new List<ClickableComponent>();
@@ -35,7 +35,7 @@ namespace Dem1se.CustomReminders.UI
         private readonly Action<int> OnChanged;
 
         /// <summary>The callback function that gets called when ok button is pressed</summary>
-        public NewReminder_Page2(Action<int> onChange)
+        public NewReminder_TimePage(Action<int> onChange)
         {
             base.initialize(XPos, YPos, UIWidth, UIHeight);
             OnChanged = onChange;
