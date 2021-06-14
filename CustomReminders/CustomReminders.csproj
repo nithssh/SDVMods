@@ -76,8 +76,8 @@
     <Compile Include="src\Multiplayer.cs" />
     <Compile Include="src\CustomReminders.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\UI\NewReminder_Page2.cs" />
-    <Compile Include="src\UI\NewReminder_Page1.cs" />
+    <Compile Include="src\UI\NewReminder_TimePage.cs" />
+    <Compile Include="src\UI\NewReminder_DatePage.cs" />
     <Compile Include="src\UI\NewReminder_RecurringPage.cs" />
     <Compile Include="src\Utilities.cs" />
   </ItemGroup>

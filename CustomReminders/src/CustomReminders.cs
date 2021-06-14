@@ -129,7 +129,7 @@ namespace Dem1se.CustomReminders
             }
 
             Utilities.Globals.Monitor.Log("Opening ReminderMenu page 1");
-            Game1.activeClickableMenu = new NewReminder_Page1((string message, string season, int day, bool isRecurring) =>
+            Game1.activeClickableMenu = new NewReminder_DatePage((string message, string season, int day, bool isRecurring) =>
             {
                 int seasonIndex = (int)Enum.Parse(typeof(Utilities.Season), season);
                 Game1.exitActiveMenu();
@@ -156,7 +156,7 @@ namespace Dem1se.CustomReminders
                         reminderInterval = interval;
 
                         // open third page
-                        Game1.activeClickableMenu = new NewReminder_Page2((int time) =>
+                        Game1.activeClickableMenu = new NewReminder_TimePage((int time) =>
                         {
                             reminderTime = time;
                             Utilities.File.Write(reminderMessage, reminderDate, reminderTime, reminderInterval);
@@ -166,7 +166,7 @@ namespace Dem1se.CustomReminders
                 }
                 else
                 {
-                    Game1.activeClickableMenu = new NewReminder_Page2((int time) =>
+                    Game1.activeClickableMenu = new NewReminder_TimePage((int time) =>
                     {
                         reminderTime = time;
                         Utilities.File.Write(reminderMessage, reminderDate, reminderTime, reminderInterval);

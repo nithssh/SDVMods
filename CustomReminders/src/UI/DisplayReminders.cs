@@ -152,7 +152,7 @@ namespace Dem1se.CustomReminders.UI
 
             // clicked new reminder
             if (NewReminderButton.containsPoint(x, y))
-                Game1.activeClickableMenu = new NewReminder_Page1(Page1OnChangeBehaviour);
+                Game1.activeClickableMenu = new NewReminder_DatePage(Page1OnChangeBehaviour);
 
             // clicked delete button
             int reminderindex = 0;
