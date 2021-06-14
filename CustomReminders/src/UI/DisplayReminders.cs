@@ -250,9 +250,14 @@ namespace Dem1se.CustomReminders.UI
                 {
                     if (box.hoverText != null)
                     {
+                        int height;
                         int x = Game1.getMouseX() + 32;
                         int y = Game1.getMouseY() + 32 + 16;
-                        IClickableMenu.drawTextureBox(b, Game1.menuTexture, new Rectangle(0, 256, 60, 60), x, y - 16, Utilities.Extras.EstimateStringDimension(box.hoverText) + 8, Game1.tileSize + 16, Color.White, 1f, true);
+                        if (Game1.viewport.Width - (x + Utilities.Extras.EstimateStringDimension(box.hoverText)) < 0)
+                            height = Game1.tileSize * 2 + 16;
+                        else
+                            height = Game1.tileSize + 16;
+                        IClickableMenu.drawTextureBox(b, Game1.menuTexture, new Rectangle(0, 256, 60, 60), x, y - 16, Utilities.Extras.EstimateStringDimension(box.hoverText) + 8, height, Color.White, 1f, true);
                         SpriteText.drawString(b, box.hoverText, x + 32, y, 999, -1, 99, 1f, 0.88f, false, -1, "", 8, SpriteText.ScrollTextAlignment.Left);
                     }
                 }
