@@ -32,14 +32,14 @@ namespace Dem1se.CustomReminders.UI
         private readonly ClickableComponent NoRemindersWarning;
 
         ///<summary>This is required for switching to New Reminders menu (for its constructor requires this call back function)</summary>
-        private readonly Action<string, string, int> Page1OnChangeBehaviour;
+        private readonly Action<string, string, int, bool> Page1OnChangeBehaviour;
 
         private ICursorPosition CursorPosition;
         private int PageIndex = 0;
 
         /// <summary>Construct an instance.</summary>
         /// <param name="page1OnChangeBehaviour">Required to switch to the New Reminder menu (as its constructor requires this callback function)</param>
-        public DisplayReminders(Action<string, string, int> page1OnChangeBehaviour)
+        public DisplayReminders(Action<string, string, int, bool> page1OnChangeBehaviour)
         {
             base.initialize(XPos, YPos, UIWidth, UIHeight);
             this.Page1OnChangeBehaviour = page1OnChangeBehaviour;
@@ -138,7 +138,8 @@ namespace Dem1se.CustomReminders.UI
                 //Json-x-ly Notes: Threw this check in since now there are entries that are spent, but still awaiting cleanup. Implies to the user that the Reminder is gone.
                 // -- Changing the "Reminder.Time < Game1.timeOfDay" to "Reminder.Time <= Game1.timeOfDay" determines if the entry is left in the list for the actual moment in time it's triggered.
                 // If Reminder is today or earlier and Reminders Time is earlier then now, omit the entry.
-                if (Reminder.DaysSinceStart <= now.DaysSinceStart && Reminder.Time < Game1.timeOfDay) continue;
+                if (Reminder.DaysSinceStart <= now.DaysSinceStart && Reminder.Time < Game1.timeOfDay && Reminder.Interval == -1) 
+                    continue;
 
                 Reminders.Add(Reminder);
             }

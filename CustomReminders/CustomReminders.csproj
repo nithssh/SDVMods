@@ -71,11 +71,14 @@
     <None Include="i18n\default.json" />
     <Compile Include="src\DataModels.cs" />
     <Compile Include="src\MobilePhoneModAPI.cs" />
+    <Compile Include="src\UI\CheckBox.cs" />
     <Compile Include="src\UI\DisplayReminders.cs" />
     <Compile Include="src\Multiplayer.cs" />
     <Compile Include="src\CustomReminders.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\UI\NewReminders.cs" />
+    <Compile Include="src\UI\NewReminder_Page2.cs" />
+    <Compile Include="src\UI\NewReminder_Page1.cs" />
+    <Compile Include="src\UI\NewReminder_RecurringPage.cs" />
     <Compile Include="src\Utilities.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -12,9 +12,10 @@ namespace Dem1se.CustomReminders
     /// <summary>The mod entry point.</summary>
     public class ModEntry : Mod
     {
-        /// <summary> Object containing the read data from config file.</summary>
+        
         private ModConfig Config;
-        protected string NotificationSound;
+        private string NotificationSound;
+        
         /// <summary> List of absolute file paths to reminders that have matured and are awaiting cleanup </summary>
         private Queue<string> DeleteQueue = new Queue<string>();
 
@@ -128,7 +129,7 @@ namespace Dem1se.CustomReminders
             }
 
             Utilities.Globals.Monitor.Log("Opening ReminderMenu page 1");
-            Game1.activeClickableMenu = new NewReminder_Page1((string message, string season, int day) =>
+            Game1.activeClickableMenu = new NewReminder_Page1((string message, string season, int day, bool isRecurring) =>
             {
                 int seasonIndex = (int)Enum.Parse(typeof(Utilities.Season), season);
                 Game1.exitActiveMenu();
@@ -145,15 +146,33 @@ namespace Dem1se.CustomReminders
 
                 reminderDate = Utilities.Converts.ConvertToDays(day, seasonIndex, year);
                 reminderMessage = message;
+                int reminderInterval = -1;
+                
                 // open the second page
-                Utilities.Globals.Monitor.Log("First page completed. Opening second page now.");
-                Game1.activeClickableMenu = new NewReminder_Page2((int time) =>
+                if (isRecurring)
                 {
-                    reminderTime = time;
-                    // write the data to file
-                    Utilities.Files.WriteToFile(reminderMessage, reminderDate, reminderTime);
-                    Utilities.Globals.Monitor.Log($"Saved new reminder: {reminderMessage} for {season} {day} at {Utilities.Converts.ConvertToPrettyTime(reminderTime)}.", LogLevel.Info);
-                });
+                    Game1.activeClickableMenu = new NewReminder_RecurringPage((int interval) =>
+                    {
+                        reminderInterval = interval;
+
+                        // open third page
+                        Game1.activeClickableMenu = new NewReminder_Page2((int time) =>
+                        {
+                            reminderTime = time;
+                            Utilities.Files.WriteToFile(reminderMessage, reminderDate, reminderTime, reminderInterval);
+                            Utilities.Globals.Monitor.Log($"Saved new reminder: {reminderMessage} for {season} {day} at {Utilities.Converts.ConvertToPrettyTime(reminderTime)}.", LogLevel.Info);
+                        });
+                    });
+                }
+                else
+                {
+                    Game1.activeClickableMenu = new NewReminder_Page2((int time) =>
+                    {
+                        reminderTime = time;
+                        Utilities.Files.WriteToFile(reminderMessage, reminderDate, reminderTime, reminderInterval);
+                        Utilities.Globals.Monitor.Log($"Saved new reminder: {reminderMessage} for {season} {day} at {Utilities.Converts.ConvertToPrettyTime(reminderTime)}.", LogLevel.Info);
+                    });
+                }
             });
 
             // MobilePhoneMod exit housekeeping
@@ -168,7 +187,7 @@ namespace Dem1se.CustomReminders
             ReminderNotifierLoop(ev.NewTime);
         }
 
-        // Json-x-ly Notes: Separated for OnSaveLoaded check since loading a new game does not send a TimeChanged event for the 600 hour 
+        // Json-x-ly Notes: Separated for OnSaveLoaded check since loading a new game does not send a TimeChanged event for the 600 hour
         private void ReminderNotifierLoop(int newTime)
         {
             // returns function if game time isn't multiple of 30 in-game minutes.
@@ -176,7 +195,6 @@ namespace Dem1se.CustomReminders
             if (!(timeString.EndsWith("30") || timeString.EndsWith("00"))) return;
 
             // Loops through all the reminder files and evaluates if they are current.
-
             #region ReminderNotifierloop
             SDate currentDate = SDate.Now();
             foreach (string filePathAbsolute in Directory.EnumerateFiles(Path.Combine(Helper.DirectoryPath, "data", Utilities.Globals.SaveFolderName)))
@@ -193,23 +211,33 @@ namespace Dem1se.CustomReminders
                     // Read the reminder and notify if mature
                     Monitor.Log($"Processing {newTime}");
                     ReminderModel Reminder = Helper.Data.ReadJsonFile<ReminderModel>(filePathRelative);
-                    if (Reminder.DaysSinceStart == currentDate.DaysSinceStart)
+                    if (Reminder.Interval != -1)
                     {
-                        if (Reminder.Time == newTime)
+                        // recurring reminder
+                        if ((SDate.Now().DaysSinceStart - Reminder.DaysSinceStart) % Reminder.Interval == 0)
                         {
-                            Game1.addHUDMessage(new HUDMessage(Reminder.ReminderMessage, 2));
-                            Game1.playSound(NotificationSound);
-                            Monitor.Log($"Reminder notified for {Reminder.DaysSinceStart}: {Reminder.ReminderMessage}", LogLevel.Info);
-                            // Store the path for deletion later.
-                            DeleteQueue.Enqueue(filePathAbsolute);
+                            if (Reminder.Time == newTime)
+                            {
+                                Game1.addHUDMessage(new HUDMessage(Reminder.ReminderMessage, 2));
+                                Game1.playSound(NotificationSound);
+                            }
                         }
-                        /* this is a very rare case (should be impossible) and won't happen normally, but I've still included it just in case,
-                         * (to avoid sedimentary files hogging the performance unnecessarily) */
-                        else if (Reminder.DaysSinceStart < SDate.Now().DaysSinceStart)
+                    }
+                    else
+                    {
+                        // single reminder
+                        if (Reminder.DaysSinceStart == currentDate.DaysSinceStart)
                         {
-                            File.Delete(filePathAbsolute);
-                            Monitor.Log("Deleted old, useless reminder", LogLevel.Info);
+                            if (Reminder.Time == newTime)
+                            {
+                                Game1.addHUDMessage(new HUDMessage(Reminder.ReminderMessage, 2));
+                                Game1.playSound(NotificationSound);
+                                Monitor.Log($"Reminder notified for {Reminder.DaysSinceStart}: {Reminder.ReminderMessage}", LogLevel.Info);
+                                // Store the path for deletion later.
+                                DeleteQueue.Enqueue(filePathAbsolute);
+                            }
                         }
+
                     }
                 }
                 catch (Exception e)
