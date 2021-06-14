@@ -144,7 +144,7 @@ namespace Dem1se.CustomReminders
                 else // future season
                     year = SDate.Now().Year;
 
-                reminderDate = Utilities.Converts.ConvertToDays(day, seasonIndex, year);
+                reminderDate = Utilities.Convert.ToDaysSinceStart(day, seasonIndex, year);
                 reminderMessage = message;
                 int reminderInterval = -1;
                 
@@ -159,8 +159,8 @@ namespace Dem1se.CustomReminders
                         Game1.activeClickableMenu = new NewReminder_Page2((int time) =>
                         {
                             reminderTime = time;
-                            Utilities.Files.WriteToFile(reminderMessage, reminderDate, reminderTime, reminderInterval);
-                            Utilities.Globals.Monitor.Log($"Saved new reminder: {reminderMessage} for {season} {day} at {Utilities.Converts.ConvertToPrettyTime(reminderTime)}.", LogLevel.Info);
+                            Utilities.File.Write(reminderMessage, reminderDate, reminderTime, reminderInterval);
+                            Utilities.Globals.Monitor.Log($"Saved new reminder: {reminderMessage} for {season} {day} at {Utilities.Convert.ToPrettyTime(reminderTime)}.", LogLevel.Info);
                         });
                     });
                 }
@@ -169,8 +169,8 @@ namespace Dem1se.CustomReminders
                     Game1.activeClickableMenu = new NewReminder_Page2((int time) =>
                     {
                         reminderTime = time;
-                        Utilities.Files.WriteToFile(reminderMessage, reminderDate, reminderTime, reminderInterval);
-                        Utilities.Globals.Monitor.Log($"Saved new reminder: {reminderMessage} for {season} {day} at {Utilities.Converts.ConvertToPrettyTime(reminderTime)}.", LogLevel.Info);
+                        Utilities.File.Write(reminderMessage, reminderDate, reminderTime, reminderInterval);
+                        Utilities.Globals.Monitor.Log($"Saved new reminder: {reminderMessage} for {season} {day} at {Utilities.Convert.ToPrettyTime(reminderTime)}.", LogLevel.Info);
                     });
                 }
             });
