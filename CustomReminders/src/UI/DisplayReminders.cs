@@ -78,12 +78,12 @@ namespace Dem1se.CustomReminders.UI
                         else
                             second_phrase = $"every {Reminders[i + (PageIndex * 5)].Interval - 1} days";
 
-                        Boxes[i].hoverText = $"{Utilities.Converts.ConvertToPrettyTime(Reminders[i + (PageIndex * 5)].Time)} {second_phrase}, since {Utilities.Converts.ConvertToPrettyDate(Reminders[i + (PageIndex * 5)].DaysSinceStart)}";
+                        Boxes[i].hoverText = $"{Utilities.Convert.ToPrettyTime(Reminders[i + (PageIndex * 5)].Time)} {second_phrase}, since {Utilities.Convert.ToPrettyDate(Reminders[i + (PageIndex * 5)].DaysSinceStart)}";
                         RecurringIcons.Add(new ClickableTextureComponent(new Rectangle(xPositionOnScreen - IClickableMenu.spaceToClearSideBorder - IClickableMenu.borderWidth + width - Game1.tileSize * 1 - 10*Game1.pixelZoom, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 + Game1.tileSize * (i * 2) - Game1.tileSize / 2 - (i * 8) + Game1.tileSize, Game1.tileSize, Game1.tileSize), Utilities.Globals.Helper.Content.Load<Texture2D>("assets/greenLoop.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
                     }
                     else
                     {
-                        Boxes[i].hoverText = Utilities.Converts.ConvertToPrettyTime(Reminders[i + (PageIndex * 5)].Time) + ", " + Utilities.Converts.ConvertToPrettyDate(Reminders[i + (PageIndex * 5)].DaysSinceStart);
+                        Boxes[i].hoverText = Utilities.Convert.ToPrettyTime(Reminders[i + (PageIndex * 5)].Time) + ", " + Utilities.Convert.ToPrettyDate(Reminders[i + (PageIndex * 5)].DaysSinceStart);
                     }
                 }
             }
@@ -94,7 +94,7 @@ namespace Dem1se.CustomReminders.UI
                 {
                     ReminderMessages.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize - Game1.tileSize / 16, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 + Game1.tileSize * (i * 2) - Game1.tileSize / 2 - (i * 8) + Game1.tileSize, 1, 1), Reminders[i + (PageIndex * 5)].ReminderMessage));
                     Boxes.Add(new ClickableTextureComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + 16, yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * (1 + (i * 2)) - Game1.tileSize - (8 * i), width - IClickableMenu.spaceToClearSideBorder * 2 - 16, Game1.tileSize * 2 - 16), Utilities.Globals.Helper.Content.Load<Texture2D>("assets/reminderBox.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
-                    Boxes[i].hoverText = Utilities.Converts.ConvertToPrettyTime(Reminders[i + (PageIndex * 5)].Time) + ", " + Utilities.Converts.ConvertToPrettyDate(Reminders[i + (PageIndex * 5)].DaysSinceStart);
+                    Boxes[i].hoverText = Utilities.Convert.ToPrettyTime(Reminders[i + (PageIndex * 5)].Time) + ", " + Utilities.Convert.ToPrettyDate(Reminders[i + (PageIndex * 5)].DaysSinceStart);
                     DeleteButtons.Add(new ClickableTextureComponent(new Rectangle(xPositionOnScreen - IClickableMenu.spaceToClearSideBorder - IClickableMenu.borderWidth + width - Game1.tileSize * 1, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 2 + Game1.tileSize / 16 + Game1.tileSize * (i * 2) - Game1.tileSize / 2 - (i * 8) + Game1.tileSize, Game1.tileSize, Game1.tileSize), Utilities.Globals.Helper.Content.Load<Texture2D>("assets/deleteButton.png", ContentSource.ModFolder), new Rectangle(), Game1.pixelZoom));
                 }
             }
@@ -162,7 +162,7 @@ namespace Dem1se.CustomReminders.UI
                 if (deleteButton.containsPoint(x, y))
                 {
                     int reminderIndex = (PageIndex * 5) + reminderindex;
-                    Utilities.Files.DeleteReminder(reminderIndex);
+                    Utilities.File.DeleteReminder(reminderIndex);
                     SetUpUI();
                     break;
                 }
