@@ -146,7 +146,11 @@ namespace Dem1se.CustomReminders.Utilities
                 prettyTime = Convert.ToString(timeIn24 - 1200);
                 if (prettyTime.EndsWith("00")) // ends with 00
                 {
-                    prettyTime = prettyTime.Replace("00", " ");
+                    if (prettyTime == "1000")
+                        prettyTime = prettyTime.Remove(2);
+                    else
+                        prettyTime = prettyTime.Replace("00", " ");
+
                     if (prettyTime.StartsWith("0"))
                         prettyTime = prettyTime.Replace("0", " ");
                     prettyTime = prettyTime.Trim();
