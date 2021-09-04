@@ -12,10 +12,9 @@ namespace Dem1se.CustomReminders
     /// <summary>The mod entry point.</summary>
     public class ModEntry : Mod
     {
-        
         private ModConfig Config;
         private string NotificationSound;
-        
+
         /// <summary> List of absolute file paths to reminders that have matured and are awaiting cleanup </summary>
         private Queue<string> DeleteQueue = new Queue<string>();
 
@@ -110,7 +109,7 @@ namespace Dem1se.CustomReminders
         /// <summary>Create a new instance of the Reminder menus, and displays them. Called on Button press</summary>
         public static void ShowReminderMenu()
         {
-            /* These are all the variables that hold the values of the reminder */
+            // These are all the variables that hold the values of the reminder 
             string reminderMessage;
             int reminderDate;
             int reminderTime;
@@ -147,7 +146,7 @@ namespace Dem1se.CustomReminders
                 reminderDate = Utilities.Convert.ToDaysSinceStart(day, seasonIndex, year);
                 reminderMessage = message;
                 int reminderInterval = -1;
-                
+
                 // open the second page
                 if (isRecurring)
                 {
