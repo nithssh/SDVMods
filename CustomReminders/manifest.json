@@ -1,7 +1,7 @@
 {
   "Name": "CustomReminders",
   "Author": "Dem1se",
-  "Version": "2.0.0-beta1",
+  "Version": "2.1.0-beta1",
   "Description": "Lets players set in-game reminder through a new menu.",
   "UniqueID": "Dem1se.CustomReminders",
   "EntryDll": "CustomReminders.dll",
@@ -10,7 +10,7 @@
   "ModUpdater": {
     "Repository": "SDVMods",
     "User": "Dem1se",
-    "Directory": "CustomReminders/bin/x86/Release",
+    "Directory": "_release",
     "ModFolder": "CustomReminders"
   }
 }
