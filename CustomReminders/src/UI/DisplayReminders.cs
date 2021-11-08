@@ -246,13 +246,13 @@ namespace Dem1se.CustomReminders.UI
             // draw the boxes hover text
             foreach (ClickableTextureComponent box in Boxes)
             {
-                if (box.containsPoint((int)CursorPosition.ScreenPixels.X, (int)CursorPosition.ScreenPixels.Y))
+                if (box.containsPoint(Game1.getMousePosition(true).X, Game1.getMousePosition(true).Y))
                 {
                     if (box.hoverText != null)
                     {
                         int height;
-                        int x = Game1.getMouseX() + 32;
-                        int y = Game1.getMouseY() + 32 + 16;
+                        int x = Game1.getMousePosition(true).X + 32;
+                        int y = Game1.getMousePosition(true).Y + 32 + 16;
                         if (Game1.viewport.Width - (x + Utilities.Extras.EstimateStringDimension(box.hoverText)) < 0)
                             height = Game1.tileSize * 2 + 16;
                         else
