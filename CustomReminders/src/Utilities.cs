@@ -217,6 +217,20 @@ namespace Dem1se.CustomReminders.Utilities
                     iterationIndex++;
             }
         }
+
+        /// <summary>
+        /// Checks if data subfolder exists for given saveFolderName, creates dir if not.
+        /// Make sure, Globals.SaveFolderName is initialized before calling it. Will throw NullReferencesExceptions otherwise.
+        /// </summary>
+        public static void CreateDataSubfolder()
+        {
+            if (!Directory.Exists(Path.Combine(Globals.Helper.DirectoryPath, "data", Globals.SaveFolderName)))
+            {
+                Globals.Monitor.Log($"Reminders directory({Globals.SaveFolderName}) not found. Creating directory.", LogLevel.Info);
+                Directory.CreateDirectory(Path.Combine(Globals.Helper.DirectoryPath, "data", Globals.SaveFolderName));
+                Globals.Monitor.Log($"Reminders directory({Globals.SaveFolderName}) created successfully.", LogLevel.Info);
+            }
+        }
     }
 
     /// <summary>Contains data values that are used across classes and namespaces</summary>
@@ -229,18 +243,15 @@ namespace Dem1se.CustomReminders.Utilities
         internal static IMonitor Monitor;
 
         /// <summary>
-        /// <para>
-        /// Contains the save folder name for mulitplayer support.
+        /// Contains the save folder name. Added especially for mulitplayer support, but reqiured in all cases now.
         /// Host generates own value, peers recieve value from host.
-        /// </para>
-        /// <para>
-        /// This is a critical field, and will cause multiple exceptions across namespaces and classes if null. 
-        /// </para>
         /// </summary>
         public static string SaveFolderName;
 
         /// <summary>The menu button of the player, required for suppressing</summary>
         public static SButton MenuButton;
+
+        public static IManifest ModManifest;
 
         /// <summary>
         /// Returns the button that is set to open the menu in current save.

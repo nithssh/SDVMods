@@ -27,6 +27,7 @@ namespace Dem1se.CustomReminders
             // Set up globals (utilities.cs)
             Utilities.Globals.Helper = Helper;
             Utilities.Globals.Monitor = Monitor;
+            Utilities.Globals.ModManifest = ModManifest;
 
             // Set the notification sound
             NotificationSound = Config.SubtlerReminderSound ? "crit" : "questcomplete";
@@ -62,8 +63,7 @@ namespace Dem1se.CustomReminders
                 }
             }
         }
-
-        ///<summary> Defines what happens when a save is loaded</summary>
+        
         void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
         {
             // set the SaveFolderName field if multiplayer host or singleplayer
@@ -80,12 +80,8 @@ namespace Dem1se.CustomReminders
 
             // Create the data subfolder for the save for first time users. 
             // Avoid DirectoryNotFound Exception in OnChangedBehaviour() when trying to save new reminder for first time
-            if (!Directory.Exists(Path.Combine(Helper.DirectoryPath, "data", Utilities.Globals.SaveFolderName)))
-            {
-                Monitor.Log("Reminders directory not found. Creating directory.", LogLevel.Info);
-                Directory.CreateDirectory(Path.Combine(Helper.DirectoryPath, "data", Utilities.Globals.SaveFolderName));
-                Monitor.Log("Reminders directory created successfully.", LogLevel.Info);
-            }
+            if (Utilities.Globals.SaveFolderName != null)
+                Utilities.File.CreateDataSubfolder();
 
             //Json-x-ly Notes: Wipes the Queue for the new save context
             DeleteQueue.Clear();
@@ -94,7 +90,7 @@ namespace Dem1se.CustomReminders
             ReminderNotifierLoop(Game1.timeOfDay);
         }
 
-        /// <summary> Defines what happens when user press the config button </summary>
+        /// <summary> Handle reminder button press</summary>
         void OnButtonPressed(object sender, ButtonPressedEventArgs ev)
         {
             // ignore if player hasn't loaded a save yet
@@ -104,7 +100,6 @@ namespace Dem1se.CustomReminders
             ShowReminderMenu();
         }
 
-        /// <summary>Create a new instance of the Reminder menus, and displays them. Called on Button press</summary>
         public static void ShowReminderMenu()
         {
             // These are all the variables that hold the values of the reminder 

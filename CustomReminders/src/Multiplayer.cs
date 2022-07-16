@@ -14,10 +14,11 @@ namespace Dem1se.CustomReminders.Multiplayer
         /// </summary>
         public static void OnModMessageReceived(object sender, ModMessageReceivedEventArgs e)
         {
-            if (e.FromModID == Utilities.Globals.Helper.ModRegistry.ModID && e.Type == "SaveFolderName")
+            if (e.FromModID == Utilities.Globals.ModManifest.UniqueID && e.Type == "SaveFolderName")
             {
                 SaveFolderNameModel message = e.ReadAs<SaveFolderNameModel>();
                 Utilities.Globals.SaveFolderName = message.SaveFolderName;
+                Utilities.File.CreateDataSubfolder();
             }
         }
 
@@ -31,7 +32,7 @@ namespace Dem1se.CustomReminders.Multiplayer
                 Utilities.Globals.Helper.Multiplayer.SendMessage<SaveFolderNameModel>(
                     new SaveFolderNameModel() { SaveFolderName = Utilities.Globals.SaveFolderName },
                     "SaveFolderName",
-                    modIDs: new[] { Utilities.Globals.Helper.ModRegistry.ModID },
+                    modIDs: new[] { Utilities.Globals.ModManifest.UniqueID },
                     playerIDs: new[] { e.Peer.PlayerID }
                 );
             }
