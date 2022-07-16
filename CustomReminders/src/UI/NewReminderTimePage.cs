@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 using System;
@@ -9,18 +8,16 @@ using System.Collections.Generic;
 namespace Dem1se.CustomReminders.UI
 {
 
-    /// <summary>
-    /// Second page of the menu that sets the reminder's time
-    /// </summary>
-    public class NewReminder_TimePage : IClickableMenu
+    // Page 3
+    public class NewReminderTimePage : IClickableMenu
     {
         // title and the error message
         readonly List<ClickableComponent> Labels = new();
 
-        readonly int XPos = (int)(Game1.viewport.Width * Game1.options.zoomLevel * (1 / Game1.options.uiScale)) / 2 - (632 + IClickableMenu.borderWidth * 2) / 2;
-        readonly int YPos = (int)(Game1.viewport.Height * Game1.options.zoomLevel * (1 / Game1.options.uiScale)) / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize;
-        readonly int UIWidth = 632 + IClickableMenu.borderWidth * 2;
-        readonly int UIHeight = 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize;
+        readonly int XPos = (int)(Game1.viewport.Width * Game1.options.zoomLevel * (1 / Game1.options.uiScale)) / 2 - (632 + borderWidth * 2) / 2;
+        readonly int YPos = (int)(Game1.viewport.Height * Game1.options.zoomLevel * (1 / Game1.options.uiScale)) / 2 - (600 + borderWidth * 2) / 2 - Game1.tileSize;
+        readonly int UIWidth = 632 + borderWidth * 2;
+        readonly int UIHeight = 600 + borderWidth * 2 + Game1.tileSize;
 
         readonly List<ClickableTextureComponent> MinutesAndMeridiemList = new();
         readonly List<ClickableTextureComponent> HoursButtons = new();
@@ -35,9 +32,9 @@ namespace Dem1se.CustomReminders.UI
         readonly Action<int> OnChanged;
 
         /// <summary>The callback function that gets called when ok button is pressed</summary>
-        public NewReminder_TimePage(Action<int> onChange)
+        public NewReminderTimePage(Action<int> onChange)
         {
-            base.initialize(XPos, YPos, UIWidth, UIHeight);
+            initialize(XPos, YPos, UIWidth, UIHeight);
             OnChanged = onChange;
             SetupPositions();
         }
@@ -45,33 +42,33 @@ namespace Dem1se.CustomReminders.UI
         private void SetupPositions()
         {
             // Ok button
-            OkButton = new ClickableTextureComponent("OK", new Rectangle(xPositionOnScreen + width - IClickableMenu.borderWidth - IClickableMenu.spaceToClearSideBorder - Game1.tileSize, yPositionOnScreen + height - IClickableMenu.borderWidth - IClickableMenu.spaceToClearTopBorder + Game1.tileSize / 4, Game1.tileSize, Game1.tileSize), "", null, Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 46), 1f);
+            OkButton = new ClickableTextureComponent("OK", new Rectangle(xPositionOnScreen + width - borderWidth - spaceToClearSideBorder - Game1.tileSize, yPositionOnScreen + height - borderWidth - spaceToClearTopBorder + Game1.tileSize / 4, Game1.tileSize, Game1.tileSize), "", null, Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 46), 1f);
 
             // Titles
-            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + 8, 1, 1), Utilities.Globals.Helper.Translation.Get("new-reminder.reminder-time")));
-            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + Game1.tileSize * 2 - Game1.tileSize / 8 + 8, 1, 1), "", "error"));
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 1 + 4, yPositionOnScreen + borderWidth + spaceToClearTopBorder - Game1.tileSize / 8 + 8, 1, 1), Utilities.Globals.Helper.Translation.Get("new-reminder.reminder-time")));
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 1 + 4, yPositionOnScreen + borderWidth + spaceToClearTopBorder + Game1.tileSize * 2 - Game1.tileSize / 8 + 8, 1, 1), "", "error"));
 
             // Current Choice
-            CurrentChoiceDisplay = new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + Game1.tileSize - Game1.tileSize / 8 + 8, 1, 1), "CurrentTimeDisplay");
+            CurrentChoiceDisplay = new ClickableComponent(new Rectangle(xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 1 + 4, yPositionOnScreen + borderWidth + spaceToClearTopBorder + Game1.tileSize - Game1.tileSize / 8 + 8, 1, 1), "CurrentTimeDisplay");
 
             // AM or PM
-            MinutesAndMeridiemList.Add(new ClickableTextureComponent("00", new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 6, Game1.tileSize * 2 + 16, Game1.tileSize + 8), "", "", Utilities.Globals.Helper.ModContent.Load<Texture2D>("assets/00.png"), new Rectangle(), (int)(Game1.pixelZoom * 0.75f)));
-            MinutesAndMeridiemList.Add(new ClickableTextureComponent("30", new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 7 + 8, Game1.tileSize * 2 + 16, Game1.tileSize + 8), "", "", Utilities.Globals.Helper.ModContent.Load<Texture2D>("assets/30.png"), new Rectangle(), (int)(Game1.pixelZoom * 0.75f)));
+            MinutesAndMeridiemList.Add(new ClickableTextureComponent("00", new Rectangle(xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize + 4, yPositionOnScreen + borderWidth + spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 6, Game1.tileSize * 2 + 16, Game1.tileSize + 8), "", "", Utilities.Globals.Helper.ModContent.Load<Texture2D>("assets/00.png"), new Rectangle(), (int)(Game1.pixelZoom * 0.75f)));
+            MinutesAndMeridiemList.Add(new ClickableTextureComponent("30", new Rectangle(xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize + 4, yPositionOnScreen + borderWidth + spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 7 + 8, Game1.tileSize * 2 + 16, Game1.tileSize + 8), "", "", Utilities.Globals.Helper.ModContent.Load<Texture2D>("assets/30.png"), new Rectangle(), (int)(Game1.pixelZoom * 0.75f)));
 
             // Minutes
-            MinutesAndMeridiemList.Add(new ClickableTextureComponent("AM", new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 4 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 6, Game1.tileSize * 2 + 16, Game1.tileSize + 8), "", "", Utilities.Globals.Helper.ModContent.Load<Texture2D>("assets/AM.png"), new Rectangle(), (int)(Game1.pixelZoom * 0.75f)));
-            MinutesAndMeridiemList.Add(new ClickableTextureComponent("PM", new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 4 + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 7 + 8, Game1.tileSize * 2 + 16, Game1.tileSize + 8), "", "", Utilities.Globals.Helper.ModContent.Load<Texture2D>("assets/PM.png"), new Rectangle(), (int)(Game1.pixelZoom * 0.75f)));
+            MinutesAndMeridiemList.Add(new ClickableTextureComponent("AM", new Rectangle(xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 4 + 4, yPositionOnScreen + borderWidth + spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 6, Game1.tileSize * 2 + 16, Game1.tileSize + 8), "", "", Utilities.Globals.Helper.ModContent.Load<Texture2D>("assets/AM.png"), new Rectangle(), (int)(Game1.pixelZoom * 0.75f)));
+            MinutesAndMeridiemList.Add(new ClickableTextureComponent("PM", new Rectangle(xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 4 + 4, yPositionOnScreen + borderWidth + spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 7 + 8, Game1.tileSize * 2 + 16, Game1.tileSize + 8), "", "", Utilities.Globals.Helper.ModContent.Load<Texture2D>("assets/PM.png"), new Rectangle(), (int)(Game1.pixelZoom * 0.75f)));
 
             // Hour
             // first row: 1-6
             for (int i = 1; i <= 6; i++)
             {
-                HoursButtons.Add(new ClickableTextureComponent($"{i}", new Rectangle(xPositionOnScreen + width / 2 - (int)(Game1.tileSize * 5.0f) + (int)(Game1.tileSize * (i * 1.25f)), yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 3, Game1.tileSize + 16, Game1.tileSize + 16), "", "", Utilities.Globals.Helper.ModContent.Load<Texture2D>($"assets/hourButtons/{i}HourButton.png"), new Rectangle(), Game1.pixelZoom));
+                HoursButtons.Add(new ClickableTextureComponent($"{i}", new Rectangle(xPositionOnScreen + width / 2 - (int)(Game1.tileSize * 5.0f) + (int)(Game1.tileSize * (i * 1.25f)), yPositionOnScreen + borderWidth + spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 3, Game1.tileSize + 16, Game1.tileSize + 16), "", "", Utilities.Globals.Helper.ModContent.Load<Texture2D>($"assets/hourButtons/{i}HourButton.png"), new Rectangle(), Game1.pixelZoom));
             }
             // second row: 7-12
             for (int i = 7; i <= 12; i++)
             {
-                HoursButtons.Add(new ClickableTextureComponent($"{i}", new Rectangle(xPositionOnScreen + width / 2 - (int)(Game1.tileSize * 5.0f) + (int)(Game1.tileSize * ((i - 6) * 1.25f)), yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 4 + Game1.tileSize / 4, Game1.tileSize + 16, Game1.tileSize + 16), "", "", Utilities.Globals.Helper.ModContent.Load<Texture2D>($"assets/hourButtons/{i}HourButton.png"), new Rectangle(), Game1.pixelZoom));
+                HoursButtons.Add(new ClickableTextureComponent($"{i}", new Rectangle(xPositionOnScreen + width / 2 - (int)(Game1.tileSize * 5.0f) + (int)(Game1.tileSize * ((i - 6) * 1.25f)), yPositionOnScreen + borderWidth + spaceToClearTopBorder - Game1.tileSize / 8 + Game1.tileSize * 4 + Game1.tileSize / 4, Game1.tileSize + 16, Game1.tileSize + 16), "", "", Utilities.Globals.Helper.ModContent.Load<Texture2D>($"assets/hourButtons/{i}HourButton.png"), new Rectangle(), Game1.pixelZoom));
             }
         }
 
@@ -115,9 +112,7 @@ namespace Dem1se.CustomReminders.UI
                 {
                     Game1.playSound("coin");
                     OkButton.scale -= 0.25f;
-                    int reminderTime = Convert.ToInt32($"{Hours}{Minutes}");
-                    if (Meridiem == "PM")
-                        reminderTime += 1200;
+                    int reminderTime = GetReminderTime();
                     OnChanged(reminderTime);
                     OkButton.scale = Math.Max(0.75f, OkButton.scale);
                     Game1.exitActiveMenu();
@@ -138,12 +133,35 @@ namespace Dem1se.CustomReminders.UI
             }
         }
 
-        private bool IsValidTime()
+        int GetReminderTime()
         {
             int reminderTime = Convert.ToInt32($"{Hours}{Minutes}");
-            if (Meridiem == "PM")
+
+            // after noon, excluding 12:00PM, 12:30PM
+            if (Meridiem == "PM" && Hours != 12)
                 reminderTime += 1200;
-            if ((reminderTime <= 2400 && reminderTime >= 600) || (reminderTime < 200 && reminderTime >= 0))
+
+            // post-midnight
+            if (Meridiem == "AM" && Hours == 12)
+            {
+                reminderTime = 2400;
+                if (Minutes == "30")
+                    reminderTime += 30;
+            }
+            if (Meridiem == "AM" && Hours == 1)
+            {
+                reminderTime = 2500;
+                if (Minutes == "30")
+                    reminderTime += 30;
+            }
+
+            return reminderTime;
+        }
+
+        bool IsValidTime()
+        {
+            int reminderTime = GetReminderTime();
+            if (reminderTime >= 600 && reminderTime < 2600) 
                 return true;
             else
                 return false;
@@ -170,7 +188,7 @@ namespace Dem1se.CustomReminders.UI
             }
         }
 
-        private bool IsOkButtonReady()
+        bool IsOkButtonReady()
         {
             if (Hours != -1 && Meridiem != null && Minutes != null)
             {
@@ -183,8 +201,8 @@ namespace Dem1se.CustomReminders.UI
         public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds)
         {
             base.gameWindowSizeChanged(oldBounds, newBounds);
-            xPositionOnScreen = Game1.viewport.Width / 2 - (632 + IClickableMenu.borderWidth * 2) / 2;
-            yPositionOnScreen = Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize;
+            xPositionOnScreen = Game1.viewport.Width / 2 - (632 + borderWidth * 2) / 2;
+            yPositionOnScreen = Game1.viewport.Height / 2 - (600 + borderWidth * 2) / 2 - Game1.tileSize;
             SetupPositions();
         }
 

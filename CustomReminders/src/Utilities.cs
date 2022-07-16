@@ -91,24 +91,24 @@ namespace Dem1se.CustomReminders.Utilities
             switch (month)
             {
                 case Season.Spring:
-                    monthStr = Utilities.Globals.Helper.Translation.Get("date.season.spring");
+                    monthStr = Globals.Helper.Translation.Get("date.season.spring");
                     break;
                 case Season.Summer:
-                    monthStr = Utilities.Globals.Helper.Translation.Get("date.season.summer");
+                    monthStr = Globals.Helper.Translation.Get("date.season.summer");
                     break;
                 case Season.Fall:
-                    monthStr = Utilities.Globals.Helper.Translation.Get("date.season.fall");
+                    monthStr = Globals.Helper.Translation.Get("date.season.fall");
                     break;
                 case Season.Winter:
-                    monthStr = Utilities.Globals.Helper.Translation.Get("date.season.winter");
+                    monthStr = Globals.Helper.Translation.Get("date.season.winter");
                     break;
                 default:
                     monthStr = "";
-                    Utilities.Globals.Monitor.Log("Season translation failed.", LogLevel.Error);
+                    Globals.Monitor.Log("Season translation failed.", LogLevel.Error);
                     break;
             }
 
-            return $"{monthStr} {day}, {Utilities.Globals.Helper.Translation.Get("date.year")} {years + 1}";
+            return $"{monthStr} {day}, {Globals.Helper.Translation.Get("date.year")} {years + 1}";
         }
 
 

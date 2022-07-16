@@ -7,22 +7,22 @@ using System.Collections.Generic;
 
 namespace Dem1se.CustomReminders.UI
 {
-    public class NewReminder_RecurringPage : IClickableMenu
+    // Page 2 if chosen
+    public class NewReminderRecurringPage : IClickableMenu
     {
-        readonly int XPos = (int)(Game1.viewport.Width * Game1.options.zoomLevel * (1 / Game1.options.uiScale)) / 2 - (632 + IClickableMenu.borderWidth * 2) / 2;
-        readonly int YPos = (int)(Game1.viewport.Height * Game1.options.zoomLevel * (1 / Game1.options.uiScale)) / 2 - (600 + IClickableMenu.borderWidth * 2) / 2 - Game1.tileSize;
-        readonly int UIWidth = 632 + IClickableMenu.borderWidth * 2;
-        readonly int UIHeight = 600 + IClickableMenu.borderWidth * 2 + Game1.tileSize;
+        readonly int XPos = (int)(Game1.viewport.Width * Game1.options.zoomLevel * (1 / Game1.options.uiScale)) / 2 - (632 + borderWidth * 2) / 2;
+        readonly int YPos = (int)(Game1.viewport.Height * Game1.options.zoomLevel * (1 / Game1.options.uiScale)) / 2 - (600 + borderWidth * 2) / 2 - Game1.tileSize;
+        readonly int UIWidth = 632 + borderWidth * 2;
+        readonly int UIHeight = 600 + borderWidth * 2 + Game1.tileSize;
 
         ClickableTextureComponent OkButton;
         TextBox IntervalTextBox;
-        List<ClickableComponent> Labels = new();
+        readonly List<ClickableComponent> Labels = new();
+        readonly Action<int> OnChanged;
 
-        Action<int> OnChanged;
-
-        public NewReminder_RecurringPage(Action<int> onChanged)
+        public NewReminderRecurringPage(Action<int> onChanged)
         {
-            base.initialize(XPos, YPos, UIWidth, UIHeight);
+            initialize(XPos, YPos, UIWidth, UIHeight);
             OnChanged = onChanged;
             SetUpUI();
         }
@@ -30,7 +30,7 @@ namespace Dem1se.CustomReminders.UI
         public void SetUpUI()
         {
             // Ok button
-            OkButton = new ClickableTextureComponent("OK", new Rectangle(xPositionOnScreen + width - IClickableMenu.borderWidth - IClickableMenu.spaceToClearSideBorder - Game1.tileSize, yPositionOnScreen + height - IClickableMenu.borderWidth - IClickableMenu.spaceToClearTopBorder + Game1.tileSize / 4, Game1.tileSize, Game1.tileSize), "", null, Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 46), 1f);
+            OkButton = new ClickableTextureComponent("OK", new Rectangle(xPositionOnScreen + width - borderWidth - spaceToClearSideBorder - Game1.tileSize, yPositionOnScreen + height - borderWidth - spaceToClearTopBorder + Game1.tileSize / 4, Game1.tileSize, Game1.tileSize), "", null, Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 46), 1f);
 
             // TextBox
             IntervalTextBox = new TextBox(null, null, Game1.smallFont, Game1.textColor)
@@ -46,8 +46,8 @@ namespace Dem1se.CustomReminders.UI
 
             // Interval Label
             Labels.Add(new ClickableComponent(
-                new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + Game1.tileSize * 1 + 4, 
-                    yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + 8 + Game1.tileSize*2, 
+                new Rectangle(xPositionOnScreen + spaceToClearSideBorder + borderWidth + Game1.tileSize * 1 + 4, 
+                    yPositionOnScreen + borderWidth + spaceToClearTopBorder - Game1.tileSize / 8 + 8 + Game1.tileSize*2, 
                     1, 
                     1), 
                 Utilities.Globals.Helper.Translation.Get("new-reminder.interval-label")
@@ -55,7 +55,7 @@ namespace Dem1se.CustomReminders.UI
             );
 
             // Explaination Label
-            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + IClickableMenu.spaceToClearSideBorder + IClickableMenu.borderWidth + 4, yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - Game1.tileSize / 8 + 8 + Game1.tileSize * 5, 1, 1), Utilities.Globals.Helper.Translation.Get("new-reminder.interval-explaination")));
+            Labels.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + spaceToClearSideBorder + borderWidth + 4, yPositionOnScreen + borderWidth + spaceToClearTopBorder - Game1.tileSize / 8 + 8 + Game1.tileSize * 5, 1, 1), Utilities.Globals.Helper.Translation.Get("new-reminder.interval-explaination")));
         }
 
         private bool IsOkButtonReady()

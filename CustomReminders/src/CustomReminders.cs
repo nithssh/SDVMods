@@ -16,10 +16,8 @@ namespace Dem1se.CustomReminders
         string NotificationSound;
 
         /// <summary> List of absolute file paths to reminders that have matured and are awaiting cleanup </summary>
-        Queue<string> DeleteQueue = new();
+        readonly Queue<string> DeleteQueue = new();
 
-        /// <summary>The mod entry point, called after the mod is first loaded.</summary>
-        /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
             // Load the config
@@ -32,7 +30,7 @@ namespace Dem1se.CustomReminders
 
             // Set the notification sound
             NotificationSound = Config.SubtlerReminderSound ? "crit" : "questcomplete";
-            Monitor.Log($"Notification sound set to {NotificationSound}.");
+            Monitor.Log($"Notification sound set to {NotificationSound}.", LogLevel.Info);
 
             // Binds the event with method.
             helper.Events.Input.ButtonPressed += OnButtonPressed;
@@ -44,7 +42,7 @@ namespace Dem1se.CustomReminders
             helper.Events.GameLoop.GameLaunched += MobilePhoneModAPI.MobilePhoneMod.HookToMobilePhoneMod;
         }
 
-        /// <summary> Loops through any mature reminders since last save and deletes their file </summary>
+        /// <summary> Loops through any mature reminders since last save and deletes their file</summary>
         //Json-x-ly Notes: Alternatively we could just parse the files again and cleanup any old entries if we'd like to avoid maintaining a collection
         private void OnSaved(object sender, SavedEventArgs ev)
         {
@@ -76,13 +74,12 @@ namespace Dem1se.CustomReminders
             }
             else
             {
-                // SaveFolderName will be assigned on peerContextRecieved
-                //Utilities.Globals.MenuButton = Config.FarmhandInventoryButton;
+                // Utilities.Globals.SaveFolderName -- will be assigned on peerContextRecieved event
                 Utilities.Globals.MenuButton = Game1.options.menuButton[0].ToSButton();
             }
 
-            /* Create the data subfolder for the save for first time users. 
-             * Avoid DirectoryNotFound Exception in OnChangedBehaviour() when trying to save new reminder for first time */
+            // Create the data subfolder for the save for first time users. 
+            // Avoid DirectoryNotFound Exception in OnChangedBehaviour() when trying to save new reminder for first time
             if (!Directory.Exists(Path.Combine(Helper.DirectoryPath, "data", Utilities.Globals.SaveFolderName)))
             {
                 Monitor.Log("Reminders directory not found. Creating directory.", LogLevel.Info);
@@ -128,7 +125,7 @@ namespace Dem1se.CustomReminders
             }
 
             Utilities.Globals.Monitor.Log("Opening ReminderMenu page 1");
-            Game1.activeClickableMenu = new NewReminder_DatePage((string message, string season, int day, bool isRecurring) =>
+            Game1.activeClickableMenu = new NewReminderDatePage((string message, string season, int day, bool isRecurring) =>
             {
                 int seasonIndex = (int)Enum.Parse(typeof(Utilities.Season), season);
                 Game1.exitActiveMenu();
@@ -150,12 +147,12 @@ namespace Dem1se.CustomReminders
                 // open the second page
                 if (isRecurring)
                 {
-                    Game1.activeClickableMenu = new NewReminder_RecurringPage((int interval) =>
+                    Game1.activeClickableMenu = new NewReminderRecurringPage((int interval) =>
                     {
                         reminderInterval = interval;
 
                         // open third page
-                        Game1.activeClickableMenu = new NewReminder_TimePage((int time) =>
+                        Game1.activeClickableMenu = new NewReminderTimePage((int time) =>
                         {
                             reminderTime = time;
                             Utilities.File.Write(reminderMessage, reminderDate, reminderTime, reminderInterval);
@@ -165,7 +162,8 @@ namespace Dem1se.CustomReminders
                 }
                 else
                 {
-                    Game1.activeClickableMenu = new NewReminder_TimePage((int time) =>
+                    // open third page directly (skip second)
+                    Game1.activeClickableMenu = new NewReminderTimePage((int time) =>
                     {
                         reminderTime = time;
                         Utilities.File.Write(reminderMessage, reminderDate, reminderTime, reminderInterval);
@@ -193,7 +191,6 @@ namespace Dem1se.CustomReminders
             string timeString = Convert.ToString(newTime);
             if (!(timeString.EndsWith("30") || timeString.EndsWith("00"))) return;
 
-            // Loops through all the reminder files and evaluates if they are current.
             #region ReminderNotifierloop
             SDate currentDate = SDate.Now();
             foreach (string filePathAbsolute in Directory.EnumerateFiles(Path.Combine(Helper.DirectoryPath, "data", Utilities.Globals.SaveFolderName)))
@@ -207,7 +204,6 @@ namespace Dem1se.CustomReminders
                     if (!filePathRelative.ToLower().EndsWith(".json"))
                         continue;
 
-                    // Read the reminder and notify if mature
                     Monitor.Log($"Processing {newTime}");
                     ReminderModel Reminder = Helper.Data.ReadJsonFile<ReminderModel>(filePathRelative);
                     if (Reminder.Interval != -1)
